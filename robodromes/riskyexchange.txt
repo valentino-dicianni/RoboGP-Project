@@ -1,0 +1,14 @@
+Risky Exchange;
+16x12;
+F;B-O3;F;F-D7;F;P;F-Wnynn;B-O1;F-Wnynn;F;B-O1;F-Wnynn;B-O3;F-Wnynn;B-O1;F-Ar;
+F;B-O3;F-Wnynn-D5;F;F;F-Wynnn;F;B-O1;F;B-O3;B-O1;F-Ac3;B-O3;F;F;F;
+B-O3-Inyn;B-O0-Inny;F-Wnynn;F-Wnnyn;F-Wynnn;F;F;B-O1;F;B-O3;B-O1;F;B-O3;F;P;F-Wnnyn;
+B-O3;F-D3;F;F;B-O2;B-O2;B-O2;F-R1;F;B-O3;B-O1;F;F-R1;B-O2;B-O2;B-O2;
+B-O3;F;F;F-Wnyyn;F-Wynnn;F;F;F;F-Wnnyy;B-O3;B-O1;F-Wynny;F;F;F;F-Wnnyn;
+F-D1;F;F;F;E-O0;E-O0;E-O0;E-O0;E-O0;F;F;B-O0;B-O0;B-O0;B-O0;B-O0;
+F-Wnynn-D2;F-Wnynn;F;F;F;B-O2;B-O2;B-O2;B-O2;F;F;B-O2;B-O2;B-O2;B-O2;B-O2;
+B-O1;F;F;F-Wnnyy;F-Wynnn;F;F;F;F-Wnyyn-Au;E-O3;B-O1;F-Wyynn;F;F;F-Ac1;F-Wnnyn;
+B-O1;F-D4;F;F;B-O0;B-O0;B-O0;F-R1;F;E-O3;B-O1;F;B-O0;B-O0;B-O0;B-O0;
+B-O1-Inny;B-O0-Inyn;F-Wnnny;F-Wnnyn;F-Wynnn;F;F;B-O1;F-Ac2;E-O3;B-O1;F;E-O3;F-Wnynn;F;F-Wnnyn;
+F;B-O1;F-Wnnny-D6;F;B-O2;F-R2;F-Wnnyn;B-O1;F;E-O3;B-O1;F;E-O3;F;F-R2;B-O2;
+F;B-O1;F;F-D8;F-Ar;B-O3;F-Wnnny;B-O1;F-Wnnny;E-O3;B-O1;F-Wnnny;E-O3;F-Wnnny-Lnnny;B-O1;F;
