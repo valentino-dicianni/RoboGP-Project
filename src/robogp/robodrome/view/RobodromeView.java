@@ -20,6 +20,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -93,16 +94,16 @@ public class RobodromeView extends JComponent {
     private boolean transitioning;
     private Animation currentAnimation;
 
-    private final MovableElement[] robotMarkers;
+    private final HashMap<String, MovableElement> robotMarkers;
     private MovableElement hitMarker;
     private LaserFireAnimation.LaserState laser;
 
-    private Color laserLightColor = Color.decode("#00C1CF");
-    private Color laserDarkColor = Color.decode("#3200FF");
-    private Stroke laserExternalStroke = new BasicStroke(6, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
-    private Stroke laserInternalStroke = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
+    private final Color laserLightColor = Color.decode("#00C1CF");
+    private final Color laserDarkColor = Color.decode("#3200FF");
+    private final Stroke laserExternalStroke = new BasicStroke(6, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
+    private final Stroke laserInternalStroke = new BasicStroke(3, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL);
 
-    private ArrayList<RobodromeAnimationObserver> observers;
+    private final ArrayList<RobodromeAnimationObserver> observers;
 
     private void startDragging() {
         /*if (followingAction && isPlayingAnimation()) {
@@ -117,7 +118,7 @@ public class RobodromeView extends JComponent {
         dragging = false;
     }
 
-    public boolean isDragging() {
+    private boolean isDragging() {
         return dragging;
     }
 
@@ -165,14 +166,14 @@ public class RobodromeView extends JComponent {
      * sulla "logica" del movimento (ad esempio il robot potrebbe attraversare
      * le pareti).
      *
-     * @param robotNum il robot da muovere
+     * @param robot il robot da muovere
      * @param movement il numero di caselle di cui si muove
      * @param dir la direzione del movimento
      * @param rot l'entit&agrave; e la direzione di rotazione
      */
-    public void addRobotMove(int robotNum, int movement, Direction dir, Rotation rot) {
+    public void addRobotMove(RobotMarker robot, int movement, Direction dir, Rotation rot) {
         if (!isPlayingAnimation()) {
-            this.animationsQueue.add(new RobotMoveAnimation(robotNum, movement, dir, rot));
+            this.animationsQueue.add(new RobotMoveAnimation(robot.getName(), movement, dir, rot));
         } else {
             throw new RobodromeException("Cannot add animation steps while playing animation.");
         }
@@ -187,14 +188,18 @@ public class RobodromeView extends JComponent {
      * "logica" del movimento (ad esempio il robot spinto qui specificato
      * potrebbe essere lontano dal robot principale, e si muoverebbe lo stesso).
      *
-     * @param robotNum il robot da muovere
+     * @param robot il robot da muovere
      * @param movement il numero di caselle di cui si muove
      * @param dir la direzione del movimento
      * @param rot l'entit&agrave; e la direzione di rotazione
      */
-    public void addRobotMove(int robotNum, int movement, Direction dir, Rotation rot, int[] push) {
+    public void addRobotMove(RobotMarker robot, int movement, Direction dir, Rotation rot, RobotMarker[] push) {
         if (!isPlayingAnimation()) {
-            this.animationsQueue.add(new RobotMoveAnimation(robotNum, movement, dir, rot, push));
+            String[] p = new String[push.length];
+            for (int i = 0; i < p.length; i++) {
+                p[i] = push[i].getName();
+            }
+            this.animationsQueue.add(new RobotMoveAnimation(robot.getName(), movement, dir, rot, p));
         } else {
             throw new RobodromeException("Cannot add animation steps while playing animation.");
         }
@@ -205,11 +210,11 @@ public class RobodromeView extends JComponent {
      * in un buco nero. Attenzione: non ci sono verifiche sulla "logica" del
      * movimento: il robot precipita anche se non si trova davvero su un buco.
      *
-     * @param robotNum Il robot che precipita
+     * @param robot Il robot che precipita
      */
-    public void addRobotFall(int robotNum) {
+    public void addRobotFall(RobotMarker robot) {
         if (!isPlayingAnimation()) {
-            this.animationsQueue.add(new RobotFallAnimation(robotNum));
+            this.animationsQueue.add(new RobotFallAnimation(robot.getName()));
         } else {
             throw new RobodromeException("Cannot add animation steps while playing animation.");
         }
@@ -221,12 +226,12 @@ public class RobodromeView extends JComponent {
      * verifiche sulla "logica" dell'animazione: il robot potrebbe non avere
      * affatto subito danni.
      *
-     * @param robotNum il robot che viene colpito
+     * @param robot il robot che viene colpito
      * @param dir il lato da cui deve essere visualizzato il colpo
      */
-    public void addRobotHit(int robotNum, Direction dir) {
+    public void addRobotHit(RobotMarker robot, Direction dir) {
         if (!isPlayingAnimation()) {
-            this.animationsQueue.add(new RobotHitAnimation(robotNum, dir));
+            this.animationsQueue.add(new RobotHitAnimation(robot.getName(), dir));
         } else {
             throw new RobodromeException("Cannot add animation steps while playing animation.");
         }
@@ -240,7 +245,7 @@ public class RobodromeView extends JComponent {
      * dell'animazione, ossia che lo sparo parta davvero dal robot e arrivi ad
      * una effettiva destinazione.
      *
-     * @param robotNum il robot che spara
+     * @param robot il robot che spara
      * @param dir la direzione in cui spara
      * @param start la casella di partenza dello sparo (la colonna, se lo sparo
      * &egrave; orizzontale; la riga, se lo sparo &egrave; verticale)
@@ -253,10 +258,10 @@ public class RobodromeView extends JComponent {
      * successiva a quella di arrivo, questo parametro deve essere false)
      * @see hideLaserFire#addHideLaser
      */
-    public void addLaserFire(int robotNum, Direction dir, int start, int end,
+    public void addLaserFire(RobotMarker robot, Direction dir, int start, int end,
             boolean hitRobot, boolean hitEndWall) {
         if (!isPlayingAnimation()) {
-            this.animationsQueue.add(new LaserFireAnimation(robotNum, dir, start, end, hitRobot, hitEndWall, cellSize));
+            this.animationsQueue.add(new LaserFireAnimation(robot.getName(), dir, start, end, hitRobot, hitEndWall, cellSize));
         } else {
             throw new RobodromeException("Cannot add animation steps while playing animation.");
         }
@@ -287,16 +292,23 @@ public class RobodromeView extends JComponent {
         }
     }
 
+    private MovableElement getMarker(RobotMarker robot) {
+        String s = robot.getName();
+        if (this.robotMarkers.get(s)== null) throw new RobodromeException("Il Robot " + robot.getName() + " non si"
+                + " trova sul robodromo.");
+        return this.robotMarkers.get(s);
+    }
+    
     /**
      * Aggiunge all'elenco di animazioni da riprodurre lo scorrimento della
-     * vista per visualizzare un dato robot.
+     * vista per inquadrare un dato robot.
      *
-     * @param robotNum il robot da visualizzare
+     * @param robot il robot da inquadrare
      */
-    public void addFocusMove(int robotNum) {
+    public void addFocusMove(RobotMarker robot) {
         if (!isPlayingAnimation()) {
-            this.animationsQueue.add(new TransitionAnimation(robotMarkers[robotNum].getPosX(),
-                    robotMarkers[robotNum].getPosY(), true));
+            this.animationsQueue.add(new TransitionAnimation(getMarker(robot).getPosX(),
+                    getMarker(robot).getPosY(), true));
         } else {
             throw new RobodromeException("Cannot add animation steps while playing animation.");
         }
@@ -307,57 +319,50 @@ public class RobodromeView extends JComponent {
      * Attenzione: non pu&ograve; essere invocato quando c'&egrave;
      * un'animazione in corso.
      *
-     * @param robotNum il numero assegnato al robot da inserire (da 0 ad N-1,
-     * dove N &egrave; il numero di robot specificati alla creazione del
-     * robodromo
-     * @param name il nome del robot, scelto fra "red", "blue", "yellow",
-     * green", "emerald", "orange", "violet", "turquoise"; il nome identifica
-     * quale segnalino verr&agrave; usato
+     * @param robot il Robot da inserire
      * @param dir la direzione in cui guarda il robot inizialmente
      * @param row la riga a cui si posiziona il robot
      * @param col la colonna a cui si posiziona il robot
      * @param visible true se il robot &egrave; inizialmente visibile
      */
-    public void addRobot(RobotMarker robot, Direction dir, int row, int col, boolean visible) {
+    public void placeRobot(RobotMarker robot, Direction dir, int row, int col, boolean visible) {
         if (!this.isPlayingAnimation()) {
-            robotMarkers[robot.getDock()] = new MovableElement(robot.getImage(cellSize));
-            robotMarkers[robot.getDock()].setBoardPosition(row, col);
-            robotMarkers[robot.getDock()].setPosX(col * cellSize + cellSize / 2 + BORDER);
-            robotMarkers[robot.getDock()].setPosY(row * cellSize + cellSize / 2 + BORDER);
-            robotMarkers[robot.getDock()].setDirection(dir);
-            robotMarkers[robot.getDock()].setVisible(visible);
+            
+            MovableElement me =  new MovableElement(robot.getImage(cellSize), Direction.E);
+            me.setBoardPosition(row, col);
+            me.setPosX(col * cellSize + cellSize / 2 + BORDER);
+            me.setPosY(row * cellSize + cellSize / 2 + BORDER);
+            me.setDirection(dir);
+            me.setVisible(visible);
+            this.robotMarkers.put(robot.getName(), me);
             repaint();
         } else {
             throw new RobodromeException("Cannot add robot during animation.");
         }
     }
-
+    
     /**
      * Posiziona sul robodromo un robot gi&agrave; precedentemente inserito con
      * addRobot. Attenzione: non pu&ograve; essere invocato quando c'&egrave;
      * un'animazione in corso.
      *
-     * @param robotNum il robot da posizionare
+     * @param robot il robot da posizionare
      * @param dir la direzione in cui guarda il robot inizialmente
      * @param row la riga a cui si posiziona il robot
      * @param col la colonna a cui si posiziona il robot
      * @param visible true se il robot &egrave; visibile
-     * @see addRobot
+     * @see addRobot#placeRobot
      */
-    public void placeRobot(RobotMarker robot, Direction dir, int row, int col, boolean visible) {
+    public void changeRobotPosition(RobotMarker robot, Direction dir, int row, int col, boolean visible) {
         if (!this.isPlayingAnimation()) {
-            int robotNum = robot.getDock();
-            if (robotNum >= 0 && robotNum < robotMarkers.length && robotMarkers[robotNum] != null) {
-                robotMarkers[robotNum].setDirection(dir);
-                robotMarkers[robotNum].setBoardPosition(row, col);
-                robotMarkers[robotNum].setPosX(col * cellSize + cellSize / 2 + BORDER);
-                robotMarkers[robotNum].setPosY(row * cellSize + cellSize / 2 + BORDER);
-                robotMarkers[robotNum].setVisible(visible);
-                robotMarkers[robotNum].resetImageSize(cellSize, cellSize);
+            MovableElement me = getMarker(robot);
+                me.setDirection(dir);
+                me.setBoardPosition(row, col);
+                me.setPosX(col * cellSize + cellSize / 2 + BORDER);
+                me.setPosY(row * cellSize + cellSize / 2 + BORDER);
+                me.setVisible(visible);
+                me.resetImageSize(cellSize, cellSize);
                 repaint();
-            } else {
-                throw new RobodromeException("Invalid robot number.");
-            }
         } else {
             throw new RobodromeException("Cannot place robot during animation.");
         }
@@ -368,12 +373,11 @@ public class RobodromeView extends JComponent {
      *
      * @param rd il robodromo da visualizzare
      * @param cellSize la dimensione del lato di una cella, in pixel
-     * @param totRobots il numero di robot che il robodromo accetta
      */
-    public RobodromeView(Robodrome rd, int cellSize, int totRobots) {
+    public RobodromeView(Robodrome rd, int cellSize) {
         this.drome = rd;
         this.cellSize = cellSize;
-        robotMarkers = new MovableElement[totRobots];
+        robotMarkers = new HashMap<>();
 
         buildBoardImage();
 
@@ -440,7 +444,7 @@ public class RobodromeView extends JComponent {
 
         this.animationsQueue = new LinkedList<>();
 
-        hitMarker = new MovableElement(TileProvider.getTileProvider().getTile("H", Direction.W));
+        hitMarker = new MovableElement(TileProvider.getTileProvider().getTile("H", Direction.W), Direction.W);
         hitMarker.setVisible(false);
         laser = new LaserFireAnimation.LaserState();
         laser.setVisible(false);
@@ -514,8 +518,7 @@ public class RobodromeView extends JComponent {
                         laser.getCurrentX() - originX, laser.getCurrentY() - originY);
             }
         }
-        for (int i = 0; i < robotMarkers.length; i++) {
-            MovableElement m = robotMarkers[i];
+        for (MovableElement m: robotMarkers.values()) {
             if (m != null && m.isVisible()) {
                 if (m.getRotation() != 0) {
                     AffineTransform at = new AffineTransform();
@@ -595,10 +598,10 @@ public class RobodromeView extends JComponent {
                     this.playingAnimation = false;
                 } else { // queue not empty 
                     if (this.isFollowingAction() && !transitioning) {
-                        int watch = animationsQueue.peek().getWhich();
-                        if (watch >= 0) {
-                            currentAnimation = new TransitionAnimation(robotMarkers[watch].getPosX(),
-                                    robotMarkers[watch].getPosY(), false);
+                        String watch = animationsQueue.peek().getWhich();
+                        if (watch != null && watch.length()>0) {
+                            currentAnimation = new TransitionAnimation(robotMarkers.get(watch).getPosX(),
+                                    robotMarkers.get(watch).getPosY(), false);
                             transitioning = true;
                         } else {
                             currentAnimation = animationsQueue.poll();
@@ -634,16 +637,16 @@ public class RobodromeView extends JComponent {
         System.out.println("STARTING " + currentAnimation);
         if (currentAnimation.isRobotMove()) {
             RobotMoveAnimation ani = (RobotMoveAnimation) currentAnimation;
-            ani.setStartPosition(robotMarkers[ani.getWhich()].getPosX(),
-                    robotMarkers[ani.getWhich()].getPosY());
+            ani.setStartPosition(robotMarkers.get(ani.getWhich()).getPosX(),
+                    robotMarkers.get(ani.getWhich()).getPosY());
         } else if (currentAnimation.isRobotFall()) {
             RobotFallAnimation ani = (RobotFallAnimation) currentAnimation;
             ani.setStartSize(cellSize);
         } else if (currentAnimation.isRobotHit()) {
             RobotHitAnimation ani = (RobotHitAnimation) currentAnimation;
-            MovableElement theRobot = robotMarkers[ani.getWhich()];
+            MovableElement theRobot = robotMarkers.get(ani.getWhich());
             this.hitMarker = new MovableElement(ImageUtil.scale(
-                    TileProvider.getTileProvider().getTile("H", ani.getDirection()), cellSize, cellSize));
+                    TileProvider.getTileProvider().getTile("H", ani.getDirection()), cellSize, cellSize), ani.getDirection());
             this.hitMarker.setBoardPosition(theRobot.getRowPos(), theRobot.getColPos());
             this.hitMarker.setPosX(theRobot.getPosX() + (int) (cellSize * ani.getShiftX()));
             this.hitMarker.setPosY(theRobot.getPosY() + (int) (cellSize * ani.getShiftY()));
@@ -652,7 +655,7 @@ public class RobodromeView extends JComponent {
             ani.adjustPhase();
         } else if (currentAnimation.isLaserFire()) {
             LaserFireAnimation ani = (LaserFireAnimation) currentAnimation;
-            MovableElement theRobot = robotMarkers[ani.getWhich()];
+            MovableElement theRobot = robotMarkers.get(ani.getWhich());
             int endLen = (int) (cellSize * (ani.shouldHitRobot() ? 0.5 : (ani.shouldHitEndWall() ? 0.92 : 1)));
             switch (ani.getDirection()) {
                 case E:
@@ -723,7 +726,7 @@ public class RobodromeView extends JComponent {
     private void finishAnimation(long elapsed, long step) {
         if (currentAnimation.isRobotMove()) {
             RobotMoveAnimation ani = (RobotMoveAnimation) currentAnimation;
-            MovableElement theRobot = robotMarkers[ani.getWhich()];
+            MovableElement theRobot = robotMarkers.get(ani.getWhich());
             if (ani.getMovement() > 0) {
                 int diffRow = 0;
                 int diffCol = 0;
@@ -742,15 +745,15 @@ public class RobodromeView extends JComponent {
                         break;
                 }
                 theRobot.setBoardPosition(theRobot.getRowPos() + diffRow, theRobot.getColPos() + diffCol);
-                for (int r : ani.getPushRobots()) {
-                    robotMarkers[r].setBoardPosition(robotMarkers[r].getRowPos() + diffRow,
-                            robotMarkers[r].getColPos() + diffCol);
+                for (String r : ani.getPushRobots()) {
+                    robotMarkers.get(r).setBoardPosition(robotMarkers.get(r).getRowPos() + diffRow,
+                            robotMarkers.get(r).getColPos() + diffCol);
                 }
                 theRobot.setPosX(theRobot.getColPos() * cellSize + cellSize / 2 + BORDER);
                 theRobot.setPosY(theRobot.getRowPos() * cellSize + cellSize / 2 + BORDER);
-                for (int r : ani.getPushRobots()) {
-                    robotMarkers[r].setPosX(robotMarkers[r].getColPos() * cellSize + cellSize / 2 + BORDER);
-                    robotMarkers[r].setPosY(robotMarkers[r].getRowPos() * cellSize + cellSize / 2 + BORDER);
+                for (String r : ani.getPushRobots()) {
+                    robotMarkers.get(r).setPosX(robotMarkers.get(r).getColPos() * cellSize + cellSize / 2 + BORDER);
+                    robotMarkers.get(r).setPosY(robotMarkers.get(r).getRowPos() * cellSize + cellSize / 2 + BORDER);
                 }
                 if (this.isFollowingAction()) { // camera needs to follow movement
                     cameraOn(theRobot.getPosX(), theRobot.getPosY());
@@ -763,7 +766,7 @@ public class RobodromeView extends JComponent {
             }
         } else if (currentAnimation.isRobotFall()) {
             RobotFallAnimation ani = (RobotFallAnimation) currentAnimation;
-            MovableElement theRobot = robotMarkers[ani.getWhich()];
+            MovableElement theRobot = robotMarkers.get(ani.getWhich());
             theRobot.setVisible(false);
             theRobot.resetImageSize(cellSize,cellSize);
         } else if (currentAnimation.isRobotHit()) {
@@ -783,7 +786,7 @@ public class RobodromeView extends JComponent {
         if (currentAnimation.isRobotMove()) {
             RobotMoveAnimation ani = (RobotMoveAnimation) currentAnimation;
             float timeFraction = elapsed / (float) currentAnimation.getDuration();
-            MovableElement theRobot = robotMarkers[ani.getWhich()];
+            MovableElement theRobot = robotMarkers.get(ani.getWhich());
             if (ani.getMovement() > 0) {
                 int realmove = (int) (cellSize * ani.getMovement() * timeFraction);
                 int oldPosX = theRobot.getPosX();
@@ -804,9 +807,9 @@ public class RobodromeView extends JComponent {
                 }
                 int diffX = theRobot.getPosX() - oldPosX;
                 int diffY = theRobot.getPosY() - oldPosY;
-                for (int r : ani.getPushRobots()) {
-                    robotMarkers[r].setPosX(robotMarkers[r].getPosX() + diffX);
-                    robotMarkers[r].setPosY(robotMarkers[r].getPosY() + diffY);
+                for (String r : ani.getPushRobots()) {
+                    robotMarkers.get(r).setPosX(robotMarkers.get(r).getPosX() + diffX);
+                    robotMarkers.get(r).setPosY(robotMarkers.get(r).getPosY() + diffY);
                 }
                 if (this.isFollowingAction()) { // camera needs to follow movement
                     cameraOn(theRobot.getPosX(), theRobot.getPosY());
@@ -819,7 +822,7 @@ public class RobodromeView extends JComponent {
         } else if (currentAnimation.isRobotFall()) {
             RobotFallAnimation ani = (RobotFallAnimation) currentAnimation;
             float timeFraction = (float) elapsed / (float) currentAnimation.getDuration();
-            MovableElement theRobot = robotMarkers[ani.getWhich()];
+            MovableElement theRobot = robotMarkers.get(ani.getWhich());
             float currdeg = (RobotFallAnimation.DEGREES * timeFraction) % 360;
             float rad = (float) Math.toRadians(currdeg);
             theRobot.setRotation(rad);
@@ -837,7 +840,7 @@ public class RobodromeView extends JComponent {
             hitMarker.setVisible(on);
         } else if (currentAnimation.isLaserFire()) {
             LaserFireAnimation ani = (LaserFireAnimation) currentAnimation;
-            MovableElement theRobot = robotMarkers[ani.getWhich()];
+            MovableElement theRobot = robotMarkers.get(ani.getWhich());
             boolean isHeating = (elapsed < LaserFireAnimation.HEATTIME);
             if (isHeating) {
                 float heatFraction = elapsed / (float) LaserFireAnimation.HEATTIME;

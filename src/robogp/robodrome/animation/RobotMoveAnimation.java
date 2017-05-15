@@ -20,25 +20,25 @@ public class RobotMoveAnimation extends Animation {
   private int startX;
   private int startY;
 
-  private int[] pushRobots;
+  private String[] pushRobots;
   
   private RobotMoveAnimation() {
     this.type = Animation.Type.ROBOT_MOVE;
   }
   
-  public RobotMoveAnimation(int robotNum, int move, Direction dir, Rotation rot) {
+  public RobotMoveAnimation(String robotName, int move, Direction dir, Rotation rot) {
       this();
-      this.which = robotNum;
+      this.which = robotName;
       this.movement = move;
       this.dir = dir;
       this.rotation = rot;
       this.duration = (movement > 0? Animation.TIMEUNIT * movement : 
               (rot.getDegrees() > 0 ? (int)(Animation.TIMEUNIT*(rot.getDegrees()/180)): 0));
-      this.pushRobots = new int[0];
+      this.pushRobots = new String[0];
   }
   
-    public RobotMoveAnimation(int robotNum, int move, Direction dir, Rotation rot, int[] push) {
-      this(robotNum, move, dir, rot);
+    public RobotMoveAnimation(String robotName, int move, Direction dir, Rotation rot, String[] push) {
+      this(robotName, move, dir, rot);
       this.pushRobots = push;
   }
 
@@ -71,7 +71,7 @@ public class RobotMoveAnimation extends Animation {
     /**
      * @return the pushRobots
      */
-    public int[] getPushRobots() {
+    public String[] getPushRobots() {
         return pushRobots;
     }
 

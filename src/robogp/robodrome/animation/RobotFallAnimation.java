@@ -17,9 +17,9 @@ public class RobotFallAnimation extends Animation {
     this.type = Animation.Type.ROBOT_FALL;
   }
   
-  public RobotFallAnimation(int robotNum) {
+  public RobotFallAnimation(String robotName) {
       this();
-      which = robotNum;
+      which = robotName;
       duration = Animation.TIMEUNIT;
   }
 

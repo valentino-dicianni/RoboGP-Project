@@ -49,4 +49,30 @@ public enum Rotation {
         int newVal = (startDir.ordinal() + turn) % 4;
         return Direction.values()[newVal];
     }
+
+    public static Rotation getClockwiseRotation(Direction from, Direction to) {
+        if (from.equals(to)) {
+            return Rotation.NO;
+        }
+        if (to.ordinal() == (from.ordinal() + 1) % 4) {
+            return Rotation.CW90;
+        }
+        if (to.ordinal() == (from.ordinal() + 2) % 4) {
+            return Rotation.CW180;
+        }
+        return Rotation.CW270;
+    }
+
+    public static Rotation getCounterClockwiseRotation(Direction from, Direction to) {
+        if (from.equals(to)) {
+            return Rotation.NO;
+        }
+        if (to.ordinal() == (from.ordinal() + 1) % 4) {
+            return Rotation.CCW270;
+        }
+        if (to.ordinal() == (from.ordinal() + 2) % 4) {
+            return Rotation.CCW180;
+        }
+        return Rotation.CCW90;
+    }
 }

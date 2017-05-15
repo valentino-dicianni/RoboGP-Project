@@ -23,9 +23,9 @@ public class RobotHitAnimation extends Animation {
     this.type = Animation.Type.ROBOT_HIT;
   }
   
-  public RobotHitAnimation(int robotNum, Direction dir) {
+  public RobotHitAnimation(String robotName, Direction dir) {
       this();
-      which = robotNum;
+      which = robotName;
       duration = (int)(Animation.TIMEUNIT*1.5);
       this.dir = dir;
       switch(dir) {

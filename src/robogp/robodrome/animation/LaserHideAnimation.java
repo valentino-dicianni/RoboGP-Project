@@ -13,7 +13,7 @@ public class LaserHideAnimation extends Animation {
 
     public LaserHideAnimation() {
         this.type = Animation.Type.LASER_HIDE;
-        this.which = -1;
+        this.which = "";
     }
 
     @Override

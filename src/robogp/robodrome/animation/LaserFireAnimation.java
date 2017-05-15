@@ -192,10 +192,10 @@ public class LaserFireAnimation extends Animation {
         this.type = Animation.Type.LASER_FIRE;
     }
 
-    public LaserFireAnimation(int robotNum, Direction dir, int start, int end,
+    public LaserFireAnimation(String robotName, Direction dir, int start, int end,
             boolean hitRobot, boolean hitEndWall, int cellSize) {
         this();
-        which = robotNum;
+        which = robotName;
         duration = (int) (Animation.TIMEUNIT * Math.abs(end - start) * (cellSize / 300.0) + LaserFireAnimation.HEATTIME);
         this.dir = dir;
         startCell = start;

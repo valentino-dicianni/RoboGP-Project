@@ -12,10 +12,10 @@ package robogp.robodrome.animation;
 public abstract class Animation {
 
     /**
-     * @return il numero identificativo del robot protagonista dell'animazione, -1 se l'animazione non riguarda 
+     * @return il nome identificativo del robot protagonista dell'animazione, -1 se l'animazione non riguarda 
      * alcun robot in particolare.
      */
-    public int getWhich() {
+    public String getWhich() {
         return which;
     }
 
@@ -72,7 +72,7 @@ public abstract class Animation {
     protected long startTime;
     private long lastTime;
     protected long duration;
-    protected int which;
+    protected String which;
 
     /**
      * 

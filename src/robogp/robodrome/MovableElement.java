@@ -16,6 +16,8 @@ public class MovableElement {
 
     private BufferedImage img;
     private BufferedImage resizedImg;
+    private int resizedWidth;
+    private int resizedHeight;
     private int rowPos;
     private int colPos;
     private Direction dir;
@@ -24,24 +26,43 @@ public class MovableElement {
     private float rotation;
     private boolean visible;
 
-    public MovableElement(BufferedImage img) {
+    public MovableElement(BufferedImage img, Direction imageDir) {
         this.img = img;
         this.resizedImg = img;
+        this.resizedWidth = -1;
+        this.resizedHeight = -1;
+        this.dir = imageDir;
     }
-    
-    public void setImage(BufferedImage img) {
-        this.img = img;
-        this.resizedImg = img;
+
+    public void setImage(BufferedImage img, Direction imageDir) {
+        if (imageDir != this.dir) {
+            System.out.println("Original image direction:" + imageDir);
+            System.out.println("Movable element direction:" + dir);
+            Rotation rot = Rotation.getClockwiseRotation(imageDir, this.dir);
+            System.out.println("Rotation: " + rot);
+            this.img = ImageUtil.rotate(img, rot);
+        } else {
+            this.img = img;
+        }
+        if (resizedWidth < 0 || resizedHeight < 0) {
+            this.resizedImg = this.img;
+        } else {
+            resetImageSize(resizedWidth, resizedHeight);
+        }
+
     }
-    
+
     public void resetImageSize(int w, int h) {
         this.resizedImg = ImageUtil.scale(this.img, w, h);
+        this.resizedWidth = w;
+        this.resizedHeight = h;
     }
 
     public void setBoardPosition(int row, int col) {
         this.rowPos = row;
         this.colPos = col;
     }
+
     /**
      * @return the posX
      */
@@ -123,11 +144,18 @@ public class MovableElement {
      * @param dir the direction to set
      */
     public void setDirection(Direction dir) {
-        this.dir = dir;        
+        boolean imageReset = false;
+        BufferedImage image = this.img;
+        Direction oldDir = this.dir;
+        if (!this.dir.equals(dir)) {
+            imageReset = true;
+        }
+        this.dir = dir;
+        if (imageReset) this.setImage(image, oldDir);
     }
-    
+
     public void resizeImage(int size) {
-        img = ImageUtil.scale(img, size, size);        
+        img = ImageUtil.scale(img, size, size);
     }
 
     /**

@@ -12,7 +12,7 @@ package robogp.robodrome.animation;
 public class PauseAnimation extends Animation {
     public PauseAnimation(long millisec) {
         this.type = Animation.Type.PAUSE;
-        this.which = -1;
+        this.which = "";
         this.duration = millisec;
     }
 
