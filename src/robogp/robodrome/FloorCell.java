@@ -13,7 +13,7 @@ import robogp.robodrome.image.TileProvider;
  *
  * @author claudia
  */
-class FloorCell extends BoardCell {
+public class FloorCell extends BoardCell {
   
   private final boolean[] walls;
   private final boolean[] lasers;

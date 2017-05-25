@@ -13,7 +13,7 @@ import robogp.robodrome.image.TileProvider;
  *
  * @author claudia
  */
-class BeltCell extends BoardCell {
+public class BeltCell extends BoardCell {
 
     private enum InputDirection {
         Straight, Left, Right
