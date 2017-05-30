@@ -588,14 +588,15 @@ public class RobodromeView extends JComponent {
         }
     }
 
-    private void evolveAnimation() {
+    private synchronized void evolveAnimation() {
         if (isPlayingAnimation()) {
             if (currentAnimation == null) { // step to next animation
                 if (animationsQueue.isEmpty()) {
+                    this.playingAnimation = false;
                     for (RobodromeAnimationObserver obs : observers) {
                         obs.animationFinished();
                     }
-                    this.playingAnimation = false;
+                    
                 } else { // queue not empty 
                     if (this.isFollowingAction() && !transitioning) {
                         String watch = animationsQueue.peek().getWhich();
