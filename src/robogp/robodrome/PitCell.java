@@ -13,7 +13,7 @@ import robogp.robodrome.image.TileProvider;
  *
  * @author claudia
  */
-class PitCell extends BoardCell {
+public class PitCell extends BoardCell {
   private final boolean[] walls;
   
   PitCell(String[] comps) {

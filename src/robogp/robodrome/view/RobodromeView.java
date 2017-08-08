@@ -256,6 +256,7 @@ public class RobodromeView extends JComponent {
      * @param hitEndWall true se lo sparo colpisce una parete nella casella di
      * arrivo (attenzione: se lo sparo colpisce una parete nella casella
      * successiva a quella di arrivo, questo parametro deve essere false)
+     * @see hideLaserFire#addHideLaser
      */
     public void addLaserFire(RobotMarker robot, Direction dir, int start, int end,
             boolean hitRobot, boolean hitEndWall) {
@@ -350,6 +351,7 @@ public class RobodromeView extends JComponent {
      * @param row la riga a cui si posiziona il robot
      * @param col la colonna a cui si posiziona il robot
      * @param visible true se il robot &egrave; visibile
+     * @see addRobot#placeRobot
      */
     public void changeRobotPosition(RobotMarker robot, Direction dir, int row, int col, boolean visible) {
         if (!this.isPlayingAnimation()) {
@@ -594,8 +596,8 @@ public class RobodromeView extends JComponent {
                     for (RobodromeAnimationObserver obs : observers) {
                         obs.animationFinished();
                     }
-
-                } else { // queue not empty
+                    
+                } else { // queue not empty 
                     if (this.isFollowingAction() && !transitioning) {
                         String watch = animationsQueue.peek().getWhich();
                         if (watch != null && watch.length()>0) {
