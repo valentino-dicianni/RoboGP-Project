@@ -181,17 +181,17 @@ public class RobodromeView extends JComponent {
 
     /**
      * Aggiunge all'elenco di animazioni da riprodurre il movimento (traslazione
-     * e/o rotazione) di un robot, che ne spinge altri con s&eacute;.
+     * e/o rotazione) di un robot, che ne spinge altri con sè;.
      * Attenzione: la "spinta" in questo caso significa semplicemente che gli
      * altri robot si muovono in modo identico a quello principale per quanto
-     * riguarda l'aspetto di traslazione. Non vi &egrave; alcuna verifica sulla
+     * riguarda l'aspetto di traslazione. Non vi è; alcuna verifica sulla
      * "logica" del movimento (ad esempio il robot spinto qui specificato
      * potrebbe essere lontano dal robot principale, e si muoverebbe lo stesso).
      *
      * @param robot il robot da muovere
      * @param movement il numero di caselle di cui si muove
      * @param dir la direzione del movimento
-     * @param rot l'entit&agrave; e la direzione di rotazione
+     * @param rot l'entità; e la direzione di rotazione
      */
     public void addRobotMove(RobotMarker robot, int movement, Direction dir, Rotation rot, RobotMarker[] push) {
         if (!isPlayingAnimation()) {
@@ -248,15 +248,14 @@ public class RobodromeView extends JComponent {
      * @param robot il robot che spara
      * @param dir la direzione in cui spara
      * @param start la casella di partenza dello sparo (la colonna, se lo sparo
-     * &egrave; orizzontale; la riga, se lo sparo &egrave; verticale)
+     * è orizzontale; la riga, se lo sparo è verticale)
      * @param end la casella di arrivo dello sparo (la colonna, se lo sparo
-     * &egrave; orizzontale; la riga, se lo sparo &egrave; verticale)
+     * è orizzontale; la riga, se lo sparo è verticale)
      * @param hitRobot true se lo sparo colpisce un robot nella casella di
      * arrivo
      * @param hitEndWall true se lo sparo colpisce una parete nella casella di
      * arrivo (attenzione: se lo sparo colpisce una parete nella casella
      * successiva a quella di arrivo, questo parametro deve essere false)
-     * @see hideLaserFire#addHideLaser
      */
     public void addLaserFire(RobotMarker robot, Direction dir, int start, int end,
             boolean hitRobot, boolean hitEndWall) {
@@ -316,14 +315,14 @@ public class RobodromeView extends JComponent {
 
     /**
      * Mette un segnalino robot sul robodromo, nella posizione indicata.
-     * Attenzione: non pu&ograve; essere invocato quando c'&egrave;
+     * Attenzione: non puù essere invocato quando c'è
      * un'animazione in corso.
      *
      * @param robot il Robot da inserire
      * @param dir la direzione in cui guarda il robot inizialmente
      * @param row la riga a cui si posiziona il robot
      * @param col la colonna a cui si posiziona il robot
-     * @param visible true se il robot &egrave; inizialmente visibile
+     * @param visible true se il robot è inizialmente visibile
      */
     public void placeRobot(RobotMarker robot, Direction dir, int row, int col, boolean visible) {
         if (!this.isPlayingAnimation()) {
@@ -342,16 +341,15 @@ public class RobodromeView extends JComponent {
     }
     
     /**
-     * Posiziona sul robodromo un robot gi&agrave; precedentemente inserito con
-     * addRobot. Attenzione: non pu&ograve; essere invocato quando c'&egrave;
+     * Posiziona sul robodromo un robot giù precedentemente inserito con
+     * addRobot. Attenzione: non può essere invocato quando c'è
      * un'animazione in corso.
      *
      * @param robot il robot da posizionare
      * @param dir la direzione in cui guarda il robot inizialmente
      * @param row la riga a cui si posiziona il robot
      * @param col la colonna a cui si posiziona il robot
-     * @param visible true se il robot &egrave; visibile
-     * @see addRobot#placeRobot
+     * @param visible true se il robot è visibile
      */
     public void changeRobotPosition(RobotMarker robot, Direction dir, int row, int col, boolean visible) {
         if (!this.isPlayingAnimation()) {
@@ -470,7 +468,7 @@ public class RobodromeView extends JComponent {
     }
 
     /**
-     * D&agrave; inizio alla riproduzione delle animazioni inserite in coda.
+     * Dà inizio alla riproduzione delle animazioni inserite in coda.
      */
     public void play() {
         if (!isPlayingAnimation() && !this.animationsQueue.isEmpty()) {
@@ -894,7 +892,7 @@ public class RobodromeView extends JComponent {
     }
 
     /**
-     * Aggiunge un Animation Observer al robodromo, che ricever&agrave;
+     * Aggiunge un Animation Observer al robodromo, che riceverà
      * notifiche sull'inizio e la fine dell'animazione.
      *
      * @param obs l'observer da aggiungere
@@ -905,7 +903,7 @@ public class RobodromeView extends JComponent {
 
     /**
      * Rimuove un Animation Observer dal robodromo, in modo che non riceva
-     * pi&ugrave; notifiche.
+     * più notifiche.
      *
      * @param obs l'observer da rimuovere
      */
