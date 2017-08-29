@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 /**
  * Questa classe rappresenta una connessione, indipendentemente dal ruolo di 
  * Client o Server. Solo inizialmente
- * serve sapere chi &egrave; il Client (colui che richiede la connessione) e chi
+ * serve sapere chi è il Client (colui che richiede la connessione) e chi
  * il Server (colui che la concede) per gestire l'handshake iniziale.
  *
  * @author picardi
@@ -198,8 +198,8 @@ public class Connection {
 
 	/**
 	 * Chiede alla connessione di chiudersi. Essa manda un Bye message sul
-	 * canale (vedasi Message). Ci&ograve; che effettivamente chiude
-	 * per&ograve; &egrave; la ricezione di una risposta al Bye. Se qualcosa va
+	 * canale (vedasi Message). Ciò che effettivamente chiude
+	 * perchè è la ricezione di una risposta al Bye. Se qualcosa va
 	 * storto la connessione viene chiusa bruscamente richiamando forceClose.
 	 */
 	public synchronized void disconnect() {
@@ -213,9 +213,9 @@ public class Connection {
 	}
 
 	/**
-	 * Dice se la connessione &egrave; chiusa.
+	 * Dice se la connessione è chiusa.
 	 *
-	 * @return true se la connessione &egrave; chiusa, false altrimenti.
+	 * @return true se la connessione è chiusa, false altrimenti.
 	 */
 	public synchronized boolean isClosed() {
 		return closed;
@@ -246,7 +246,7 @@ public class Connection {
 	}
 
 	/**
-	 * Aggiunge un osservatore della classe MessageObserver che verr&agrave;
+	 * Aggiunge un osservatore della classe MessageObserver che verrà
 	 * notificato quando arriva un messaggio del tipo richiesto.
 	 *
 	 * @param obs l'oggetto che vuole essere notificato dell'arrivo del
@@ -265,7 +265,7 @@ public class Connection {
 	/**
 	 * Rimuove un'istanza della classe MessageReceiver dalla lista degli
 	 * osservatori dei messaggi con nome <em>messageName</em>. Tale istanza non
-	 * verr&agrave; pi&ugrave; notificata.
+	 * verrà più notificata.
 	 *
 	 * @param obs l'oggetto che vuole essere rimosso dalla lista degli
 	 * osservatori

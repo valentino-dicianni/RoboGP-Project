@@ -41,12 +41,35 @@ public class Match implements MessageObserver {
     private final int nRobotsXPlayer;
     private final boolean initUpgrades;
     private State status;
+    //private int readyPlayers;
+    //private MatchHelper matchThread;
 
     private final HashMap<String, Connection> waiting;
     private final HashMap<String, Connection> players;
 
     /* Gestione pattern singleton */
     private static Match singleInstance;
+
+
+    /** TODO
+     * 	private class MatchHelper implements Runnable {
+     *
+     * 	    controlla ogni tot tempo che ci sia il numero di giocatori
+     * 	    necessari per iniziare la partita invocando checkPlayersReady(){}
+     * 	}
+     *
+     *
+     *
+     *
+     * 	public syncronized boolean checkPlayersReady(){
+     * 	    while (!available) {
+     * 	        wait();
+     * 	    }
+     * 	    notifyAll();
+     * 	    return readyPlayers == availablePlayers ;
+     *
+     * 	}
+     */
 
     private Match(String rbdName, int nMaxPlayers, int nRobotsXPlayer, EndGame endGameCond, boolean initUpg) {
         this.nMaxPlayers = nMaxPlayers;
@@ -59,9 +82,14 @@ public class Match implements MessageObserver {
         for (int i = 0; i < Match.ROBOT_NAMES.length; i++) {
             this.robots[i] = new RobotMarker(Match.ROBOT_NAMES[i], Match.ROBOT_COLORS[i]);
         }
+
         waiting = new HashMap<>();
         players = new HashMap<>();
         this.status = State.Created;
+        //TODO
+        //matchThread = new MatchHelper();
+        //(new Thread(matchThread)).start();
+
     }
 
     public static Match getInstance(String rbdName, int nMaxPlayers,
@@ -86,6 +114,11 @@ public class Match implements MessageObserver {
             this.waiting.put(nickName, msg.getSenderConnection());
             MatchManagerApp.getAppInstance().getIniziarePartitaController().matchJoinRequestArrived(msg);
         }
+
+        /**
+         * else{  msg.getName().equals(Match.ALTRO) } nel caso il match debba ricevere altri messaggi
+         **/
+
     }
 
     public State getStatus() {

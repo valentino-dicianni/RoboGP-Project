@@ -70,6 +70,7 @@ public class Robodrome {
                 }
                 if (board[r][c] instanceof FloorCell && ((FloorCell)board[r][c]).isDock()) {
                     this.docksCount++;
+                    /**TODO si crea un array con le posizioni dei dock*/
                 }
             }
         }

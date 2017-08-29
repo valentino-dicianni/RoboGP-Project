@@ -39,7 +39,7 @@ public class Server implements Runnable {
     }
 
     /**
-     * @param port La porta su cui eseguire il Server, se non &grave; stato
+     * @param port La porta su cui eseguire il Server, se non è stato
      * ancora creato
      * @return L'unica istanza di Server esistente
      * @throws ServerCreationException se non trova 'localhost'
