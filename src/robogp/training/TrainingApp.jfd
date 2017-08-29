@@ -3,30 +3,126 @@ JFDML JFormDesigner: "6.0.2.0.116" Java: "1.8.0_152-release" encoding: "UTF-8"
 new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
-		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
-			"$layoutConstraints": "hidemode 3"
-			"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
-			"$rowConstraints": "[][][][][][][][][][]"
-		} ) {
-			name: "this"
-			add( new FormComponent( "javax.swing.JButton" ) {
-				name: "startButton"
-				"text": "Inizia Allenamento"
-				addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "startTrainingActionPerformed", true ) )
-			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "cell 11 2"
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.CardLayout ) ) {
+			name: "TrainingFrame"
+			"defaultCloseOperation": 3
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+				"$layoutConstraints": "hidemode 3"
+				"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
+				"$rowConstraints": "[][][][][]"
+			} ) {
+				name: "roboPanel"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label1"
+					"text": "Benvenuto nel programma di Allenamento RoboGP"
+					"font": new java.awt.Font( "Lucida Grande", 1, 18 )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 5 0"
+				} )
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label2"
+					"text": "Seleziona un robodrome per continuare:"
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 5 2"
+				} )
+				add( new FormComponent( "javax.swing.JComboBox" ) {
+					name: "comboBox1"
+					"model": new javax.swing.DefaultComboBoxModel {
+						selectedItem: "Checkmate"
+						addElement( "Checkmate" )
+						addElement( "Risky Exchange" )
+					}
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 5 3"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "initButton"
+					"text": "Continua"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "initButtonActionPerformed", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 5 4"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "robodromo"
 			} )
-			add( new FormComponent( "javax.swing.JTextArea" ) {
-				name: "textArea1"
-				"text": "Caricamento..."
-				"editable": false
-				"visible": false
-			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-				"value": "cell 11 3"
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
+				"$layoutConstraints": "hidemode 3"
+				"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
+				"$rowConstraints": "[][][][][][]"
+			} ) {
+				name: "progPanel"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label3"
+					"text": "Scrivi il programma per l'allenamento "
+					"font": new java.awt.Font( "Lucida Grande", 1, 18 )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 5 0"
+				} )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "scrollPaneLeft"
+					add( new FormComponent( "javax.swing.JList" ) {
+						name: "cardList"
+						"model": new javax.swing.DefaultListModel {
+							addElement( "move1" )
+							addElement( "move2" )
+							addElement( "move3" )
+							addElement( "turnL" )
+							addElement( "turnR" )
+							addElement( "uturn" )
+						}
+					} )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 5 1 1 4"
+				} )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "scrollPaneRight"
+					add( new FormComponent( "javax.swing.JList" ) {
+						name: "progList"
+					} )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 5 1 1 4"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "addButton"
+					"text": "Aggiungi"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "addButtonActionPerformed", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 7 1"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "deleteButton"
+					"text": "Scambia"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "deleteButtonActionPerformed", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 7 2"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "changeButton"
+					"text": "Elimina"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "changeButtonActionPerformed", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 7 3"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "startTraining"
+					"text": "Inizia "
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "startTrainingActionPerformed", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 5 5"
+				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "backButton"
+					"text": "Indietro"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "backButtonActionPerformed", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 5 5"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "prog"
 			} )
 		}, new FormLayoutConstraints( null ) {
-			"location": new java.awt.Point( 0, 10 )
-			"size": new java.awt.Dimension( 445, 260 )
+			"location": new java.awt.Point( 15, 20 )
+			"size": new java.awt.Dimension( 585, 380 )
 		} )
 	}
 }

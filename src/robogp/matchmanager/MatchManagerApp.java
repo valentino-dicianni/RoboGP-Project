@@ -24,6 +24,8 @@ public class MatchManagerApp extends javax.swing.JFrame {
 
     private static MatchManagerApp singleInstance;
     private RobotStatePanel[] robotPanel;
+    private final IniziarePartitaController inizPartCtrl;
+    private final RobotChooser robotChooser;
 
     /**
      * Creates new form MatchManager
@@ -38,9 +40,7 @@ public class MatchManagerApp extends javax.swing.JFrame {
         return MatchManagerApp.singleInstance;
     }
 
-    private final IniziarePartitaController inizPartCtrl;
 
-    private final RobotChooser robotChooser;
 
     public IniziarePartitaController getIniziarePartitaController() {
         return this.inizPartCtrl;
