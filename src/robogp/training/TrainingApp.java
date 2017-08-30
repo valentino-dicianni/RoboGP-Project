@@ -51,9 +51,9 @@ public class TrainingApp  {
         if(elems.length == 2) {
             DefaultListModel model = (DefaultListModel) progList.getModel();
             Object[] arr = model.toArray();
-            String temp = (String)arr[elems[0]];
+            Object temp = arr[elems[0]];
             arr[elems[0]] = arr[elems[1]];
-            arr[elems[elems[1]]] = temp;
+            arr[elems[1]] = temp;
             model.removeAllElements();
             for(Object s : arr){
                 model.addElement(s);
@@ -75,6 +75,9 @@ public class TrainingApp  {
     private void backButtonActionPerformed(ActionEvent e) {
         ((CardLayout) TrainingApp.getAppInstance().TrainingFrame.getContentPane().getLayout()).show(
                 TrainingApp.getAppInstance().TrainingFrame.getContentPane(), "robodromo");
+        DefaultListModel model = (DefaultListModel) progList.getModel();
+        model.removeAllElements();
+
     }
 
     private void createUIComponents() {
