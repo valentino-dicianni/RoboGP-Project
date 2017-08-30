@@ -91,14 +91,14 @@ new FormModel {
 				} )
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "deleteButton"
-					"text": "Scambia"
+					"text": "Elimina"
 					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "deleteButtonActionPerformed", true ) )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 					"value": "cell 7 2"
 				} )
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "changeButton"
-					"text": "Elimina"
+					"text": "Scambia"
 					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "changeButtonActionPerformed", true ) )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 					"value": "cell 7 3"

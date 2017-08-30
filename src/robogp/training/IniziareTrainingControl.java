@@ -10,4 +10,5 @@ public class IniziareTrainingControl {
         return IniziareTrainingControl.singleInstance;
     }
 
+    public void setRobodrome() { }
 }

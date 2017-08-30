@@ -2,6 +2,8 @@ package robogp.training;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Collections;
+import java.util.List;
 import javax.swing.*;
 import net.miginfocom.swing.*;
 
@@ -15,10 +17,10 @@ public class TrainingApp  {
 
 
 
+
     private TrainingApp(){
         initComponents();
         this.inizPartCtrl = IniziareTrainingControl.getInstance();
-        // comment comment2
     }
     public static TrainingApp getAppInstance() {
         return TrainingApp.singleInstance;
@@ -26,20 +28,39 @@ public class TrainingApp  {
 
 
     private void initButtonActionPerformed(ActionEvent e) {
+        inizPartCtrl.setRobodrome();
         ((CardLayout) TrainingApp.getAppInstance().TrainingFrame.getContentPane().getLayout()).show(
                 TrainingApp.getAppInstance().TrainingFrame.getContentPane(), "prog");
 	}
 
 	private void addButtonActionPerformed(ActionEvent e) {
-		// TODO add your code here
+        DefaultListModel model = (DefaultListModel) progList.getModel();
+        model.addElement(cardList.getSelectedValue());
 	}
 
 	private void deleteButtonActionPerformed(ActionEvent e) {
-		// TODO add your code here
-	}
+        DefaultListModel model = (DefaultListModel) progList.getModel();
+        int selectedIndex = progList.getSelectedIndex();
+        if (selectedIndex != -1) {
+            model.remove(selectedIndex);
+        }
+    }
 
 	private void changeButtonActionPerformed(ActionEvent e) {
-		// TODO add your code here
+        List<String> elems=progList.getSelectedValuesList();
+        if(elems.size() == 2) {
+            DefaultListModel model = (DefaultListModel) progList.getModel();
+            int pos1 = model.indexOf(elems.get(0));
+            int pos2 = model.indexOf(elems.get(1));
+            String s1 = (String) model.get(pos1);
+            String s2 = (String) model.get(pos2);
+            model.remove(pos1);
+            model.remove(pos2);
+            model.add(pos1,s2);
+            model.add(pos2,s1);
+        }
+
+
 	}
 
 	private void startTrainingActionPerformed(ActionEvent e) {
@@ -185,6 +206,7 @@ public class TrainingApp  {
                 progPanel.add(scrollPaneLeft, "cell 5 1 1 4");
 
                 //======== scrollPaneRight ========
+                progList.setModel(new DefaultListModel());
                 {
                     scrollPaneRight.setViewportView(progList);
                 }
@@ -196,12 +218,12 @@ public class TrainingApp  {
                 progPanel.add(addButton, "cell 7 1");
 
                 //---- deleteButton ----
-                deleteButton.setText("Scambia");
+                deleteButton.setText("Elimina");
                 deleteButton.addActionListener(e -> deleteButtonActionPerformed(e));
                 progPanel.add(deleteButton, "cell 7 2");
 
                 //---- changeButton ----
-                changeButton.setText("Elimina");
+                changeButton.setText("Scambia");
                 changeButton.addActionListener(e -> changeButtonActionPerformed(e));
                 progPanel.add(changeButton, "cell 7 3");
 
