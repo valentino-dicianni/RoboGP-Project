@@ -18,7 +18,7 @@ public class TrainingApp  {
     private TrainingApp(){
         initComponents();
         this.inizPartCtrl = IniziareTrainingControl.getInstance();
-
+        // comment
     }
     public static TrainingApp getAppInstance() {
         return TrainingApp.singleInstance;
