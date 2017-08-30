@@ -31,14 +31,14 @@ public class TrainingApp  {
         inizPartCtrl.setRobodrome();
         ((CardLayout) TrainingApp.getAppInstance().TrainingFrame.getContentPane().getLayout()).show(
                 TrainingApp.getAppInstance().TrainingFrame.getContentPane(), "prog");
-	}
+    }
 
-	private void addButtonActionPerformed(ActionEvent e) {
+    private void addButtonActionPerformed(ActionEvent e) {
         DefaultListModel model = (DefaultListModel) progList.getModel();
         model.addElement(cardList.getSelectedValue());
-	}
+    }
 
-	private void deleteButtonActionPerformed(ActionEvent e) {
+    private void deleteButtonActionPerformed(ActionEvent e) {
         DefaultListModel model = (DefaultListModel) progList.getModel();
         int selectedIndex = progList.getSelectedIndex();
         if (selectedIndex != -1) {
@@ -46,36 +46,47 @@ public class TrainingApp  {
         }
     }
 
-	private void changeButtonActionPerformed(ActionEvent e) {
-        List<String> elems=progList.getSelectedValuesList();
-        if(elems.size() == 2) {
+    private void changeButtonActionPerformed(ActionEvent e) {
+        int[] elems=progList.getSelectedIndices();
+        if(elems.length == 2) {
             DefaultListModel model = (DefaultListModel) progList.getModel();
-            int pos1 = model.indexOf(elems.get(0));
-            int pos2 = model.indexOf(elems.get(1));
-            String s1 = (String) model.get(pos1);
-            String s2 = (String) model.get(pos2);
-            model.remove(pos1);
-            model.remove(pos2);
-            model.add(pos1,s2);
-            model.add(pos2,s1);
+            Object[] arr = model.toArray();
+            String temp = (String)arr[elems[0]];
+            arr[elems[0]] = arr[elems[1]];
+            arr[elems[elems[1]]] = temp;
+            model.removeAllElements();
+            for(Object s : arr){
+                model.addElement(s);
+            }
+        }
+        else{
+            JOptionPane.showMessageDialog(TrainingApp.getAppInstance().TrainingFrame,
+                    "Selezionare due schede istruzione!","Attenzione:",
+                    JOptionPane.WARNING_MESSAGE);
         }
 
 
-	}
+    }
 
-	private void startTrainingActionPerformed(ActionEvent e) {
-		// TODO add your code here
-	}
+    private void startTrainingActionPerformed(ActionEvent e) {
+        // TODO add your code here
+    }
 
     private void backButtonActionPerformed(ActionEvent e) {
         ((CardLayout) TrainingApp.getAppInstance().TrainingFrame.getContentPane().getLayout()).show(
                 TrainingApp.getAppInstance().TrainingFrame.getContentPane(), "robodromo");
     }
 
+    private void createUIComponents() {
+        // TODO: add custom component creation code here
+    }
 
-	private void initComponents() {
-		// JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
+
+    private void initComponents() {
+        // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner Evaluation license - valka getz
+        createUIComponents();
+
         TrainingFrame = new JFrame();
         roboPanel = new JPanel();
         label1 = new JLabel();
@@ -87,12 +98,12 @@ public class TrainingApp  {
         scrollPaneLeft = new JScrollPane();
         cardList = new JList<>();
         scrollPaneRight = new JScrollPane();
-        progList = new JList();
         addButton = new JButton();
         deleteButton = new JButton();
         changeButton = new JButton();
         startTraining = new JButton();
         backButton = new JButton();
+        trainPanel = new JPanel();
 
         //======== TrainingFrame ========
         {
@@ -206,8 +217,11 @@ public class TrainingApp  {
                 progPanel.add(scrollPaneLeft, "cell 5 1 1 4");
 
                 //======== scrollPaneRight ========
-                progList.setModel(new DefaultListModel());
                 {
+
+                    //---- progList ----
+                    progList = new JList();
+                    progList.setModel(new DefaultListModel());
                     scrollPaneRight.setViewportView(progList);
                 }
                 progPanel.add(scrollPaneRight, "cell 5 1 1 4");
@@ -238,11 +252,17 @@ public class TrainingApp  {
                 progPanel.add(backButton, "cell 5 5");
             }
             TrainingFrameContentPane.add(progPanel, "prog");
+
+            //======== trainPanel ========
+            {
+                trainPanel.setLayout(new BorderLayout());
+            }
+            TrainingFrameContentPane.add(trainPanel, "showTrain");
             TrainingFrame.pack();
             TrainingFrame.setLocationRelativeTo(TrainingFrame.getOwner());
         }
-		// JFormDesigner - End of component initialization  //GEN-END:initComponents
-	}
+        // JFormDesigner - End of component initialization  //GEN-END:initComponents
+    }
 
     public static void main(String[] args) {
 
@@ -252,7 +272,7 @@ public class TrainingApp  {
         });
     }
 
-	// JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
+    // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
     // Generated using JFormDesigner Evaluation license - valka getz
     private JFrame TrainingFrame;
     private JPanel roboPanel;
@@ -271,5 +291,7 @@ public class TrainingApp  {
     private JButton changeButton;
     private JButton startTraining;
     private JButton backButton;
-	// JFormDesigner - End of variables declaration  //GEN-END:variables
+    private JPanel trainPanel;
+    // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
+
