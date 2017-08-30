@@ -1,7 +1,15 @@
 package robogp.training;
 
-public class Training {
+import java.util.Observable;
+
+public class Training extends Observable {
     private static Training singleInstance;
+    private boolean paused;
+    private TrainingRobot robot;
+
+    private Training() {
+        this.paused = false;
+    }
 
 
     public static Training getInstance() {
@@ -11,6 +19,18 @@ public class Training {
     }
 
 
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+        setChanged();
+        notifyObservers(this.paused);
+    }
 
+    public boolean isPaused() {
+        return paused;
+    }
 
+    public void setRobot(String robotName) {
+        this.robot = new TrainingRobot(robotName);
+        this.addObserver(this.robot);
+    }
 }
