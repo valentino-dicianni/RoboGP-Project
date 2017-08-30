@@ -111,6 +111,7 @@ public class TrainingApp  {
         //======== TrainingFrame ========
         {
             TrainingFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            TrainingFrame.setResizable(false);
             Container TrainingFrameContentPane = TrainingFrame.getContentPane();
             TrainingFrameContentPane.setLayout(new CardLayout());
 
@@ -151,7 +152,7 @@ public class TrainingApp  {
                 roboPanel.add(label1, "cell 5 0");
 
                 //---- label2 ----
-                label2.setText("Seleziona un robodrome per continuare:");
+                label2.setText("Seleziona un robodromo per continuare:");
                 roboPanel.add(label2, "cell 5 2");
 
                 //---- comboBox1 ----
