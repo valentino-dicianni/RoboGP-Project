@@ -16,7 +16,7 @@ public class ShowRobodrome extends javax.swing.JFrame {
      */
     public ShowRobodrome() {
         initComponents();
-        toShow = new RobodromeView(new Robodrome("robodromes/riskyexchange.txt"), 35);
+        toShow = new RobodromeView(new Robodrome("robodromes/checkmate.txt"), 35);
         this.getContentPane().add(toShow, BorderLayout.CENTER);
     }
 

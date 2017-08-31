@@ -22,4 +22,9 @@ public class Position {
     public Direction getRotation() {
         return this.dir;
     }
+
+    @Override
+    public String toString() {
+        return "Dock position: posX = "+posX+", posY = "+posY+", Direction = " + dir;
+    }
 }

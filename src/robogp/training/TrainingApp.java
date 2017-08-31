@@ -28,10 +28,20 @@ public class TrainingApp  {
 
 
     private void initButtonActionPerformed(ActionEvent e) {
-
         ArrayList<Position> dockPos = inizPartCtrl.setRobodrome((String)robodromeChoose.getSelectedItem());
+        DefaultComboBoxModel model = (DefaultComboBoxModel)dockChooser.getModel();
+        model.removeAllElements();
+        for(Position pos : dockPos){
+            model.addElement(pos.toString());
+        }
+        label4.setEnabled(true);
+        dockChooser.setEnabled(true);
+        continueButton.setEnabled(true);
+
+    }
+    private void continueButtonActionPerformed(ActionEvent e) {
         ((CardLayout) TrainingApp.getAppInstance().TrainingFrame.getContentPane().getLayout()).show(
-                TrainingApp.getAppInstance().TrainingFrame.getContentPane(), "prog");
+              TrainingApp.getAppInstance().TrainingFrame.getContentPane(), "prog");
     }
 
     private void addButtonActionPerformed(ActionEvent e) {
@@ -70,6 +80,8 @@ public class TrainingApp  {
     }
 
     private void startTrainingActionPerformed(ActionEvent e) {
+        //TODO aggiungere al metodo start la posizione iniziale
+
         DefaultListModel model = (DefaultListModel) progList.getModel();
         model.toArray();
         inizPartCtrl.start((String[])model.toArray());
@@ -83,9 +95,7 @@ public class TrainingApp  {
 
     }
 
-    private void createUIComponents() {
-        // TODO: add custom component creation code here
-    }
+    private void createUIComponents() {}
 
 
     private void initComponents() {
@@ -98,9 +108,10 @@ public class TrainingApp  {
         label1 = new JLabel();
         label2 = new JLabel();
         robodromeChoose = new JComboBox<>();
+        chooseButton = new JButton();
         label4 = new JLabel();
         dockChooser = new JComboBox<>();
-        initButton = new JButton();
+        continueButton = new JButton();
         progPanel = new JPanel();
         label3 = new JLabel();
         scrollPaneLeft = new JScrollPane();
@@ -153,6 +164,8 @@ public class TrainingApp  {
                     "[]" +
                     "[]" +
                     "[]" +
+                    "[]" +
+                    "[]" +
                     "[]"));
 
                 //---- label1 ----
@@ -171,22 +184,28 @@ public class TrainingApp  {
                 }));
                 roboPanel.add(robodromeChoose, "cell 5 3");
 
+                //---- chooseButton ----
+                chooseButton.setText("Scegli");
+                chooseButton.addActionListener(e -> initButtonActionPerformed(e));
+                roboPanel.add(chooseButton, "cell 5 5");
+
                 //---- label4 ----
                 label4.setText("Seleziona un Dock di Partenza:");
                 label4.setEnabled(false);
-                roboPanel.add(label4, "cell 5 4");
+                roboPanel.add(label4, "cell 5 7");
 
                 //---- dockChooser ----
                 dockChooser.setEnabled(false);
                 dockChooser.setModel(new DefaultComboBoxModel<>(new String[] {
                     "--selezionare un elemento--"
                 }));
-                roboPanel.add(dockChooser, "cell 5 5");
+                roboPanel.add(dockChooser, "cell 5 8");
 
-                //---- initButton ----
-                initButton.setText("Continua");
-                initButton.addActionListener(e -> initButtonActionPerformed(e));
-                roboPanel.add(initButton, "cell 5 7");
+                //---- continueButton ----
+                continueButton.setText("Continua");
+                continueButton.setEnabled(false);
+                continueButton.addActionListener(e -> continueButtonActionPerformed(e));
+                roboPanel.add(continueButton, "cell 5 9");
             }
             TrainingFrameContentPane.add(roboPanel, "robodromo");
 
@@ -305,9 +324,10 @@ public class TrainingApp  {
     private JLabel label1;
     private JLabel label2;
     private JComboBox<String> robodromeChoose;
+    private JButton chooseButton;
     private JLabel label4;
     private JComboBox<String> dockChooser;
-    private JButton initButton;
+    private JButton continueButton;
     private JPanel progPanel;
     private JLabel label3;
     private JScrollPane scrollPaneLeft;
