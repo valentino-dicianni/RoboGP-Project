@@ -8,6 +8,7 @@ package robogp.robodrome;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,6 +24,7 @@ public class Robodrome {
     private final int columns;
     private final java.util.ArrayList<CellLaser> allLasers;
     private int docksCount;
+    private ArrayList<Position> dockPos = new ArrayList();
 
     /**
      * Costruisce un robodromo a partire da un file che lo descrive.
@@ -70,7 +72,8 @@ public class Robodrome {
                 }
                 if (board[r][c] instanceof FloorCell && ((FloorCell)board[r][c]).isDock()) {
                     this.docksCount++;
-                    /**TODO si crea un array con le posizioni dei dock*/
+                    Position doc = new Position(r,c ,((FloorCell)board[r][c]).getDockDirection());
+                    dockPos.add(doc);
                 }
             }
         }

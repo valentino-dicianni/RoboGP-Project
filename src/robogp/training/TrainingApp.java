@@ -2,10 +2,12 @@ package robogp.training;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import javax.swing.*;
 import net.miginfocom.swing.*;
+import robogp.robodrome.Position;
 
 /**
  * @author valka getz
@@ -28,7 +30,7 @@ public class TrainingApp  {
 
 
     private void initButtonActionPerformed(ActionEvent e) {
-        inizPartCtrl.setRobodrome();
+        ArrayList<Position> dockPos = inizPartCtrl.setRobodrome();
         ((CardLayout) TrainingApp.getAppInstance().TrainingFrame.getContentPane().getLayout()).show(
                 TrainingApp.getAppInstance().TrainingFrame.getContentPane(), "prog");
     }

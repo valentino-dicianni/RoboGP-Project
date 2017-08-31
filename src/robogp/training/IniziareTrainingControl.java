@@ -1,5 +1,9 @@
 package robogp.training;
 
+import robogp.robodrome.Position;
+
+import java.util.ArrayList;
+
 public class IniziareTrainingControl {
     private static IniziareTrainingControl singleInstance;
 
@@ -10,5 +14,7 @@ public class IniziareTrainingControl {
         return IniziareTrainingControl.singleInstance;
     }
 
-    public void setRobodrome() { }
+    public ArrayList<Position> setRobodrome() {
+        return null;
+    }
 }

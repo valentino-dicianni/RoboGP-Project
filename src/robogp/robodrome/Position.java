@@ -3,12 +3,12 @@ package robogp.robodrome;
 public class Position {
     private int posX;
     private int posY;
-    private Rotation rotation;
+    private Direction dir;
 
-    public Position(int posX, int posY, Rotation rotation) {
+    public Position(int posX, int posY, Direction rotation) {
         this.posX = posX;
         this.posY = posY;
-        this.rotation = rotation;
+        this.dir = rotation;
     }
 
     public int getPosX() {
@@ -19,7 +19,7 @@ public class Position {
         return posY;
     }
 
-    public Rotation getRotation() {
-        return rotation;
+    public Direction getRotation() {
+        return this.dir;
     }
 }
