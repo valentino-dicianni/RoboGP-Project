@@ -28,7 +28,7 @@ public class TrainingApp  {
 
 
     private void initButtonActionPerformed(ActionEvent e) {
-        ArrayList<Position> dockPos = inizPartCtrl.setRobodrome("ciao");
+        ArrayList<Position> dockPos = inizPartCtrl.setRobodrome(robodromeChoose.getActionCommand());
         ((CardLayout) TrainingApp.getAppInstance().TrainingFrame.getContentPane().getLayout()).show(
                 TrainingApp.getAppInstance().TrainingFrame.getContentPane(), "prog");
     }
@@ -69,7 +69,9 @@ public class TrainingApp  {
     }
 
     private void startTrainingActionPerformed(ActionEvent e) {
-        // TODO add your code here
+        DefaultListModel model = (DefaultListModel) progList.getModel();
+        model.toArray();
+        inizPartCtrl.start((String[])model.toArray());
     }
 
     private void backButtonActionPerformed(ActionEvent e) {
@@ -94,7 +96,7 @@ public class TrainingApp  {
         roboPanel = new JPanel();
         label1 = new JLabel();
         label2 = new JLabel();
-        comboBox1 = new JComboBox<>();
+        robodromeChoose = new JComboBox<>();
         initButton = new JButton();
         progPanel = new JPanel();
         label3 = new JLabel();
@@ -155,12 +157,12 @@ public class TrainingApp  {
                 label2.setText("Seleziona un robodromo per continuare:");
                 roboPanel.add(label2, "cell 5 2");
 
-                //---- comboBox1 ----
-                comboBox1.setModel(new DefaultComboBoxModel<>(new String[] {
+                //---- robodromeChoose ----
+                robodromeChoose.setModel(new DefaultComboBoxModel<>(new String[] {
                     "Checkmate",
                     "Risky Exchange"
                 }));
-                roboPanel.add(comboBox1, "cell 5 3");
+                roboPanel.add(robodromeChoose, "cell 5 3");
 
                 //---- initButton ----
                 initButton.setText("Continua");
@@ -225,7 +227,7 @@ public class TrainingApp  {
 
                     //---- progList ----
                     progList = new JList();
-                    progList.setModel(new DefaultListModel());
+                    progList.setModel(new DefaultListModel<String>());
                     scrollPaneRight.setViewportView(progList);
                 }
                 progPanel.add(scrollPaneRight, "cell 5 1 1 4");
@@ -282,7 +284,7 @@ public class TrainingApp  {
     private JPanel roboPanel;
     private JLabel label1;
     private JLabel label2;
-    private JComboBox<String> comboBox1;
+    private JComboBox<String> robodromeChoose;
     private JButton initButton;
     private JPanel progPanel;
     private JLabel label3;

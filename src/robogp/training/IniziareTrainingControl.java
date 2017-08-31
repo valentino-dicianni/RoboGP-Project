@@ -31,7 +31,7 @@ public class IniziareTrainingControl {
     /**
      * inizia allenamento, dato un programma del robot
      */
-    public void start(Program program) {
+    public void start(String[] arr) {
 
     }
 }

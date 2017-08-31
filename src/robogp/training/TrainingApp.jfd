@@ -27,7 +27,7 @@ new FormModel {
 					"value": "cell 5 2"
 				} )
 				add( new FormComponent( "javax.swing.JComboBox" ) {
-					name: "comboBox1"
+					name: "robodromeChoose"
 					"model": new javax.swing.DefaultComboBoxModel {
 						selectedItem: "Checkmate"
 						addElement( "Checkmate" )
