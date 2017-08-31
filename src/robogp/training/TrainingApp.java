@@ -28,7 +28,8 @@ public class TrainingApp  {
 
 
     private void initButtonActionPerformed(ActionEvent e) {
-        ArrayList<Position> dockPos = inizPartCtrl.setRobodrome(robodromeChoose.getActionCommand());
+
+        ArrayList<Position> dockPos = inizPartCtrl.setRobodrome((String)robodromeChoose.getSelectedItem());
         ((CardLayout) TrainingApp.getAppInstance().TrainingFrame.getContentPane().getLayout()).show(
                 TrainingApp.getAppInstance().TrainingFrame.getContentPane(), "prog");
     }
@@ -47,7 +48,7 @@ public class TrainingApp  {
     }
 
     private void changeButtonActionPerformed(ActionEvent e) {
-        int[] elems=progList.getSelectedIndices();
+        int[] elems = progList.getSelectedIndices();
         if(elems.length == 2) {
             DefaultListModel model = (DefaultListModel) progList.getModel();
             Object[] arr = model.toArray();
@@ -97,6 +98,8 @@ public class TrainingApp  {
         label1 = new JLabel();
         label2 = new JLabel();
         robodromeChoose = new JComboBox<>();
+        label4 = new JLabel();
+        dockChooser = new JComboBox<>();
         initButton = new JButton();
         progPanel = new JPanel();
         label3 = new JLabel();
@@ -146,6 +149,10 @@ public class TrainingApp  {
                     "[]" +
                     "[]" +
                     "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
                     "[]"));
 
                 //---- label1 ----
@@ -159,15 +166,27 @@ public class TrainingApp  {
 
                 //---- robodromeChoose ----
                 robodromeChoose.setModel(new DefaultComboBoxModel<>(new String[] {
-                    "Checkmate",
-                    "Risky Exchange"
+                    "checkmate",
+                    "riskyexchange"
                 }));
                 roboPanel.add(robodromeChoose, "cell 5 3");
+
+                //---- label4 ----
+                label4.setText("Seleziona un Dock di Partenza:");
+                label4.setEnabled(false);
+                roboPanel.add(label4, "cell 5 4");
+
+                //---- dockChooser ----
+                dockChooser.setEnabled(false);
+                dockChooser.setModel(new DefaultComboBoxModel<>(new String[] {
+                    "--selezionare un elemento--"
+                }));
+                roboPanel.add(dockChooser, "cell 5 5");
 
                 //---- initButton ----
                 initButton.setText("Continua");
                 initButton.addActionListener(e -> initButtonActionPerformed(e));
-                roboPanel.add(initButton, "cell 5 4");
+                roboPanel.add(initButton, "cell 5 7");
             }
             TrainingFrameContentPane.add(roboPanel, "robodromo");
 
@@ -206,6 +225,7 @@ public class TrainingApp  {
                     //---- cardList ----
                     cardList.setModel(new AbstractListModel<String>() {
                         String[] values = {
+                            "backup",
                             "move1",
                             "move2",
                             "move3",
@@ -227,7 +247,7 @@ public class TrainingApp  {
 
                     //---- progList ----
                     progList = new JList();
-                    progList.setModel(new DefaultListModel<String>());
+                    progList.setModel(new DefaultListModel());
                     scrollPaneRight.setViewportView(progList);
                 }
                 progPanel.add(scrollPaneRight, "cell 5 1 1 4");
@@ -285,6 +305,8 @@ public class TrainingApp  {
     private JLabel label1;
     private JLabel label2;
     private JComboBox<String> robodromeChoose;
+    private JLabel label4;
+    private JComboBox<String> dockChooser;
     private JButton initButton;
     private JPanel progPanel;
     private JLabel label3;
