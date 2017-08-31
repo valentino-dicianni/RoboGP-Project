@@ -1,12 +1,13 @@
 package robogp.training;
 
+import robogp.common.Instruction;
 import robogp.robodrome.Position;
 
 public class Status {
-    private TrainingInstruction instruction;
+    private Instruction instruction;
     private Position position;
 
-    public Status(TrainingInstruction instruction, Position position) {
+    public Status(Instruction instruction, Position position) {
         this.instruction = instruction;
         this.position = position;
     }
@@ -15,7 +16,7 @@ public class Status {
         return position;
     }
 
-    public TrainingInstruction getInstruction() {
+    public Instruction getInstruction() {
         return instruction;
     }
 }

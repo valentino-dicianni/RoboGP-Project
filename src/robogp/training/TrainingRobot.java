@@ -9,7 +9,7 @@ public class TrainingRobot implements Runnable, Observer {
     private Program program;
     private ArrayList<Status> statesList;
 
-    public TrainingRobot(/*String robotName*/) {
+    public TrainingRobot(Program program) {
         //this.robotName = robotName;
         this.program = new Program();
         this.statesList = new ArrayList<>();
@@ -17,6 +17,10 @@ public class TrainingRobot implements Runnable, Observer {
 
     public void executeProgram() {
         this.program.setRunning();
+    }
+
+    public void setProgram(Program program) {
+        this.program = program;
     }
 
     @Override

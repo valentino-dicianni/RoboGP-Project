@@ -1,5 +1,6 @@
 package robogp.training;
 
+import robogp.common.Instruction;
 import robogp.robodrome.Position;
 
 import java.util.ArrayList;
@@ -20,18 +21,23 @@ public class IniziareTrainingControl {
 
     /**
      * creates the Training robodrome
-     * @param robodromename
-     * @return
+     * @param robodromename: file name of the chosen robodrome
+     * @return dock positions in the chosen robodrome
      */
     public ArrayList<Position> setRobodrome(String robodromename) {
+        //System.out.println(robodromename);
         training.setRobodrome(new Robodrome("robodromes/"+robodromename+".txt"));
-        return Training.getInstance().getTheRobodrome().getDockPos();
+        return training.getRobodrome().getDockPos();
     }
 
     /**
-     * inizia allenamento, dato un programma del robot
+     * start training given a list of instructions in the form of Strings
      */
-    public void start(String[] arr) {
-
+    public void start(Object[] arr) {
+        Program tmpprog = new Program();
+        for(Object instrname : arr)
+            tmpprog.loadInstruction(Instruction.getInstructionByName(instrname.toString()));
+        training.setRobot(tmpprog);
+        //System.out.println(tmpprog.toString());
     }
 }

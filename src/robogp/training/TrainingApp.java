@@ -84,7 +84,7 @@ public class TrainingApp  {
 
         DefaultListModel model = (DefaultListModel) progList.getModel();
         model.toArray();
-        inizPartCtrl.start((String[])model.toArray());
+        inizPartCtrl.start(model.toArray());
     }
 
     private void backButtonActionPerformed(ActionEvent e) {

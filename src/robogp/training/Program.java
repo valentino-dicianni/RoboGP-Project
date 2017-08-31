@@ -1,11 +1,13 @@
 package robogp.training;
 
+import robogp.common.Instruction;
+
 import java.util.ArrayList;
 import java.util.Collections;
 
 public class Program {
-    private ArrayList<TrainingInstruction> instructions;
-    private TrainingInstruction currentInstruction;
+    private ArrayList<Instruction> instructions;
+    private Instruction currentInstruction;
     private boolean running;
 
     public Program() {
@@ -49,7 +51,7 @@ public class Program {
      * @param instruction
      * @return true if the currentInstruction has been set correctly, false otherwise
      */
-    public boolean setCurrentInstruction(TrainingInstruction instruction) {
+    public boolean setCurrentInstruction(Instruction instruction) {
         if (this.instructions.contains(instruction)) {
             this.currentInstruction = instruction;
             return true;
@@ -76,7 +78,7 @@ public class Program {
         return true;
     }
 
-    public TrainingInstruction getCurrentInstruction() {
+    public Instruction getCurrentInstruction() {
         return currentInstruction;
     }
 
@@ -85,7 +87,7 @@ public class Program {
      * @param instruction
      * @return true if add is successful, false otherwise
      */
-    public boolean loadInstruction(TrainingInstruction instruction) {
+    public boolean loadInstruction(Instruction instruction) {
         if (this.running)
             return false;
         // TODO: check if instruction is already in list?
@@ -98,7 +100,7 @@ public class Program {
         this.instructions.clear();
     }
 
-    public boolean remove(TrainingInstruction instruction) {
+    public boolean remove(Instruction instruction) {
         if (this.running)
             return false;
         return this.instructions.remove(instruction);
@@ -110,7 +112,7 @@ public class Program {
      * @param instruction2
      * @return true if the swap was successful, false if one of the given instructions was not found
      */
-    public boolean swap(TrainingInstruction instruction1, TrainingInstruction instruction2) {
+    public boolean swap(Instruction instruction1, Instruction instruction2) {
         if (this.running)
             return false;
         int instruction1index = this.instructions.indexOf(instruction1);
@@ -119,5 +121,19 @@ public class Program {
             return false;
         Collections.swap(this.instructions, instruction1index, instruction2index);
         return true;
+    }
+
+    @Override
+    public String toString() {
+        String returnstr = "Program is ";
+        if (!this.running)
+            returnstr += "NOT ";
+        returnstr += "RUNNING\nInstructions:\n\n";
+        int i = 0;
+        for (Instruction instruction: this.instructions) {
+            returnstr += i+": "+instruction.toString()+"\n";
+            i++;
+        }
+        return returnstr;
     }
 }

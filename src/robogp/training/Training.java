@@ -32,16 +32,18 @@ public class Training extends Observable {
         return paused;
     }
 
-    public void setRobot() {
-        this.robot = new TrainingRobot();
+    public void setRobot(Program initialProgram) {
+        this.robot = new TrainingRobot(initialProgram);
         this.addObserver(this.robot);
     }
+
+
 
     public void setRobodrome(Robodrome robodrome) {
         this.theRobodrome = robodrome;
     }
 
-    public Robodrome getTheRobodrome() {
+    public Robodrome getRobodrome() {
         return theRobodrome;
     }
 }
