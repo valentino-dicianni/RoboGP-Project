@@ -1,11 +1,14 @@
 package robogp.training;
 
+import robogp.robodrome.Robodrome;
+
 import java.util.Observable;
 
 public class Training extends Observable {
     private static Training singleInstance;
     private boolean paused;
     private TrainingRobot robot;
+    private Robodrome theRobodrome;
 
     private Training() {
         this.paused = false;
@@ -29,8 +32,12 @@ public class Training extends Observable {
         return paused;
     }
 
-    public void setRobot(String robotName) {
-        this.robot = new TrainingRobot(robotName);
+    public void setRobot() {
+        this.robot = new TrainingRobot();
         this.addObserver(this.robot);
+    }
+
+    public void setRobodrome(Robodrome robodrome) {
+        this.theRobodrome = robodrome;
     }
 }

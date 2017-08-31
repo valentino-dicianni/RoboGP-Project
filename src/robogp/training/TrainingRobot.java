@@ -5,12 +5,12 @@ import java.util.Observable;
 import java.util.Observer;
 
 public class TrainingRobot implements Runnable, Observer {
-    private String robotName;
+    //private String robotName;
     private Program program;
     private ArrayList<Status> statesList;
 
-    public TrainingRobot(String robotName) {
-        this.robotName = robotName;
+    public TrainingRobot(/*String robotName*/) {
+        //this.robotName = robotName;
         this.program = new Program();
         this.statesList = new ArrayList<>();
     }
