@@ -25,7 +25,7 @@ public class IniziareTrainingControl {
      */
     public ArrayList<Position> setRobodrome(String robodromename) {
         training.setRobodrome(new Robodrome("robodromes/"+robodromename+".txt"));
-        return null;
+        return Training.getInstance().getTheRobodrome().getDockPos();
     }
 
     /**

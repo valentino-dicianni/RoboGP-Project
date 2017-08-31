@@ -166,4 +166,8 @@ public class Robodrome {
     public int getDocksCount() {
         return this.docksCount;
     }
+
+    public ArrayList<Position> getDockPos() {
+        return dockPos;
+    }
 }

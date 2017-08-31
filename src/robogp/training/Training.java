@@ -40,4 +40,8 @@ public class Training extends Observable {
     public void setRobodrome(Robodrome robodrome) {
         this.theRobodrome = robodrome;
     }
+
+    public Robodrome getTheRobodrome() {
+        return theRobodrome;
+    }
 }
