@@ -4,13 +4,12 @@ new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.CardLayout ) ) {
-			name: "TrainingFrame"
+			name: "trainingFrame"
 			"defaultCloseOperation": 3
-			"resizable": false
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 				"$layoutConstraints": "hidemode 3"
 				"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
-				"$rowConstraints": "[][][][][][][]"
+				"$rowConstraints": "[][][][][][][][][][][]"
 			} ) {
 				name: "roboPanel"
 				add( new FormComponent( "javax.swing.JLabel" ) {
@@ -36,25 +35,37 @@ new FormModel {
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 					"value": "cell 5 3"
 				} )
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "chooseButton"
+					"text": "Scegli"
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "initButtonActionPerformed", true ) )
+				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
+					"value": "cell 5 5"
+				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "label4"
 					"text": "Seleziona un Dock di Partenza:"
 					"enabled": false
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 5 4"
+					"value": "cell 5 7"
 				} )
 				add( new FormComponent( "javax.swing.JComboBox" ) {
 					name: "dockChooser"
 					"enabled": false
+					"model": new javax.swing.DefaultComboBoxModel {
+						selectedItem: "--selezionare un elemento--"
+						addElement( "--selezionare un elemento--" )
+					}
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 5 5"
+					"value": "cell 5 8"
 				} )
 				add( new FormComponent( "javax.swing.JButton" ) {
-					name: "initButton"
+					name: "continueButton"
 					"text": "Continua"
-					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "initButtonActionPerformed", true ) )
+					"enabled": false
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "continueButtonActionPerformed", true ) )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 5 6"
+					"value": "cell 5 9"
 				} )
 			}, new FormLayoutConstraints( class java.lang.String ) {
 				"value": "robodromo"
@@ -62,7 +73,7 @@ new FormModel {
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 				"$layoutConstraints": "hidemode 3"
 				"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
-				"$rowConstraints": "[][][][][][]"
+				"$rowConstraints": "[][][][][][][]"
 			} ) {
 				name: "progPanel"
 				add( new FormComponent( "javax.swing.JLabel" ) {
@@ -77,6 +88,7 @@ new FormModel {
 					add( new FormComponent( "javax.swing.JList" ) {
 						name: "cardList"
 						"model": new javax.swing.DefaultListModel {
+							addElement( "backup" )
 							addElement( "move1" )
 							addElement( "move2" )
 							addElement( "move3" )
@@ -139,14 +151,28 @@ new FormModel {
 			}, new FormLayoutConstraints( class java.lang.String ) {
 				"value": "prog"
 			} )
-			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
-				name: "trainPanel"
-			}, new FormLayoutConstraints( class java.lang.String ) {
-				"value": "showTrain"
-			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 15, 20 )
 			"size": new java.awt.Dimension( 585, 275 )
+		} )
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "playFrame"
+			"visible": true
+			"defaultCloseOperation": 3
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "trainPanel"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label6"
+					"text": "Il Robodromo è pronto!"
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "North"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 25, 325 )
+			"size": new java.awt.Dimension( 525, 445 )
 		} )
 	}
 }

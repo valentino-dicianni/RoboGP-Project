@@ -1,6 +1,7 @@
 package robogp.training;
 
 import robogp.common.Instruction;
+import robogp.matchmanager.RobotMarker;
 import robogp.robodrome.Position;
 
 import java.util.ArrayList;
@@ -29,6 +30,11 @@ public class IniziareTrainingControl {
         training.setRobodrome(new Robodrome("robodromes/"+robodromename+".txt"));
         return training.getRobodrome().getDockPos();
     }
+
+    public Robodrome getRobodrome(){
+       return IniziareTrainingControl.training.getRobodrome();
+    }
+
 
     /**
      * start training given a list of instructions in the form of Strings

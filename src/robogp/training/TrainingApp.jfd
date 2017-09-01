@@ -4,9 +4,8 @@ new FormModel {
 	contentType: "form/swing"
 	root: new FormRoot {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.CardLayout ) ) {
-			name: "TrainingFrame"
+			name: "trainingFrame"
 			"defaultCloseOperation": 3
-			"resizable": false
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 				"$layoutConstraints": "hidemode 3"
 				"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
@@ -74,7 +73,7 @@ new FormModel {
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 				"$layoutConstraints": "hidemode 3"
 				"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
-				"$rowConstraints": "[][][][][][]"
+				"$rowConstraints": "[][][][][][][]"
 			} ) {
 				name: "progPanel"
 				add( new FormComponent( "javax.swing.JLabel" ) {
@@ -152,14 +151,28 @@ new FormModel {
 			}, new FormLayoutConstraints( class java.lang.String ) {
 				"value": "prog"
 			} )
-			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
-				name: "trainPanel"
-			}, new FormLayoutConstraints( class java.lang.String ) {
-				"value": "showTrain"
-			} )
 		}, new FormLayoutConstraints( null ) {
 			"location": new java.awt.Point( 15, 20 )
 			"size": new java.awt.Dimension( 585, 275 )
+		} )
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+			name: "playFrame"
+			"visible": true
+			"defaultCloseOperation": 3
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "trainPanel"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label6"
+					"text": "Il Robodromo è pronto!"
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "North"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "Center"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"location": new java.awt.Point( 25, 325 )
+			"size": new java.awt.Dimension( 525, 445 )
 		} )
 	}
 }

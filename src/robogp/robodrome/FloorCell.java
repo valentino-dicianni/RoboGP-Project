@@ -114,7 +114,11 @@ public class FloorCell extends BoardCell {
   public int getDock() {
     return dockNumber;
   }
-  
+
+  public int getDockNumber() {
+        return dockNumber;
+  }
+
   public Direction getDockDirection() {
       return dockDir;
   }
