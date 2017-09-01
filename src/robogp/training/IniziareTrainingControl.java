@@ -1,11 +1,8 @@
 package robogp.training;
 
 import robogp.common.Instruction;
-import robogp.matchmanager.RobotMarker;
 import robogp.robodrome.Position;
-
 import java.util.ArrayList;
-
 import robogp.robodrome.Robodrome;
 
 public class IniziareTrainingControl {
@@ -26,7 +23,6 @@ public class IniziareTrainingControl {
      * @return dock positions in the chosen robodrome
      */
     public ArrayList<Position> setRobodrome(String robodromename) {
-        //System.out.println(robodromename);
         training.setRobodrome(new Robodrome("robodromes/"+robodromename+".txt"));
         return training.getRobodrome().getDockPos();
     }
@@ -34,6 +30,8 @@ public class IniziareTrainingControl {
     public Robodrome getRobodrome(){
        return IniziareTrainingControl.training.getRobodrome();
     }
+
+    public TrainingRobot getTrainingRobot(){return IniziareTrainingControl.training.getRobot();}
 
 
     /**
@@ -45,6 +43,5 @@ public class IniziareTrainingControl {
             tmpprog.loadInstruction(Instruction.getInstructionByName(instrname.toString()));
         training.setRobot(tmpprog);
         training.executeProgram();
-        //System.out.println(tmpprog.toString());
     }
 }

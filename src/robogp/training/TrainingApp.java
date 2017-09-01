@@ -5,7 +5,6 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.*;
 import net.miginfocom.swing.*;
-import robogp.matchmanager.RobotMarker;
 import robogp.robodrome.Position;
 import robogp.robodrome.view.RobodromeView;
 
@@ -91,9 +90,8 @@ public class TrainingApp  {
         inizPartCtrl.start(model.toArray());
         trainingFrame.dispose();
         rv = new RobodromeView(inizPartCtrl.getRobodrome(), 55);
-
         int pos= Integer.parseInt(((String)dockChooser.getSelectedItem()).split("\\.")[0]);
-        rv.placeRobot(new RobotMarker("robot-red","red"), dockPos.get(pos).getRotation(),dockPos.get(pos).getPosX(),dockPos.get(pos).getPosY(),true);
+        rv.placeRobot(inizPartCtrl.getTrainingRobot(), dockPos.get(pos).getRotation(),dockPos.get(pos).getPosX(),dockPos.get(pos).getPosY(),true);
         trainPanel.add(rv,BorderLayout.CENTER);
         playFrame.setSize(1000,1000);
         playFrame.setVisible(true);

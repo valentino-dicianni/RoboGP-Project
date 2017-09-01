@@ -1,9 +1,7 @@
 package robogp.training;
 
 import robogp.robodrome.Robodrome;
-
 import java.util.Observable;
-import java.util.TreeMap;
 
 public class Training extends Observable {
 
@@ -11,7 +9,7 @@ public class Training extends Observable {
 
         @Override
         public void run() {
-            /* guarda currentInstruction del programma, guarda la posizione attuale del robot nel robodromo
+            /** guarda currentInstruction del programma, guarda la posizione attuale del robot nel robodromo
             * in base a ciò calcola tutte il susseguirsi di animazioni che andrà a fare il robodromo:
             *   prima guarda lo spostamento da fare secondo la scheda istruzione,
             *   una volta calcolata la nuova posizione si esegue l'animazione (play)
@@ -19,7 +17,8 @@ public class Training extends Observable {
             *   si calcola la nuova posizione e le animazioni da fare dopo l'attivazione di quella casella
             *   se anche la casella successiva è una casella attiva si ripete questo processo
             *   fino a quando il robot finisce su una casella non attiva
-            *   alla fine si fa play delle animazioni messe in coda della fase attivazione robodomo*/
+            *   alla fine si fa play delle animazioni messe in coda della fase attivazione robodomo
+            */
         }
     }
 
@@ -52,7 +51,11 @@ public class Training extends Observable {
     }
 
     public void setRobot(Program initialProgram) {
-        this.robot = new TrainingRobot("training-robot", "yellow", initialProgram);
+        this.robot = new TrainingRobot("robot-red","red", initialProgram);
+    }
+
+    public TrainingRobot getRobot() {
+        return robot;
     }
 
     /**
@@ -75,4 +78,6 @@ public class Training extends Observable {
     public Robodrome getRobodrome() {
         return theRobodrome;
     }
+
+
 }
