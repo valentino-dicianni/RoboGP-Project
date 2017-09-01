@@ -1,17 +1,19 @@
 package robogp.training;
 
+import robogp.matchmanager.RobotMarker;
+
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-public class TrainingRobot implements Runnable, Observer {
+public class TrainingRobot extends RobotMarker{
     //private String robotName;
     private Program program;
     private ArrayList<Status> statesList;
 
-    public TrainingRobot(Program program) {
-        //this.robotName = robotName;
-        this.program = new Program();
+    public TrainingRobot(String name, String color, Program program) {
+        super(name, color);
+        this.program = program;
         this.statesList = new ArrayList<>();
     }
 
@@ -23,26 +25,4 @@ public class TrainingRobot implements Runnable, Observer {
         this.program = program;
     }
 
-    @Override
-    public void run() {
-
-    }
-
-    @Override
-    public void update(Observable o, Object arg) {
-
-    }
-
-    /*@Override
-    public void update(boolean paused) {
-        try {
-            if (paused) {
-                this.wait();
-            } else {
-                this.notify();
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }*/
 }

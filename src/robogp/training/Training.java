@@ -3,12 +3,31 @@ package robogp.training;
 import robogp.robodrome.Robodrome;
 
 import java.util.Observable;
+import java.util.TreeMap;
 
 public class Training extends Observable {
+
+    private class TrainingHelper implements Runnable {
+
+        @Override
+        public void run() {
+            /* guarda currentInstruction del programma, guarda la posizione attuale del robot nel robodromo
+            * in base a ciò calcola tutte il susseguirsi di animazioni che andrà a fare il robodromo:
+            *   prima guarda lo spostamento da fare secondo la scheda istruzione,
+            *   una volta calcolata la nuova posizione si esegue l'animazione (play)
+            *   a questo punto se il robot è finito su una casella attiva del robodromo
+            *   si calcola la nuova posizione e le animazioni da fare dopo l'attivazione di quella casella
+            *   se anche la casella successiva è una casella attiva si ripete questo processo
+            *   fino a quando il robot finisce su una casella non attiva
+            *   alla fine si fa play delle animazioni messe in coda della fase attivazione robodomo*/
+        }
+    }
+
     private static Training singleInstance;
     private boolean paused;
     private TrainingRobot robot;
     private Robodrome theRobodrome;
+    private TrainingHelper trainingThread;
 
     private Training() {
         this.paused = false;
@@ -33,11 +52,21 @@ public class Training extends Observable {
     }
 
     public void setRobot(Program initialProgram) {
-        this.robot = new TrainingRobot(initialProgram);
-        this.addObserver(this.robot);
+        this.robot = new TrainingRobot("training-robot", "yellow", initialProgram);
     }
 
+    /**
+     * fa partire il thread di training helper che farà i metodi che calcolano le animazioni
+     * e aggiornano la posizione del robot
+     */
+    public void executeProgram() {
+        this.trainingThread = new TrainingHelper();
+        this.trainingThread.run();
+    }
 
+    // TODO: metodo (di robot?) che prende la scheda istruzione corrente, fa animazioni del robodromo e aggiorna pos robot
+
+    // TODO: metodo loop che prende pozione corrente del robot; se casella attiva fa effetti casella, se no fa animazioni e finisce
 
     public void setRobodrome(Robodrome robodrome) {
         this.theRobodrome = robodrome;

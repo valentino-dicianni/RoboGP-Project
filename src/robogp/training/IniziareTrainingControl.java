@@ -38,6 +38,7 @@ public class IniziareTrainingControl {
         for(Object instrname : arr)
             tmpprog.loadInstruction(Instruction.getInstructionByName(instrname.toString()));
         training.setRobot(tmpprog);
+        training.executeProgram();
         //System.out.println(tmpprog.toString());
     }
 }
