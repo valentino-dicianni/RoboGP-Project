@@ -5,7 +5,9 @@ import java.awt.event.*;
 import java.util.ArrayList;
 import javax.swing.*;
 import net.miginfocom.swing.*;
+import robogp.matchmanager.RobotMarker;
 import robogp.robodrome.Position;
+import robogp.robodrome.view.RobodromeView;
 
 /**
  * @author valka getz
@@ -14,7 +16,8 @@ public class TrainingApp  {
 
     private static TrainingApp singleInstance;
     private final IniziareTrainingControl inizPartCtrl;
-
+    private RobodromeView rv;
+    private ArrayList<Position> dockPos;
 
 
 
@@ -28,11 +31,12 @@ public class TrainingApp  {
 
 
     private void initButtonActionPerformed(ActionEvent e) {
-        ArrayList<Position> dockPos = inizPartCtrl.setRobodrome((String)robodromeChoose.getSelectedItem());
+        dockPos = inizPartCtrl.setRobodrome((String)robodromeChoose.getSelectedItem());
         DefaultComboBoxModel model = (DefaultComboBoxModel)dockChooser.getModel();
         model.removeAllElements();
-        for(Position pos : dockPos){
-            model.addElement(pos.toString());
+        for(int i = 0; i<dockPos.size();i++){
+            String pos = i +"." + " " +dockPos.get(i).toString();
+            model.addElement(pos);
         }
         label4.setEnabled(true);
         dockChooser.setEnabled(true);
@@ -40,8 +44,8 @@ public class TrainingApp  {
 
     }
     private void continueButtonActionPerformed(ActionEvent e) {
-        ((CardLayout) TrainingApp.getAppInstance().TrainingFrame.getContentPane().getLayout()).show(
-              TrainingApp.getAppInstance().TrainingFrame.getContentPane(), "prog");
+        ((CardLayout) TrainingApp.getAppInstance().trainingFrame.getContentPane().getLayout()).show(
+              TrainingApp.getAppInstance().trainingFrame.getContentPane(), "prog");
     }
 
     private void addButtonActionPerformed(ActionEvent e) {
@@ -71,7 +75,7 @@ public class TrainingApp  {
             }
         }
         else{
-            JOptionPane.showMessageDialog(TrainingApp.getAppInstance().TrainingFrame,
+            JOptionPane.showMessageDialog(TrainingApp.getAppInstance().trainingFrame,
                     "Selezionare due schede istruzione!","Attenzione:",
                     JOptionPane.WARNING_MESSAGE);
         }
@@ -85,11 +89,21 @@ public class TrainingApp  {
         DefaultListModel model = (DefaultListModel) progList.getModel();
         model.toArray();
         inizPartCtrl.start(model.toArray());
+        trainingFrame.dispose();
+        rv = new RobodromeView(inizPartCtrl.getRobodrome(), 55);
+
+        int pos= Integer.parseInt(((String)dockChooser.getSelectedItem()).split("\\.")[0]);
+        rv.placeRobot(new RobotMarker("robot-red","red"), dockPos.get(pos).getRotation(),dockPos.get(pos).getPosX(),dockPos.get(pos).getPosY(),true);
+        trainPanel.add(rv,BorderLayout.CENTER);
+        playFrame.setSize(1000,1000);
+        playFrame.setVisible(true);
+
+
     }
 
     private void backButtonActionPerformed(ActionEvent e) {
-        ((CardLayout) TrainingApp.getAppInstance().TrainingFrame.getContentPane().getLayout()).show(
-                TrainingApp.getAppInstance().TrainingFrame.getContentPane(), "robodromo");
+        ((CardLayout) TrainingApp.getAppInstance().trainingFrame.getContentPane().getLayout()).show(
+                TrainingApp.getAppInstance().trainingFrame.getContentPane(), "robodromo");
         DefaultListModel model = (DefaultListModel) progList.getModel();
         model.removeAllElements();
 
@@ -103,7 +117,7 @@ public class TrainingApp  {
         // Generated using JFormDesigner Evaluation license - valka getz
         createUIComponents();
 
-        TrainingFrame = new JFrame();
+        trainingFrame = new JFrame();
         roboPanel = new JPanel();
         label1 = new JLabel();
         label2 = new JLabel();
@@ -122,14 +136,15 @@ public class TrainingApp  {
         changeButton = new JButton();
         startTraining = new JButton();
         backButton = new JButton();
+        playFrame = new JFrame();
         trainPanel = new JPanel();
+        label6 = new JLabel();
 
-        //======== TrainingFrame ========
+        //======== trainingFrame ========
         {
-            TrainingFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-            TrainingFrame.setResizable(false);
-            Container TrainingFrameContentPane = TrainingFrame.getContentPane();
-            TrainingFrameContentPane.setLayout(new CardLayout());
+            trainingFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            Container trainingFrameContentPane = trainingFrame.getContentPane();
+            trainingFrameContentPane.setLayout(new CardLayout());
 
             //======== roboPanel ========
             {
@@ -207,7 +222,7 @@ public class TrainingApp  {
                 continueButton.addActionListener(e -> continueButtonActionPerformed(e));
                 roboPanel.add(continueButton, "cell 5 9");
             }
-            TrainingFrameContentPane.add(roboPanel, "robodromo");
+            trainingFrameContentPane.add(roboPanel, "robodromo");
 
             //======== progPanel ========
             {
@@ -226,6 +241,7 @@ public class TrainingApp  {
                     "[fill]" +
                     "[fill]",
                     // rows
+                    "[]" +
                     "[]" +
                     "[]" +
                     "[]" +
@@ -296,15 +312,37 @@ public class TrainingApp  {
                 backButton.addActionListener(e -> backButtonActionPerformed(e));
                 progPanel.add(backButton, "cell 5 5");
             }
-            TrainingFrameContentPane.add(progPanel, "prog");
+            trainingFrameContentPane.add(progPanel, "prog");
+            trainingFrame.pack();
+            trainingFrame.setLocationRelativeTo(trainingFrame.getOwner());
+        }
+
+        //======== playFrame ========
+        {
+            playFrame.setVisible(true);
+            playFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            Container playFrameContentPane = playFrame.getContentPane();
+            playFrameContentPane.setLayout(new BorderLayout());
 
             //======== trainPanel ========
             {
+
+                // JFormDesigner evaluation mark
+                trainPanel.setBorder(new javax.swing.border.CompoundBorder(
+                    new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
+                        "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
+                        javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
+                        java.awt.Color.red), trainPanel.getBorder())); trainPanel.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
+
                 trainPanel.setLayout(new BorderLayout());
+
+                //---- label6 ----
+                label6.setText("Il Robodromo \u00e8 pronto!");
+                trainPanel.add(label6, BorderLayout.NORTH);
             }
-            TrainingFrameContentPane.add(trainPanel, "showTrain");
-            TrainingFrame.pack();
-            TrainingFrame.setLocationRelativeTo(TrainingFrame.getOwner());
+            playFrameContentPane.add(trainPanel, BorderLayout.CENTER);
+            playFrame.pack();
+            playFrame.setLocationRelativeTo(playFrame.getOwner());
         }
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
@@ -313,13 +351,13 @@ public class TrainingApp  {
 
         java.awt.EventQueue.invokeLater(() -> {
             TrainingApp.singleInstance = new TrainingApp();
-            TrainingApp.singleInstance.TrainingFrame.setVisible(true);
+            TrainingApp.singleInstance.trainingFrame.setVisible(true);
         });
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
     // Generated using JFormDesigner Evaluation license - valka getz
-    private JFrame TrainingFrame;
+    private JFrame trainingFrame;
     private JPanel roboPanel;
     private JLabel label1;
     private JLabel label2;
@@ -339,7 +377,9 @@ public class TrainingApp  {
     private JButton changeButton;
     private JButton startTraining;
     private JButton backButton;
+    private JFrame playFrame;
     private JPanel trainPanel;
+    private JLabel label6;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
 
