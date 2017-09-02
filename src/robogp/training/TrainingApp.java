@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.plaf.metal.MetalBorders;
+
 import net.miginfocom.swing.*;
 import robogp.common.Instruction;
 import robogp.robodrome.Position;
@@ -18,7 +21,6 @@ public class TrainingApp implements Observer {
 
     private static TrainingApp singleInstance;
     private final IniziareTrainingControl inizPartCtrl;
-    private final Training training;
     private RobodromeView rv;
     private ArrayList<Position> dockPos;
 
@@ -27,8 +29,8 @@ public class TrainingApp implements Observer {
     private TrainingApp(){
         initComponents();
         this.inizPartCtrl = IniziareTrainingControl.getInstance();
-        this.training = Training.getInstance();
-        this.training.addObserver(this);
+        Training training = Training.getInstance();
+        training.addObserver(this);
     }
     public static TrainingApp getAppInstance() {
         return TrainingApp.singleInstance;
@@ -89,18 +91,24 @@ public class TrainingApp implements Observer {
     }
 
     private void startTrainingActionPerformed(ActionEvent e) {
-        //TODO aggiungere al metodo start la posizione iniziale
-
-        DefaultListModel model = (DefaultListModel) progList.getModel();
-        model.toArray();
-        trainingFrame.dispose();
-        rv = new RobodromeView(inizPartCtrl.getRobodrome(), 55);
-        int pos = Integer.parseInt(((String)dockChooser.getSelectedItem()).split("\\.")[0]);
-        inizPartCtrl.start(model.toArray(), dockPos.get(pos));
-        rv.placeRobot(inizPartCtrl.getTrainingRobot(), dockPos.get(pos).getRotation(),dockPos.get(pos).getPosX(),dockPos.get(pos).getPosY(),true);
-        trainPanel.add(rv,BorderLayout.CENTER);
-        playFrame.setSize(1000,800);
-        playFrame.setVisible(true);
+            //TODO aggiungere al metodo start la posizione iniziale
+        if(progList.getModel().getSize() != 0){
+            DefaultListModel model = (DefaultListModel) progList.getModel();
+            model.toArray();
+            trainingFrame.dispose();
+            rv = new RobodromeView(inizPartCtrl.getRobodrome(), 55);
+            int pos = Integer.parseInt(((String)dockChooser.getSelectedItem()).split("\\.")[0]);
+            inizPartCtrl.start(model.toArray(), dockPos.get(pos));
+            rv.placeRobot(inizPartCtrl.getTrainingRobot(), dockPos.get(pos).getRotation(),dockPos.get(pos).getPosX(),dockPos.get(pos).getPosY(),true);
+            trainPanel.add(rv,BorderLayout.CENTER);
+            playFrame.setSize(1050,800);
+            playFrame.setVisible(true);
+        }
+        else{
+            JOptionPane.showMessageDialog(TrainingApp.getAppInstance().trainingFrame,
+                    "Devi selezionare almeno un'istruzione!","Attenzione:",
+                    JOptionPane.WARNING_MESSAGE);
+        }
 
 
     }
@@ -361,6 +369,7 @@ public class TrainingApp implements Observer {
 
                 //======== buttonPanel ========
                 {
+                    buttonPanel.setBackground(Color.white);
                     buttonPanel.setLayout(new FlowLayout());
 
                     //---- button1 ----
@@ -459,10 +468,16 @@ public class TrainingApp implements Observer {
 
 
 class MyListCellRenderer extends JLabel implements ListCellRenderer<Instruction> {
+
+    public MyListCellRenderer() {
+        setBorder(new MetalBorders.InternalFrameBorder());
+    }
+
     @Override
     public Component getListCellRendererComponent(JList<? extends Instruction> list, Instruction value, int index, boolean isSelected, boolean cellHasFocus) {
 
-
+        ImageIcon imageIcon = new ImageIcon(value.getImage(100));
+        setIcon(imageIcon);
         return this;
     }
 }

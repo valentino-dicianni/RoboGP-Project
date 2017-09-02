@@ -170,6 +170,7 @@ new FormModel {
 					name: "scrollPane1"
 					add( new FormComponent( "javax.swing.JList" ) {
 						name: "progRenderList"
+						"background": sfield java.awt.Color black
 						auxiliary() {
 							"JavaCodeGenerator.typeParameters": "Instruction"
 							"JavaCodeGenerator.postInitCode": "progRenderList.setModel(new DefaultListModel());"
@@ -180,6 +181,7 @@ new FormModel {
 				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) ) {
 					name: "buttonPanel"
+					"background": sfield java.awt.Color white
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "button1"
 						"text": "Start"

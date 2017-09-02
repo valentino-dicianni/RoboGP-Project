@@ -48,7 +48,7 @@ public class Instruction {
         return null;
     }
 
-   /* public BufferedImage getImage(int size) {
+    public BufferedImage getImage(int size) {
         if (this.cardImage == null) {
             String imgFile = "tiles/card-" + name + ".png";
             try {
@@ -58,7 +58,11 @@ public class Instruction {
             }
         }
         return ImageUtil.scale(ImageUtil.superImpose(null, this.cardImage), size, size);
-    }*/
+    }
+
+    public String getName() {
+        return name;
+    }
 
     @Override
     public String toString() {
