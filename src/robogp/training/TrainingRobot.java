@@ -29,4 +29,8 @@ public class TrainingRobot extends RobotMarker{
         statesList.add(new Status(currentInstruction,newPosition));
     }
 
+    public Instruction getCurrentInstruction() {
+        return this.program.getCurrentInstruction();
+    }
+
 }

@@ -52,7 +52,7 @@ public class Instruction {
         if (this.cardImage == null) {
             String imgFile = "tiles/card-" + name + ".png";
             try {
-                cardImage = ImageIO.read(new File(imgFile));)()(
+                cardImage = ImageIO.read(new File(imgFile));
             } catch (IOException ex) {
                 System.out.println("Scheda immagine non caricata correttamente");
             }

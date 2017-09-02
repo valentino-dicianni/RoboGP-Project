@@ -1,5 +1,8 @@
 package robogp.training;
 
+import robogp.common.Instruction;
+import robogp.robodrome.BoardCell;
+import robogp.robodrome.Position;
 import robogp.robodrome.Robodrome;
 import java.util.Observable;
 
@@ -23,7 +26,7 @@ public class Training extends Observable {
             executeNextInstruction();
             /* si mette in sleep, quando viene svegliato fa avanzare il programa di robot
              all'istruzione successiva e fa executenextinstr */
-
+            System.out.println("inst executed");
         }
     }
 
@@ -55,8 +58,9 @@ public class Training extends Observable {
         return paused;
     }
 
-    public void setRobot(Program initialProgram) {
+    public void setRobot(Program initialProgram, Position robotInitialPos) {
         this.robot = new TrainingRobot("robot-red","red", initialProgram);
+        this.robot.setPosition(robotInitialPos);
     }
 
     public TrainingRobot getRobot() {
@@ -68,6 +72,7 @@ public class Training extends Observable {
      * e aggiornano la posizione del robot
      */
     public void executeProgram() {
+        this.robot.executeProgram();
         this.trainingThread = new TrainingHelper();
         this.trainingThread.run();
     }
@@ -78,10 +83,26 @@ public class Training extends Observable {
      * una volta terminata l'esecuzione
      */
     private void executeNextInstruction() {
+        Position initialRobotPos = this.robot.getPosition();
+        //rv.addRobotMove(robots[2], 3, Direction.E, Rotation.NO);
+        Instruction instrToExecute = this.robot.getCurrentInstruction();
+        //BoardCell nextcell = this.theRobodrome.getCell(initialRobotPos.getPosX(),initialRobotPos.getPosY());
+        //System.out.println(initialRobotPos.toString());
+        setChanged();
+        notifyObservers(instrToExecute.getStepsToTake()+":"+initialRobotPos.getRotation()+":"+instrToExecute.getRotation());
+        // aggiorno pos robot
 
+        robodromeActivation();
     }
 
-    // TODO: metodo loop che prende pozione corrente del robot; se casella attiva fa effetti casella, se no fa animazioni e finisce
+    /**
+     * fase di attivatione del robodromo, crea lista di animazioni di robodrome view
+     * e le manda a observers con notify
+     */
+    private void robodromeActivation() {
+        //posizione iniziale del robot (nel caso cada in buco nero)
+        Position initialRobotPos = this.robot.getPosition();
+    }
 
     public void setRobodrome(Robodrome robodrome) {
         this.theRobodrome = robodrome;

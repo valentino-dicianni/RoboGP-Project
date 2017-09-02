@@ -12,7 +12,7 @@ public class IniziareTrainingControl {
     public static IniziareTrainingControl getInstance(){
         if (IniziareTrainingControl.singleInstance == null) {
             IniziareTrainingControl.singleInstance = new IniziareTrainingControl();
-            //IniziareTrainingControl.training = Training.getInstance();
+            IniziareTrainingControl.training = Training.getInstance();
         }
         return IniziareTrainingControl.singleInstance;
     }
@@ -37,11 +37,11 @@ public class IniziareTrainingControl {
     /**
      * start training given a list of instructions in the form of Strings
      */
-    public void start(Object[] arr) {
+    public void start(Object[] arr, Position robotStartPosition) {
         Program tmpprog = new Program();
         for(Object instrname : arr)
             tmpprog.loadInstruction(Instruction.getInstructionByName(instrname.toString()));
-        training.setRobot(tmpprog);
+        training.setRobot(tmpprog, robotStartPosition);
         training.executeProgram();
     }
 }

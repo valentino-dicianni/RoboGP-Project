@@ -92,10 +92,10 @@ public class TrainingApp implements Observer {
 
         DefaultListModel model = (DefaultListModel) progList.getModel();
         model.toArray();
-        inizPartCtrl.start(model.toArray());
         trainingFrame.dispose();
         rv = new RobodromeView(inizPartCtrl.getRobodrome(), 55);
-        int pos= Integer.parseInt(((String)dockChooser.getSelectedItem()).split("\\.")[0]);
+        int pos = Integer.parseInt(((String)dockChooser.getSelectedItem()).split("\\.")[0]);
+        inizPartCtrl.start(model.toArray(), dockPos.get(pos));
         rv.placeRobot(inizPartCtrl.getTrainingRobot(), dockPos.get(pos).getRotation(),dockPos.get(pos).getPosX(),dockPos.get(pos).getPosY(),true);
         trainPanel.add(rv,BorderLayout.CENTER);
         playFrame.setSize(1000,800);
@@ -407,6 +407,7 @@ public class TrainingApp implements Observer {
      */
     public void update(Observable o, Object arg) {
         /* */
+        System.out.println("app received;  "+arg);
     }
 
     public static void main(String[] args) {
