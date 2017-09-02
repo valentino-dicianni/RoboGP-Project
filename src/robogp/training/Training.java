@@ -10,7 +10,7 @@ public class Training extends Observable {
         @Override
         public void run() {
             /** guarda currentInstruction del programma, guarda la posizione attuale del robot nel robodromo
-            * in base a ciò calcola tutte il susseguirsi di animazioni che andrà a fare il robodromo:
+            *  in base a ciò calcola tutte il susseguirsi di animazioni che andrà a fare il robodromo:
             *   prima guarda lo spostamento da fare secondo la scheda istruzione,
             *   una volta calcolata la nuova posizione si esegue l'animazione (play)
             *   a questo punto se il robot è finito su una casella attiva del robodromo
@@ -19,6 +19,11 @@ public class Training extends Observable {
             *   fino a quando il robot finisce su una casella non attiva
             *   alla fine si fa play delle animazioni messe in coda della fase attivazione robodomo
             */
+
+            executeNextInstruction();
+            /* si mette in sleep, quando viene svegliato fa avanzare il programa di robot
+             all'istruzione successiva e fa executenextinstr */
+
         }
     }
 
@@ -67,7 +72,14 @@ public class Training extends Observable {
         this.trainingThread.run();
     }
 
-    // TODO: metodo (di robot?) che prende la scheda istruzione corrente, fa animazioni del robodromo e aggiorna pos robot
+    /**
+     * metodo che prende la currentInstruction del robot e calcola le animazioni da fare, aggiorna la posizione robot
+     * e fa notify con argomento le animazioni che robodrome view dovrà fare.
+     * una volta terminata l'esecuzione
+     */
+    private void executeNextInstruction() {
+
+    }
 
     // TODO: metodo loop che prende pozione corrente del robot; se casella attiva fa effetti casella, se no fa animazioni e finisce
 

@@ -1,10 +1,10 @@
 package robogp.training;
 
+import robogp.common.Instruction;
 import robogp.matchmanager.RobotMarker;
+import robogp.robodrome.Position;
 
 import java.util.ArrayList;
-import java.util.Observable;
-import java.util.Observer;
 
 public class TrainingRobot extends RobotMarker{
     //private String robotName;
@@ -23,6 +23,10 @@ public class TrainingRobot extends RobotMarker{
 
     public void setProgram(Program program) {
         this.program = program;
+    }
+
+    public void addState(Position newPosition, Instruction currentInstruction) {
+        statesList.add(new Status(currentInstruction,newPosition));
     }
 
 }

@@ -7,6 +7,8 @@ import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+
+import robogp.robodrome.Position;
 import robogp.robodrome.image.ImageUtil;
 
 /**
@@ -20,6 +22,7 @@ public class RobotMarker implements Serializable {
     private final String color;
     private String owner;
     private int dockNumber;
+    private Position position;
 
     public RobotMarker(String name, String color) {
         this.name = name;
@@ -63,5 +66,13 @@ public class RobotMarker implements Serializable {
     
     public String getName() {
         return name;
+    }
+
+    public void setPosition(Position position) {
+        this.position = position;
+    }
+
+    public Position getPosition() {
+        return position;
     }
 }

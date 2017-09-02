@@ -12,7 +12,7 @@ public class IniziareTrainingControl {
     public static IniziareTrainingControl getInstance(){
         if (IniziareTrainingControl.singleInstance == null) {
             IniziareTrainingControl.singleInstance = new IniziareTrainingControl();
-            IniziareTrainingControl.training = Training.getInstance();
+            //IniziareTrainingControl.training = Training.getInstance();
         }
         return IniziareTrainingControl.singleInstance;
     }

@@ -3,6 +3,8 @@ package robogp.training;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 import javax.swing.*;
 import net.miginfocom.swing.*;
 import robogp.robodrome.Position;
@@ -11,10 +13,11 @@ import robogp.robodrome.view.RobodromeView;
 /**
  * @author valka getz
  */
-public class TrainingApp  {
+public class TrainingApp implements Observer {
 
     private static TrainingApp singleInstance;
     private final IniziareTrainingControl inizPartCtrl;
+    private final Training training;
     private RobodromeView rv;
     private ArrayList<Position> dockPos;
 
@@ -23,6 +26,8 @@ public class TrainingApp  {
     private TrainingApp(){
         initComponents();
         this.inizPartCtrl = IniziareTrainingControl.getInstance();
+        this.training = Training.getInstance();
+        this.training.addObserver(this);
     }
     public static TrainingApp getAppInstance() {
         return TrainingApp.singleInstance;
@@ -345,6 +350,17 @@ public class TrainingApp  {
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
+    @Override
+    /**
+     * viene chiamato da training quando bisogna fare delle animazioni sul robodromo
+     * e come argomento avrà la lista di animazioni da fare,
+     * oppure sarà un avvertimento che il training è stato messo in pausa o resume
+     * (tale avvertimento è più utile per training helper)
+     */
+    public void update(Observable o, Object arg) {
+        /* */
+    }
+
     public static void main(String[] args) {
 
         java.awt.EventQueue.invokeLater(() -> {
@@ -378,6 +394,8 @@ public class TrainingApp  {
     private JFrame playFrame;
     private JPanel trainPanel;
     private JLabel label6;
+
+
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
 
