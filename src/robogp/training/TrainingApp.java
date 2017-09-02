@@ -7,6 +7,7 @@ import java.util.Observable;
 import java.util.Observer;
 import javax.swing.*;
 import net.miginfocom.swing.*;
+import robogp.common.Instruction;
 import robogp.robodrome.Position;
 import robogp.robodrome.view.RobodromeView;
 
@@ -143,8 +144,8 @@ public class TrainingApp implements Observer {
         trainPanel = new JPanel();
         label6 = new JLabel();
         scrollPane1 = new JScrollPane();
-        list1 = new JList<>();
-        panel1 = new JPanel();
+        progRenderList = new JList<>();
+        buttonPanel = new JPanel();
         button1 = new JButton();
         button2 = new JButton();
         button3 = new JButton();
@@ -329,7 +330,6 @@ public class TrainingApp implements Observer {
 
         //======== playFrame ========
         {
-            playFrame.setVisible(true);
             playFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
             Container playFrameContentPane = playFrame.getContentPane();
             playFrameContentPane.setLayout(new BorderLayout());
@@ -353,43 +353,33 @@ public class TrainingApp implements Observer {
                 //======== scrollPane1 ========
                 {
 
-                    //---- list1 ----
-                    list1.setModel(new AbstractListModel<String>() {
-                        String[] values = {
-                            "scheda1",
-                            "scheda2",
-                            "scheda3"
-                        };
-                        @Override
-                        public int getSize() { return values.length; }
-                        @Override
-                        public String getElementAt(int i) { return values[i]; }
-                    });
-                    scrollPane1.setViewportView(list1);
+                    //---- progRenderList ----
+                    progRenderList.setModel(new DefaultListModel());
+                    scrollPane1.setViewportView(progRenderList);
                 }
                 trainPanel.add(scrollPane1, BorderLayout.EAST);
 
-                //======== panel1 ========
+                //======== buttonPanel ========
                 {
-                    panel1.setLayout(new FlowLayout());
+                    buttonPanel.setLayout(new FlowLayout());
 
                     //---- button1 ----
                     button1.setText("Start");
-                    panel1.add(button1);
+                    buttonPanel.add(button1);
 
                     //---- button2 ----
                     button2.setText("Stop");
-                    panel1.add(button2);
+                    buttonPanel.add(button2);
 
                     //---- button3 ----
                     button3.setText("Pause");
-                    panel1.add(button3);
+                    buttonPanel.add(button3);
 
                     //---- button4 ----
                     button4.setText("Resume");
-                    panel1.add(button4);
+                    buttonPanel.add(button4);
                 }
-                trainPanel.add(panel1, BorderLayout.SOUTH);
+                trainPanel.add(buttonPanel, BorderLayout.SOUTH);
             }
             playFrameContentPane.add(trainPanel, BorderLayout.CENTER);
             playFrame.pack();
@@ -407,7 +397,21 @@ public class TrainingApp implements Observer {
      */
     public void update(Observable o, Object arg) {
         /* */
-        System.out.println("app received;  "+arg);
+        if(arg instanceof ArrayList){
+            renderProgramList((ArrayList<Instruction>)arg);
+        }
+        /**
+         * else istanceof altro*/
+
+
+    }
+
+    private void renderProgramList(ArrayList<Instruction> prog) {
+        DefaultListModel model = (DefaultListModel) progRenderList.getModel();
+        for(Instruction instr : prog){
+            model.addElement(instr);
+        }
+        progRenderList.setCellRenderer(new MyListCellRenderer());
     }
 
     public static void main(String[] args) {
@@ -444,14 +448,21 @@ public class TrainingApp implements Observer {
     private JPanel trainPanel;
     private JLabel label6;
     private JScrollPane scrollPane1;
-    private JList<String> list1;
-    private JPanel panel1;
+    private JList<Instruction> progRenderList;
+    private JPanel buttonPanel;
     private JButton button1;
     private JButton button2;
     private JButton button3;
     private JButton button4;
-
-
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
 
+
+class MyListCellRenderer extends JLabel implements ListCellRenderer<Instruction> {
+    @Override
+    public Component getListCellRendererComponent(JList<? extends Instruction> list, Instruction value, int index, boolean isSelected, boolean cellHasFocus) {
+
+
+        return this;
+    }
+}

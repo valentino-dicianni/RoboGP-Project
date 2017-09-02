@@ -61,6 +61,8 @@ public class Training extends Observable {
     public void setRobot(Program initialProgram, Position robotInitialPos) {
         this.robot = new TrainingRobot("robot-red","red", initialProgram);
         this.robot.setPosition(robotInitialPos);
+        setChanged();
+        notifyObservers(robot.getProgram().getInstructions());
     }
 
     public TrainingRobot getRobot() {

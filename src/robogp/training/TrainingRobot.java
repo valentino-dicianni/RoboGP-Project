@@ -17,6 +17,10 @@ public class TrainingRobot extends RobotMarker{
         this.statesList = new ArrayList<>();
     }
 
+    public Program getProgram() {
+        return program;
+    }
+
     public void executeProgram() {
         this.program.setRunning();
     }

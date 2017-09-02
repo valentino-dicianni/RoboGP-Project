@@ -123,6 +123,10 @@ public class Program {
         return true;
     }
 
+    public ArrayList<Instruction> getInstructions() {
+        return instructions;
+    }
+
     @Override
     public String toString() {
         String returnstr = "Program is ";
