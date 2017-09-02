@@ -98,7 +98,7 @@ public class TrainingApp implements Observer {
         int pos= Integer.parseInt(((String)dockChooser.getSelectedItem()).split("\\.")[0]);
         rv.placeRobot(inizPartCtrl.getTrainingRobot(), dockPos.get(pos).getRotation(),dockPos.get(pos).getPosX(),dockPos.get(pos).getPosY(),true);
         trainPanel.add(rv,BorderLayout.CENTER);
-        playFrame.setSize(1000,1000);
+        playFrame.setSize(1000,800);
         playFrame.setVisible(true);
 
 
@@ -142,6 +142,13 @@ public class TrainingApp implements Observer {
         playFrame = new JFrame();
         trainPanel = new JPanel();
         label6 = new JLabel();
+        scrollPane1 = new JScrollPane();
+        list1 = new JList<>();
+        panel1 = new JPanel();
+        button1 = new JButton();
+        button2 = new JButton();
+        button3 = new JButton();
+        button4 = new JButton();
 
         //======== trainingFrame ========
         {
@@ -342,6 +349,47 @@ public class TrainingApp implements Observer {
                 //---- label6 ----
                 label6.setText("Il Robodromo \u00e8 pronto!");
                 trainPanel.add(label6, BorderLayout.NORTH);
+
+                //======== scrollPane1 ========
+                {
+
+                    //---- list1 ----
+                    list1.setModel(new AbstractListModel<String>() {
+                        String[] values = {
+                            "scheda1",
+                            "scheda2",
+                            "scheda3"
+                        };
+                        @Override
+                        public int getSize() { return values.length; }
+                        @Override
+                        public String getElementAt(int i) { return values[i]; }
+                    });
+                    scrollPane1.setViewportView(list1);
+                }
+                trainPanel.add(scrollPane1, BorderLayout.EAST);
+
+                //======== panel1 ========
+                {
+                    panel1.setLayout(new FlowLayout());
+
+                    //---- button1 ----
+                    button1.setText("Start");
+                    panel1.add(button1);
+
+                    //---- button2 ----
+                    button2.setText("Stop");
+                    panel1.add(button2);
+
+                    //---- button3 ----
+                    button3.setText("Pause");
+                    panel1.add(button3);
+
+                    //---- button4 ----
+                    button4.setText("Resume");
+                    panel1.add(button4);
+                }
+                trainPanel.add(panel1, BorderLayout.SOUTH);
             }
             playFrameContentPane.add(trainPanel, BorderLayout.CENTER);
             playFrame.pack();
@@ -394,6 +442,13 @@ public class TrainingApp implements Observer {
     private JFrame playFrame;
     private JPanel trainPanel;
     private JLabel label6;
+    private JScrollPane scrollPane1;
+    private JList<String> list1;
+    private JPanel panel1;
+    private JButton button1;
+    private JButton button2;
+    private JButton button3;
+    private JButton button4;
 
 
     // JFormDesigner - End of variables declaration  //GEN-END:variables
