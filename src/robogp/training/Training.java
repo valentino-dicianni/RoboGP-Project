@@ -29,7 +29,7 @@ public class Training extends Observable {
             executeNextInstruction();
             /* si mette in sleep, quando viene svegliato fa avanzare il programa di robot
              all'istruzione successiva e fa executenextinstr */
-            System.out.println("inst executed");
+            System.out.println("TtrainingThread: inst executed");
         }
 
         @Override
@@ -53,6 +53,9 @@ public class Training extends Observable {
         this.paused = false;
     }
 
+    private synchronized boolean isAnimating() {
+        return false;
+    }
 
     public static Training getInstance() {
         if(Training.singleInstance == null)

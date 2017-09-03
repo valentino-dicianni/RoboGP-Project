@@ -11,7 +11,9 @@ import javax.swing.plaf.metal.MetalBorders;
 
 import net.miginfocom.swing.*;
 import robogp.common.Instruction;
+import robogp.robodrome.Direction;
 import robogp.robodrome.Position;
+import robogp.robodrome.Rotation;
 import robogp.robodrome.view.RobodromeView;
 
 /**
@@ -412,6 +414,18 @@ public class TrainingApp implements Observer {
         /* azione per fare vedere le animazioni del robot sulla robodrome view, lista di stringhe tipo "stepsToTake:direction:rotation" */
         if (arg instanceof String[]) {
             // le istruzioni sono da mettere in coda e poi eseguire
+            String[] strar = (String[])arg;
+            System.out.println(strar[0]+" .. "+strar[1]);
+            for (String inst: strar) {
+                if (inst != null) {
+                    String[] animdata = inst.split(":");
+                    int movement = Integer.parseInt(animdata[0]);
+                    Direction dir = Direction.valueOf(animdata[1]);
+                    Rotation rot = Rotation.valueOf(animdata[2]);
+                    rv.addRobotMove(Training.getInstance().getRobot(), movement, dir, rot);
+                }
+            }
+            rv.play();
         }
 
     }
