@@ -99,7 +99,7 @@ public class TrainingApp implements Observer {
             rv = new RobodromeView(inizPartCtrl.getRobodrome(), 55);
             int pos = Integer.parseInt(((String)dockChooser.getSelectedItem()).split("\\.")[0]);
             inizPartCtrl.start(model.toArray(), dockPos.get(pos));
-            rv.placeRobot(inizPartCtrl.getTrainingRobot(), dockPos.get(pos).getRotation(),dockPos.get(pos).getPosX(),dockPos.get(pos).getPosY(),true);
+            rv.placeRobot(inizPartCtrl.getTrainingRobot(), dockPos.get(pos).getDirection(),dockPos.get(pos).getPosX(),dockPos.get(pos).getPosY(),true);
             trainPanel.add(rv,BorderLayout.CENTER);
             playFrame.setSize(1050,800);
             playFrame.setVisible(true);
@@ -405,13 +405,14 @@ public class TrainingApp implements Observer {
      * (tale avvertimento è più utile per training helper)
      */
     public void update(Observable o, Object arg) {
-        /* */
-        if(arg instanceof ArrayList){
+        /* azione iniziale per visualizzare lista di istruzioni del programma */
+        if (arg instanceof ArrayList){
             renderProgramList((ArrayList<Instruction>)arg);
         }
-        /**
-         * else istanceof altro*/
-
+        /* azione per fare vedere le animazioni del robot sulla robodrome view, lista di stringhe tipo "stepsToTake:direction:rotation" */
+        if (arg instanceof String[]) {
+            // le istruzioni sono da mettere in coda e poi eseguire
+        }
 
     }
 

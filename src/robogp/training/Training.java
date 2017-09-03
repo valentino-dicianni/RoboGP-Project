@@ -2,13 +2,16 @@ package robogp.training;
 
 import robogp.common.Instruction;
 import robogp.robodrome.BoardCell;
+import robogp.robodrome.PitCell;
 import robogp.robodrome.Position;
 import robogp.robodrome.Robodrome;
+import robogp.robodrome.view.RobodromeAnimationObserver;
+
 import java.util.Observable;
 
 public class Training extends Observable {
 
-    private class TrainingHelper implements Runnable {
+    private class TrainingHelper implements Runnable, RobodromeAnimationObserver {
 
         @Override
         public void run() {
@@ -27,6 +30,16 @@ public class Training extends Observable {
             /* si mette in sleep, quando viene svegliato fa avanzare il programa di robot
              all'istruzione successiva e fa executenextinstr */
             System.out.println("inst executed");
+        }
+
+        @Override
+        public void animationStarted() {
+
+        }
+
+        @Override
+        public void animationFinished() {
+
         }
     }
 
@@ -47,6 +60,9 @@ public class Training extends Observable {
         return Training.singleInstance;
     }
 
+    public TrainingHelper getTrainingHelper() {
+        return trainingThread;
+    }
 
     public void setPaused(boolean paused) {
         this.paused = paused;
@@ -85,14 +101,41 @@ public class Training extends Observable {
      * una volta terminata l'esecuzione
      */
     private void executeNextInstruction() {
-        Position initialRobotPos = this.robot.getPosition();
+        Position robotPos = this.robot.getPosition();
+        Position newRobotPos = robotPos.clone();
         //rv.addRobotMove(robots[2], 3, Direction.E, Rotation.NO);
         Instruction instrToExecute = this.robot.getCurrentInstruction();
-        //BoardCell nextcell = this.theRobodrome.getCell(initialRobotPos.getPosX(),initialRobotPos.getPosY());
-        //System.out.println(initialRobotPos.toString());
+        // TODO: se si sta facendo un movimento bisogna prima guardare se le celle in cui si vuole muovere sono libere (niente muri  buchi)
+        // se sono tutte libere si procede con l'esecuzione, se una cella ha un muro nella direzione in cui si sta andando e si devono ancora fare passi
+        // i passi successivi non vengono fatti, se invece una delle celle è un buco nero, si crea l'animazione del robot che va fino a quella cella
+        // e poi ritorna nella posizione di partenza
+        int stepstaken = 0;
+        String[] animationInstr = new String[2];
+        for (int steps = instrToExecute.getStepsToTake(); steps < 0; steps--) {
+            // muovo di 1 il robot
+            newRobotPos.changePosition(1, instrToExecute.getRotation());
+            BoardCell landingCell = this.theRobodrome.getCell(newRobotPos.getPosX(), newRobotPos.getPosY());
+            if (landingCell.hasWall(newRobotPos.getDirection())) {
+                // si è arrivati in una cella che ha un muro nella direzione del robot
+                newRobotPos.changePosition(stepstaken, instrToExecute.getRotation());
+                break;
+            } else if (landingCell instanceof PitCell) {
+                // il robot è finito su un buco nero?
+                // faccio animazione inversa
+                animationInstr[1] = (-stepstaken)+":"+newRobotPos.getDirection()+":"+instrToExecute.getRotation();
+                stepstaken = 0;
+                newRobotPos = robotPos; // ripristino posizione iniziale
+                break;
+            } else
+                stepstaken++;
+        }
+        animationInstr[0] = stepstaken+":"+newRobotPos.getDirection()+":"+instrToExecute.getRotation();
+        if (stepstaken == instrToExecute.getStepsToTake()) // tutti i passi che si dovevano fare sono stati fatti
+            newRobotPos.changePosition(instrToExecute.getStepsToTake(), instrToExecute.getRotation());
+
         setChanged();
-        notifyObservers(instrToExecute.getStepsToTake()+":"+initialRobotPos.getRotation()+":"+instrToExecute.getRotation());
-        // aggiorno pos robot
+        notifyObservers(animationInstr);
+
 
         robodromeActivation();
     }
@@ -103,7 +146,10 @@ public class Training extends Observable {
      */
     private void robodromeActivation() {
         //posizione iniziale del robot (nel caso cada in buco nero)
-        Position initialRobotPos = this.robot.getPosition();
+        Position robotPos = this.robot.getPosition();
+        // copia posizione corrente e modifica quella, nel caso che
+        Position newRobotPos = robotPos.clone();
+
     }
 
     public void setRobodrome(Robodrome robodrome) {
