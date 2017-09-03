@@ -1,5 +1,6 @@
 package robogp.training;
 
+import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 import robogp.common.Instruction;
 import robogp.robodrome.*;
 import robogp.robodrome.view.RobodromeAnimationObserver;
@@ -26,7 +27,7 @@ public class Training extends Observable {
             executeNextInstruction();
             /* si mette in sleep, quando viene svegliato fa avanzare il programa di robot
              all'istruzione successiva e fa executenextinstr */
-            System.out.println("TtrainingThread: inst executed");
+            //System.out.println("TtrainingThread: inst executed");
         }
 
         @Override
@@ -115,21 +116,33 @@ public class Training extends Observable {
         String[] animationInstr = new String[2];
         for (steps = instrToExecute.getStepsToTake(); steps > 0; steps--) {
             // muovo di 1 il robot
-            newRobotPos.changePosition(1, instrToExecute.getRotation());
             BoardCell landingCell = this.theRobodrome.getCell(newRobotPos.getPosX(), newRobotPos.getPosY());
-            if (landingCell.hasWall(newRobotPos.getDirection())) {
-                // si è arrivati in una cella che ha un muro nella direzione del robot
+
+            // la cella attuale ha un muro nell direzione in cui voglio andare, lo stostamento finisce qui
+            if (landingCell instanceof FloorCell) {
+                FloorCell fcell = (FloorCell)landingCell;
+                System.out.println("board cell has wall "+newRobotPos.getDirection()+"? "+fcell.hasWall(newRobotPos.getDirection()));
+                if (fcell.hasWall(newRobotPos.getDirection())) {
+                    newRobotPos.changePosition(stepstaken, instrToExecute.getRotation());
+                    break;
+                }
+            }
+            /*if (landingCell.hasWall(newRobotPos.getDirection())) {
                 newRobotPos.changePosition(stepstaken, instrToExecute.getRotation());
                 break;
-            } else if (landingCell instanceof PitCell) {
+            }*/
+            // non si è su una cella con un muro, continuo a muovermi
+            newRobotPos.changePosition(1, instrToExecute.getRotation());
+            landingCell = this.theRobodrome.getCell(newRobotPos.getPosX(), newRobotPos.getPosY());
+            if (landingCell instanceof PitCell) {
                 // il robot è finito su un buco nero?
                 // faccio animazione inversa
                 animationInstr[1] = stepstaken+":"+Direction.getOppositeDirection(chosendir)+":"+instrToExecute.getRotation();
                 stepstaken = 0;
                 newRobotPos = robotPos; // ripristino posizione iniziale
                 break;
-            } else
-                stepstaken++;
+            }
+            stepstaken++;
         }
         if (steps == -1) {
             stepstaken = 1;
@@ -138,7 +151,9 @@ public class Training extends Observable {
         animationInstr[0] = stepstaken+":"+chosendir+":"+instrToExecute.getRotation();
         if (stepstaken == instrToExecute.getStepsToTake()) // tutti i passi che si dovevano fare sono stati fatti
             newRobotPos.changePosition(instrToExecute.getStepsToTake(), instrToExecute.getRotation());
+        this.robot.setPosition(newRobotPos);
 
+        System.out.println("updtrobotpos: "+robot.getPosition().toString());
         setChanged();
         notifyObservers(animationInstr);
 

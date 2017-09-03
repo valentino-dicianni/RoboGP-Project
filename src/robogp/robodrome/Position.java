@@ -28,8 +28,8 @@ public class Position {
             // movimento senza rotazione
             if (this.dir == Direction.E) this.posX += movement;
             else if (this.dir == Direction.W) this.posX -= movement;
-            else if (this.dir == Direction.N) this.posY += movement;
-            else if (this.dir == Direction.S) this.posY -= movement;
+            else if (this.dir == Direction.N) this.posY -= movement;
+            else if (this.dir == Direction.S) this.posY += movement;
         } else {
             // movimento con rotazione
             this.dir = Rotation.changeDirection(this.dir, rotation);

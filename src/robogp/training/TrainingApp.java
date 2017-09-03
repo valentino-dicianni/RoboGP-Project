@@ -421,7 +421,7 @@ public class TrainingApp implements Observer {
         if (arg instanceof String[]) {
             // le istruzioni sono da mettere in coda e poi eseguire
             String[] strar = (String[])arg;
-            System.out.println(strar[0]+" .. "+strar[1]);
+            System.out.println("Animations to exec: "+strar[0]+" .. "+strar[1]);
             for (String inst: strar) {
                 if (inst != null) {
                     String[] animdata = inst.split(":");
