@@ -140,7 +140,38 @@ public class Robodrome {
         return null;
     }
 
-    /** 
+    /**
+     *
+     * @param posX, posY: coordinate della cella di cui si vuole prendere la cella adiacente
+     * @param dir direzione in cui è la cella adiacente
+     * @return cella adiacente a quella data
+     */
+    public BoardCell getNextCell(int posX, int posY, Direction dir) {
+        if (posX < 0 || posY < 0)
+            throw new ArrayIndexOutOfBoundsException();
+        switch (dir) {
+            case N:
+                if (posX == 0)
+                    throw new ArrayIndexOutOfBoundsException();
+                return getCell(posX - 1, posY);
+            case S:
+                if (posX == board.length - 1)
+                    throw new ArrayIndexOutOfBoundsException();
+                return getCell(posX + 1, posY);
+            case W:
+                if (posY == 0)
+                    throw new ArrayIndexOutOfBoundsException();
+                return getCell(posX, posY - 1);
+            case E:
+                if (posY == board[0].length - 1)
+                    throw new ArrayIndexOutOfBoundsException();
+                return getCell(posX, posY + 1);
+            default:
+                return null;
+        }
+    }
+
+    /**
      * @return il numero di righe nel tabellone
      */
     public int getRowCount() {

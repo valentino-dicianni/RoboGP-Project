@@ -121,7 +121,19 @@ public class Training extends Observable {
             // la cella attuale ha un muro nell direzione in cui voglio andare, lo stostamento finisce qui
             if (landingCell instanceof FloorCell) {
                 FloorCell fcell = (FloorCell)landingCell;
+                BoardCell nextlandigcell = this.theRobodrome.getNextCell(newRobotPos.getPosX(), newRobotPos.getPosY(), newRobotPos.getDirection());
+                // controlla che la cella successiva non abbia un muro nella direzione opposta
+                if (nextlandigcell instanceof  FloorCell) {
+                    FloorCell nfcell = (FloorCell)nextlandigcell;
+                    System.out.println("Next board cell has wall "+Direction.getOppositeDirection(newRobotPos.getDirection())+"? "+nfcell.hasWall(newRobotPos.getDirection()));
+                    System.out.println("Next board cell pos X="+newRobotPos.getPosX()+" Y="+newRobotPos.getPosY());
+                    if (nfcell.hasWall(Direction.getOppositeDirection(newRobotPos.getDirection()))) {
+                        newRobotPos.changePosition(stepstaken, instrToExecute.getRotation());
+                        break;
+                    }
+                }
                 System.out.println("board cell has wall "+newRobotPos.getDirection()+"? "+fcell.hasWall(newRobotPos.getDirection()));
+                // controlla anche se la cella successiva ha muro in su direzione opposta
                 if (fcell.hasWall(newRobotPos.getDirection())) {
                     newRobotPos.changePosition(stepstaken, instrToExecute.getRotation());
                     break;
