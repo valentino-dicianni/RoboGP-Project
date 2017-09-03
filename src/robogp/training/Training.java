@@ -1,15 +1,14 @@
 package robogp.training;
 
-import com.sun.org.apache.xerces.internal.util.SynchronizedSymbolTable;
 import robogp.common.Instruction;
 import robogp.robodrome.*;
 import robogp.robodrome.view.RobodromeAnimationObserver;
 
 import java.util.Observable;
 
-public class Training extends Observable {
+public class Training extends Observable implements  RobodromeAnimationObserver {
 
-    private class TrainingHelper implements Runnable, RobodromeAnimationObserver {
+    private class TrainingHelper implements Runnable{
 
         @Override
         public void run() {
@@ -24,28 +23,28 @@ public class Training extends Observable {
             *   alla fine si fa play delle animazioni messe in coda della fase attivazione robodomo
             */
 
-            executeNextInstruction();
+            while(true){
+                getReadyAnimation();
+                executeNextInstruction();
+                try {
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             /* si mette in sleep, quando viene svegliato fa avanzare il programa di robot
              all'istruzione successiva e fa executenextinstr */
-            //System.out.println("TtrainingThread: inst executed");
+                System.out.println("TtrainingThread: inst executed");
+            }
         }
 
-        @Override
-        public void animationStarted() {
 
-        }
-
-        @Override
-        public void animationFinished() {
-
-        }
     }
 
     private static Training singleInstance;
     private boolean paused;
     private TrainingRobot robot;
     private Robodrome theRobodrome;
-    private TrainingHelper trainingThread;
+    private boolean readyAnimation = true;
 
     private Training() {
         this.paused = false;
@@ -61,9 +60,6 @@ public class Training extends Observable {
         return Training.singleInstance;
     }
 
-    public TrainingHelper getTrainingHelper() {
-        return trainingThread;
-    }
 
     public void setPaused(boolean paused) {
         this.paused = paused;
@@ -92,8 +88,19 @@ public class Training extends Observable {
      */
     public void executeProgram() {
         this.robot.executeProgram();
-        this.trainingThread = new TrainingHelper();
-        this.trainingThread.run();
+        TrainingHelper trainingThread = new TrainingHelper();
+        Thread t = new Thread(trainingThread);
+        t.start();
+    }
+
+    @Override
+    public void animationStarted() {
+
+    }
+
+    @Override
+    public void animationFinished() {
+        setReadyAnimation();
     }
 
     /**
@@ -173,6 +180,34 @@ public class Training extends Observable {
 
 
         //robodromeActivation();
+    }
+    /**
+     * metodi sincronizzati per la fine/inizio animazioni
+     */
+
+    public synchronized  void  setReadyAnimation() {
+        while(readyAnimation){
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        this.readyAnimation = true;
+        notify();
+    }
+
+    public  synchronized boolean getReadyAnimation() {
+        while(!readyAnimation){
+            try{
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        readyAnimation = false;
+        notify();
+        return readyAnimation;
     }
 
     /**

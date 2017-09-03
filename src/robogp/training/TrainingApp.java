@@ -103,6 +103,7 @@ public class TrainingApp implements Observer {
             inizPartCtrl.start(model.toArray(), dockPos.get(pos));
             rv.placeRobot(inizPartCtrl.getTrainingRobot(), dockPos.get(pos).getDirection(),dockPos.get(pos).getPosX(),dockPos.get(pos).getPosY(),true);
             trainPanel.add(rv,BorderLayout.CENTER);
+            rv.addObserver(Training.getInstance());
             playFrame.setSize(1050,800);
             playFrame.setVisible(true);
         }
@@ -432,6 +433,8 @@ public class TrainingApp implements Observer {
                 }
             }
             rv.play();
+
+
         }
 
     }
