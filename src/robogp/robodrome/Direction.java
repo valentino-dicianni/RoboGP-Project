@@ -9,4 +9,22 @@ package robogp.robodrome;
  *
  * @author claudia
  */
-public enum Direction {W, N, E, S};
+public enum Direction {
+    W, N, E, S;
+
+    public static Direction getOppositeDirection(Direction direction) {
+        switch (direction) {
+            case N:
+                return S;
+            case E:
+                return W;
+            case W:
+                return E;
+            case S:
+                return N;
+            default:
+                return null;
+        }
+    }
+};
+

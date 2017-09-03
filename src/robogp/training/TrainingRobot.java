@@ -37,4 +37,8 @@ public class TrainingRobot extends RobotMarker{
         return this.program.getCurrentInstruction();
     }
 
+    public void goToNextInstruction() {
+        this.program.goToNextInstruction();
+    }
+
 }

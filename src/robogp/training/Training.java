@@ -1,10 +1,7 @@
 package robogp.training;
 
 import robogp.common.Instruction;
-import robogp.robodrome.BoardCell;
-import robogp.robodrome.PitCell;
-import robogp.robodrome.Position;
-import robogp.robodrome.Robodrome;
+import robogp.robodrome.*;
 import robogp.robodrome.view.RobodromeAnimationObserver;
 
 import java.util.Observable;
@@ -112,9 +109,11 @@ public class Training extends Observable {
         // se sono tutte libere si procede con l'esecuzione, se una cella ha un muro nella direzione in cui si sta andando e si devono ancora fare passi
         // i passi successivi non vengono fatti, se invece una delle celle è un buco nero, si crea l'animazione del robot che va fino a quella cella
         // e poi ritorna nella posizione di partenza
+        int steps;
         int stepstaken = 0;
+        Direction chosendir = newRobotPos.getDirection();
         String[] animationInstr = new String[2];
-        for (int steps = instrToExecute.getStepsToTake(); steps < 0; steps--) {
+        for (steps = instrToExecute.getStepsToTake(); steps > 0; steps--) {
             // muovo di 1 il robot
             newRobotPos.changePosition(1, instrToExecute.getRotation());
             BoardCell landingCell = this.theRobodrome.getCell(newRobotPos.getPosX(), newRobotPos.getPosY());
@@ -125,22 +124,28 @@ public class Training extends Observable {
             } else if (landingCell instanceof PitCell) {
                 // il robot è finito su un buco nero?
                 // faccio animazione inversa
-                animationInstr[1] = (-stepstaken)+":"+newRobotPos.getDirection()+":"+instrToExecute.getRotation();
+                animationInstr[1] = stepstaken+":"+Direction.getOppositeDirection(chosendir)+":"+instrToExecute.getRotation();
                 stepstaken = 0;
                 newRobotPos = robotPos; // ripristino posizione iniziale
                 break;
             } else
                 stepstaken++;
         }
-        animationInstr[0] = stepstaken+":"+newRobotPos.getDirection()+":"+instrToExecute.getRotation();
+        if (steps == -1) {
+            stepstaken = 1;
+            chosendir = Direction.getOppositeDirection(chosendir);
+        }
+        animationInstr[0] = stepstaken+":"+chosendir+":"+instrToExecute.getRotation();
         if (stepstaken == instrToExecute.getStepsToTake()) // tutti i passi che si dovevano fare sono stati fatti
             newRobotPos.changePosition(instrToExecute.getStepsToTake(), instrToExecute.getRotation());
 
         setChanged();
         notifyObservers(animationInstr);
 
+        this.robot.goToNextInstruction();
 
-        robodromeActivation();
+
+        //robodromeActivation();
     }
 
     /**
