@@ -42,6 +42,9 @@ public class IniziareTrainingControl {
         for(Object instrname : arr)
             tmpprog.loadInstruction(Instruction.getInstructionByName(instrname.toString()));
         training.setRobot(tmpprog, robotStartPosition);
+    }
+
+    public void inizia(){
         training.executeProgram();
     }
 }

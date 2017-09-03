@@ -183,8 +183,9 @@ new FormModel {
 					name: "buttonPanel"
 					"background": sfield java.awt.Color white
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "button1"
+						name: "iniziaButton"
 						"text": "Start"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "iniziaButtonActionPerformed", true ) )
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "button2"

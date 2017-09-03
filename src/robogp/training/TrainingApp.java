@@ -125,6 +125,10 @@ public class TrainingApp implements Observer {
 
     private void createUIComponents() {}
 
+    private void iniziaButtonActionPerformed(ActionEvent e) {
+        inizPartCtrl.inizia();
+    }
+
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
@@ -156,7 +160,7 @@ public class TrainingApp implements Observer {
         scrollPane1 = new JScrollPane();
         progRenderList = new JList<>();
         buttonPanel = new JPanel();
-        button1 = new JButton();
+        iniziaButton = new JButton();
         button2 = new JButton();
         button3 = new JButton();
         button4 = new JButton();
@@ -364,6 +368,7 @@ public class TrainingApp implements Observer {
                 {
 
                     //---- progRenderList ----
+                    progRenderList.setBackground(Color.black);
                     progRenderList.setModel(new DefaultListModel());
                     scrollPane1.setViewportView(progRenderList);
                 }
@@ -374,9 +379,10 @@ public class TrainingApp implements Observer {
                     buttonPanel.setBackground(Color.white);
                     buttonPanel.setLayout(new FlowLayout());
 
-                    //---- button1 ----
-                    button1.setText("Start");
-                    buttonPanel.add(button1);
+                    //---- iniziaButton ----
+                    iniziaButton.setText("Start");
+                    iniziaButton.addActionListener(e -> iniziaButtonActionPerformed(e));
+                    buttonPanel.add(iniziaButton);
 
                     //---- button2 ----
                     button2.setText("Stop");
@@ -474,7 +480,7 @@ public class TrainingApp implements Observer {
     private JScrollPane scrollPane1;
     private JList<Instruction> progRenderList;
     private JPanel buttonPanel;
-    private JButton button1;
+    private JButton iniziaButton;
     private JButton button2;
     private JButton button3;
     private JButton button4;
@@ -490,7 +496,6 @@ class MyListCellRenderer extends JLabel implements ListCellRenderer<Instruction>
 
     @Override
     public Component getListCellRendererComponent(JList<? extends Instruction> list, Instruction value, int index, boolean isSelected, boolean cellHasFocus) {
-
         ImageIcon imageIcon = new ImageIcon(value.getImage(100));
         setIcon(imageIcon);
         return this;
