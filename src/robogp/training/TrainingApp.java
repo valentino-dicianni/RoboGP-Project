@@ -104,6 +104,8 @@ public class TrainingApp implements Observer {
             rv.placeRobot(inizPartCtrl.getTrainingRobot(), dockPos.get(pos).getDirection(),dockPos.get(pos).getPosX(),dockPos.get(pos).getPosY(),true);
             trainPanel.add(rv,BorderLayout.CENTER);
             rv.addObserver(Training.getInstance());
+            pauseButton.setEnabled(false);
+            resumeButton.setEnabled(false);
             playFrame.setSize(1050,800);
             playFrame.setVisible(true);
         }
@@ -128,6 +130,10 @@ public class TrainingApp implements Observer {
 
     private void iniziaButtonActionPerformed(ActionEvent e) {
         inizPartCtrl.inizia();
+    }
+
+    private void stopButtonActionPerformed(ActionEvent e) {
+
     }
 
 
@@ -162,9 +168,9 @@ public class TrainingApp implements Observer {
         progRenderList = new JList<>();
         buttonPanel = new JPanel();
         iniziaButton = new JButton();
-        button2 = new JButton();
-        button3 = new JButton();
-        button4 = new JButton();
+        stopButton = new JButton();
+        pauseButton = new JButton();
+        resumeButton = new JButton();
 
         //======== trainingFrame ========
         {
@@ -351,6 +357,7 @@ public class TrainingApp implements Observer {
 
             //======== trainPanel ========
             {
+                trainPanel.setBackground(Color.black);
 
                 // JFormDesigner evaluation mark
                 trainPanel.setBorder(new javax.swing.border.CompoundBorder(
@@ -362,14 +369,20 @@ public class TrainingApp implements Observer {
                 trainPanel.setLayout(new BorderLayout());
 
                 //---- label6 ----
-                label6.setText("Il Robodromo \u00e8 pronto!");
+                label6.setText("Programma di Allenamento RoboGP");
+                label6.setHorizontalAlignment(SwingConstants.CENTER);
+                label6.setBackground(Color.black);
+                label6.setForeground(Color.white);
+                label6.setFont(new Font("Lucida Grande", Font.BOLD, 18));
                 trainPanel.add(label6, BorderLayout.NORTH);
 
                 //======== scrollPane1 ========
                 {
+                    scrollPane1.setBorder(null);
 
                     //---- progRenderList ----
                     progRenderList.setBackground(Color.black);
+                    progRenderList.setBorder(null);
                     progRenderList.setModel(new DefaultListModel());
                     scrollPane1.setViewportView(progRenderList);
                 }
@@ -378,6 +391,7 @@ public class TrainingApp implements Observer {
                 //======== buttonPanel ========
                 {
                     buttonPanel.setBackground(Color.white);
+                    buttonPanel.setFont(new Font("Lucida Grande", Font.BOLD, 16));
                     buttonPanel.setLayout(new FlowLayout());
 
                     //---- iniziaButton ----
@@ -385,17 +399,18 @@ public class TrainingApp implements Observer {
                     iniziaButton.addActionListener(e -> iniziaButtonActionPerformed(e));
                     buttonPanel.add(iniziaButton);
 
-                    //---- button2 ----
-                    button2.setText("Stop");
-                    buttonPanel.add(button2);
+                    //---- stopButton ----
+                    stopButton.setText("Stop");
+                    stopButton.addActionListener(e -> stopButtonActionPerformed(e));
+                    buttonPanel.add(stopButton);
 
-                    //---- button3 ----
-                    button3.setText("Pause");
-                    buttonPanel.add(button3);
+                    //---- pauseButton ----
+                    pauseButton.setText("Pause");
+                    buttonPanel.add(pauseButton);
 
-                    //---- button4 ----
-                    button4.setText("Resume");
-                    buttonPanel.add(button4);
+                    //---- resumeButton ----
+                    resumeButton.setText("Resume");
+                    buttonPanel.add(resumeButton);
                 }
                 trainPanel.add(buttonPanel, BorderLayout.SOUTH);
             }
@@ -419,7 +434,7 @@ public class TrainingApp implements Observer {
             renderProgramList((ArrayList<Instruction>)arg);
         }
         /* azione per fare vedere le animazioni del robot sulla robodrome view, lista di stringhe tipo "stepsToTake:direction:rotation" */
-        if (arg instanceof String[]) {
+        else if (arg instanceof String[]) {
             // le istruzioni sono da mettere in coda e poi eseguire
             String[] strar = (String[])arg;
             System.out.println("Animations to exec: "+strar[0]+" .. "+strar[1]);
@@ -430,11 +445,20 @@ public class TrainingApp implements Observer {
                     Direction dir = Direction.valueOf(animdata[1]);
                     Rotation rot = Rotation.valueOf(animdata[2]);
                     rv.addRobotMove(Training.getInstance().getRobot(), movement, dir, rot);
+                    rv.addPause(600);
                 }
             }
             rv.play();
-
-
+        }
+        else if(arg == "animationFinished"){
+            DefaultListModel model = (DefaultListModel) progRenderList.getModel();
+            model.remove(0);
+        }
+        else if(arg == "endInstructions"){
+            JOptionPane.showMessageDialog(TrainingApp.getAppInstance().trainingFrame,
+                    "Hai completato il programma di allenamento RoboGP!","Complimenti:",
+                    JOptionPane.INFORMATION_MESSAGE);
+            System.exit(0);
         }
 
     }
@@ -484,9 +508,9 @@ public class TrainingApp implements Observer {
     private JList<Instruction> progRenderList;
     private JPanel buttonPanel;
     private JButton iniziaButton;
-    private JButton button2;
-    private JButton button3;
-    private JButton button4;
+    private JButton stopButton;
+    private JButton pauseButton;
+    private JButton resumeButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 }
 

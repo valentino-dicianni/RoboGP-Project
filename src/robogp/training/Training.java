@@ -3,7 +3,6 @@ package robogp.training;
 import robogp.common.Instruction;
 import robogp.robodrome.*;
 import robogp.robodrome.view.RobodromeAnimationObserver;
-
 import java.util.Observable;
 
 public class Training extends Observable implements  RobodromeAnimationObserver {
@@ -12,46 +11,32 @@ public class Training extends Observable implements  RobodromeAnimationObserver 
 
         @Override
         public void run() {
-            /** guarda currentInstruction del programma, guarda la posizione attuale del robot nel robodromo
-            *  in base a ciò calcola tutte il susseguirsi di animazioni che andrà a fare il robodromo:
-            *   prima guarda lo spostamento da fare secondo la scheda istruzione,
-            *   una volta calcolata la nuova posizione si esegue l'animazione (play)
-            *   a questo punto se il robot è finito su una casella attiva del robodromo
-            *   si calcola la nuova posizione e le animazioni da fare dopo l'attivazione di quella casella
-            *   se anche la casella successiva è una casella attiva si ripete questo processo
-            *   fino a quando il robot finisce su una casella non attiva
-            *   alla fine si fa play delle animazioni messe in coda della fase attivazione robodomo
-            */
-
             while(true){
                 getReadyAnimation();
-                executeNextInstruction();
-                try {
-                    Thread.sleep(200);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                if(robot.getCurrentInstruction() !=null && !isPaused()){
+                    executeNextInstruction();
+
+                    System.out.println("TtrainingThread: inst executed");
                 }
-            /* si mette in sleep, quando viene svegliato fa avanzare il programa di robot
-             all'istruzione successiva e fa executenextinstr */
-                System.out.println("TtrainingThread: inst executed");
+                else{
+                    setChanged();
+                    notifyObservers("endInstructions");
+                    System.out.println("Fine dei giochi");
+                    break;
+                }
             }
         }
-
-
     }
 
     private static Training singleInstance;
     private boolean paused;
     private TrainingRobot robot;
     private Robodrome theRobodrome;
-    private boolean readyAnimation = true;
+    private boolean readyAnimation;
 
     private Training() {
         this.paused = false;
-    }
-
-    private synchronized boolean isAnimating() {
-        return false;
+        this.readyAnimation = true;
     }
 
     public static Training getInstance() {
@@ -87,19 +72,19 @@ public class Training extends Observable implements  RobodromeAnimationObserver 
      * e aggiornano la posizione del robot
      */
     public void executeProgram() {
-        this.robot.executeProgram();
+        this.robot.runProgram();
         TrainingHelper trainingThread = new TrainingHelper();
         Thread t = new Thread(trainingThread);
         t.start();
     }
 
     @Override
-    public void animationStarted() {
-
-    }
+    public void animationStarted() {}
 
     @Override
     public void animationFinished() {
+        setChanged();
+        notifyObservers("animationFinished");
         setReadyAnimation();
     }
 
@@ -173,19 +158,19 @@ public class Training extends Observable implements  RobodromeAnimationObserver 
         this.robot.setPosition(newRobotPos);
 
         System.out.println("updtrobotpos: "+robot.getPosition().toString());
+
+        //TODO String[] robodromeAnimation = robodromeActivation() -->attacca alla stringa di animazioni anche quelle di attivazione del robodromo
+
         setChanged();
         notifyObservers(animationInstr);
 
         this.robot.goToNextInstruction();
-
-
-        //robodromeActivation();
     }
     /**
      * metodi sincronizzati per la fine/inizio animazioni
      */
 
-    public synchronized  void  setReadyAnimation() {
+    private synchronized  void  setReadyAnimation() {
         while(readyAnimation){
             try {
                 wait();
@@ -197,7 +182,7 @@ public class Training extends Observable implements  RobodromeAnimationObserver 
         notify();
     }
 
-    public  synchronized boolean getReadyAnimation() {
+    private  synchronized void getReadyAnimation() {
         while(!readyAnimation){
             try{
                 wait();
@@ -207,7 +192,6 @@ public class Training extends Observable implements  RobodromeAnimationObserver 
         }
         readyAnimation = false;
         notify();
-        return readyAnimation;
     }
 
     /**

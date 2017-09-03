@@ -21,7 +21,7 @@ public class TrainingRobot extends RobotMarker{
         return program;
     }
 
-    public void executeProgram() {
+    public void runProgram() {
         this.program.setRunning();
     }
 
