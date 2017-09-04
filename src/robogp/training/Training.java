@@ -169,19 +169,19 @@ public class Training extends Observable implements  RobodromeAnimationObserver 
             // quando il nastro trasportatore ha input direction != output direction allora è un nastro curva
             // se nastro è curva il robot oltre a spostarsi ruota
             boolean turn = false;
-            System.out.println("-> cell output dir: "+bcell.getOutputDirection());
+            //System.out.println("-> cell output dir: "+bcell.getOutputDirection());
             if (bcell.hasInputDirection(Direction.getOppositeDirection(bcell.getOutputDirection()))) { // primo nastro è pezzo dritto
                 // guarda se il nastro trasportatore ha un input nella data direzione, se si = nastro dritto, se no = curva
-                System.out.println("-> 1:straight belt odir= "+bcell.getOutputDirection());
+                //System.out.println("-> 1:straight belt odir= "+bcell.getOutputDirection());
                 robotPos.changePosition(1, bcell.getOutputDirection(), rotation);
                 movement = 1;
                 animation[0] = movement+":"+bcell.getOutputDirection()+":"+rotation;
-                System.out.println("-> 1:robot posx="+robotPos.getPosX()+", posy="+robotPos.getPosY());
+                //System.out.println("-> 1:robot posx="+robotPos.getPosX()+", posy="+robotPos.getPosY());
             } else {
                 //nastro è curva
                 turn = true;
                 Rotation trot = BeltCell.getTurnRotation(bcell);
-                System.out.println("-> 1:turn belt rot= "+trot);
+                //System.out.println("-> 1:turn belt rot= "+trot);
                 robotPos.changePosition(0, trot);
                 animation[0] = "0:"+robotPos.getDirection()+":"+trot;
             }
@@ -194,7 +194,7 @@ public class Training extends Observable implements  RobodromeAnimationObserver 
                     turn = true;
                     // mette animation di rotazione in animation 1
                     Rotation trot = BeltCell.getTurnRotation(bcell);
-                    System.out.println("-> 2:turn belt rot= "+trot);
+                    //System.out.println("-> 2:turn belt rot= "+trot);
                     robotPos.changePosition(0, trot);
                     animation[1] = "0:"+robotPos.getDirection()+":"+trot;
                     dir = robotPos.getDirection();

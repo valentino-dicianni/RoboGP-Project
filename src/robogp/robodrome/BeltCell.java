@@ -70,27 +70,27 @@ public class BeltCell extends BoardCell {
         switch (bcell.getOutputDirection()) {
             case E:
                 if (bcell.hasInputDirection(Direction.N)) {
-                    return Rotation.getCounterClockwiseRotation(Direction.N, Direction.E);
+                    return Rotation.getCounterClockwiseRotation(Direction.W, Direction.S);
                 } else {
-                    return Rotation.getClockwiseRotation(Direction.S, Direction.E);
+                    return Rotation.getClockwiseRotation(Direction.W, Direction.N);
                 }
             case W:
                 if (bcell.hasInputDirection(Direction.N)) {
-                    return Rotation.getClockwiseRotation(Direction.N, Direction.W);
+                    return Rotation.getClockwiseRotation(Direction.E, Direction.S);
                 } else {
-                    return Rotation.getCounterClockwiseRotation(Direction.S, Direction.W);
+                    return Rotation.getCounterClockwiseRotation(Direction.E, Direction.N);
                 }
             case S:
                 if (bcell.hasInputDirection(Direction.E)) {
-                    return Rotation.getCounterClockwiseRotation(Direction.E, Direction.S);
+                    return Rotation.getCounterClockwiseRotation(Direction.N, Direction.E);
                 } else {
-                    return Rotation.getClockwiseRotation(Direction.W, Direction.S);
+                    return Rotation.getClockwiseRotation(Direction.N, Direction.E);
                 }
             case N:
                 if (bcell.hasInputDirection(Direction.E)) {
-                    return Rotation.getClockwiseRotation(Direction.E, Direction.N);
+                    return Rotation.getClockwiseRotation(Direction.S, Direction.W);
                 } else {
-                    return Rotation.getCounterClockwiseRotation(Direction.W, Direction.N);
+                    return Rotation.getCounterClockwiseRotation(Direction.S, Direction.E);
                 }
         }
         return Rotation.NO;
