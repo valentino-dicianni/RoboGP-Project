@@ -354,16 +354,22 @@ public class RobodromeView extends JComponent {
     public void changeRobotPosition(RobotMarker robot, Direction dir, int row, int col, boolean visible) {
         if (!this.isPlayingAnimation()) {
             MovableElement me = getMarker(robot);
-                me.setDirection(dir);
-                me.setBoardPosition(row, col);
-                me.setPosX(col * cellSize + cellSize / 2 + BORDER);
-                me.setPosY(row * cellSize + cellSize / 2 + BORDER);
-                me.setVisible(visible);
-                me.resetImageSize(cellSize, cellSize);
-                repaint();
+            me.setImage(robot.getImage(cellSize),dir);
+            me.setBoardPosition(row, col);
+            me.setPosX(col * cellSize + cellSize / 2 + BORDER);
+            me.setPosY(row * cellSize + cellSize / 2 + BORDER);
+            me.setDirection(dir);
+            me.setVisible(visible);
+            repaint();
         } else {
             throw new RobodromeException("Cannot place robot during animation.");
         }
+    }
+
+    public boolean isInPit(RobotMarker robot){
+        MovableElement me = getMarker(robot);
+        return !me.isVisible();
+
     }
 
     /**
