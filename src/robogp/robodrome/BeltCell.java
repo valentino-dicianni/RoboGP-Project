@@ -66,6 +66,36 @@ public class BeltCell extends BoardCell {
         return false;
     }
 
+    public static Rotation getTurnRotation(BeltCell bcell) {
+        switch (bcell.getOutputDirection()) {
+            case E:
+                if (bcell.hasInputDirection(Direction.N)) {
+                    return Rotation.getCounterClockwiseRotation(Direction.N, Direction.E);
+                } else {
+                    return Rotation.getClockwiseRotation(Direction.S, Direction.E);
+                }
+            case W:
+                if (bcell.hasInputDirection(Direction.N)) {
+                    return Rotation.getClockwiseRotation(Direction.N, Direction.W);
+                } else {
+                    return Rotation.getCounterClockwiseRotation(Direction.S, Direction.W);
+                }
+            case S:
+                if (bcell.hasInputDirection(Direction.E)) {
+                    return Rotation.getCounterClockwiseRotation(Direction.E, Direction.S);
+                } else {
+                    return Rotation.getClockwiseRotation(Direction.W, Direction.S);
+                }
+            case N:
+                if (bcell.hasInputDirection(Direction.E)) {
+                    return Rotation.getClockwiseRotation(Direction.E, Direction.N);
+                } else {
+                    return Rotation.getCounterClockwiseRotation(Direction.W, Direction.N);
+                }
+        }
+        return Rotation.NO;
+    }
+
     @Override
     public BufferedImage getBaseImage() {
         String tilename = this.getType() + "-";

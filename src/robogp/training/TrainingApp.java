@@ -437,14 +437,24 @@ public class TrainingApp implements Observer {
         else if (arg instanceof String[]) {
             // le istruzioni sono da mettere in coda e poi eseguire
             String[] strar = (String[])arg;
-            System.out.println("Animations to exec: "+strar[0]+" .. "+strar[1]);
+            System.out.println("Animations to exec: "+strar[0]+" .. "+strar[1]+" .. "+strar[2]+" .. "+strar[3]+" .. "+strar[4]);
             for (String inst: strar) {
                 if (inst != null) {
                     String[] animdata = inst.split(":");
-                    int movement = Integer.parseInt(animdata[0]);
-                    Direction dir = Direction.valueOf(animdata[1]);
-                    Rotation rot = Rotation.valueOf(animdata[2]);
-                    rv.addRobotMove(Training.getInstance().getRobot(), movement, dir, rot);
+                    if (animdata.length == 3) { // animazione scheda/robodromo
+                        int movement = Integer.parseInt(animdata[0]);
+                        Direction dir = Direction.valueOf(animdata[1]);
+                        Rotation rot = Rotation.valueOf(animdata[2]);
+                        rv.addRobotMove(Training.getInstance().getRobot(), movement, dir, rot);
+                    } else if (animdata.length == 4) { // animazione torna checkpoint
+                        // posx:posY:direction:??
+                        int posX = Integer.parseInt(animdata[0]);
+                        int posY = Integer.parseInt(animdata[1]);
+                        Direction dir = Direction.valueOf(animdata[2]);
+                        rv.addRobotFall(Training.getInstance().getRobot());
+                        //rv.placeRobot(Training.getInstance().getRobot(), dir, posY, posX, true);
+                        rv.changeRobotPosition(Training.getInstance().getRobot(), dir, posY, posX, true);
+                    }
                     rv.addPause(600);
                 }
             }

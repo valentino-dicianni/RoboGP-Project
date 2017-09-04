@@ -16,12 +16,12 @@ public class Training extends Observable implements  RobodromeAnimationObserver 
                 if(robot.getCurrentInstruction() !=null && !isPaused()){
                     executeNextInstruction();
 
-                    System.out.println("TtrainingThread: inst executed");
+                    //System.out.println("TtrainingThread: inst executed");
                 }
                 else{
                     setChanged();
                     notifyObservers("endInstructions");
-                    System.out.println("Fine dei giochi");
+                    //System.out.println("Fine dei giochi");
                     break;
                 }
             }
@@ -95,81 +95,144 @@ public class Training extends Observable implements  RobodromeAnimationObserver 
      */
     private void executeNextInstruction() {
         Position robotPos = this.robot.getPosition();
-        Position newRobotPos = robotPos.clone();
-        //rv.addRobotMove(robots[2], 3, Direction.E, Rotation.NO);
+        //System.out.println("initial posX="+robotPos.getPosX()+", posY="+robotPos.getPosY());
         Instruction instrToExecute = this.robot.getCurrentInstruction();
-        // TODO: se si sta facendo un movimento bisogna prima guardare se le celle in cui si vuole muovere sono libere (niente muri  buchi)
-        // se sono tutte libere si procede con l'esecuzione, se una cella ha un muro nella direzione in cui si sta andando e si devono ancora fare passi
-        // i passi successivi non vengono fatti, se invece una delle celle è un buco nero, si crea l'animazione del robot che va fino a quella cella
-        // e poi ritorna nella posizione di partenza
         int steps;
         int stepstaken = 0;
-        Direction chosendir = newRobotPos.getDirection();
+        Direction chosendir = robotPos.getDirection();
+        Rotation instrRot = instrToExecute.getRotation();
         String[] animationInstr = new String[2];
         for (steps = instrToExecute.getStepsToTake(); steps > 0; steps--) {
-            // muovo di 1 il robot
-            BoardCell landingCell = this.theRobodrome.getCell(newRobotPos.getPosX(), newRobotPos.getPosY());
-
-            // la cella attuale ha un muro nell direzione in cui voglio andare, lo stostamento finisce qui
-            if (landingCell instanceof FloorCell) {
-                FloorCell fcell = (FloorCell)landingCell;
-                BoardCell nextlandigcell = this.theRobodrome.getNextCell(newRobotPos.getPosX(), newRobotPos.getPosY(), newRobotPos.getDirection());
-                // controlla che la cella successiva non abbia un muro nella direzione opposta
-                if (nextlandigcell instanceof  FloorCell) {
-                    FloorCell nfcell = (FloorCell)nextlandigcell;
-                    System.out.println("Next board cell has wall "+Direction.getOppositeDirection(newRobotPos.getDirection())+"? "+nfcell.hasWall(newRobotPos.getDirection()));
-                    System.out.println("Next board cell pos X="+newRobotPos.getPosX()+" Y="+newRobotPos.getPosY());
-                    if (nfcell.hasWall(Direction.getOppositeDirection(newRobotPos.getDirection()))) {
-                        newRobotPos.changePosition(stepstaken, instrToExecute.getRotation());
-                        break;
-                    }
-                }
-                System.out.println("board cell has wall "+newRobotPos.getDirection()+"? "+fcell.hasWall(newRobotPos.getDirection()));
-                // controlla anche se la cella successiva ha muro in su direzione opposta
-                if (fcell.hasWall(newRobotPos.getDirection())) {
-                    newRobotPos.changePosition(stepstaken, instrToExecute.getRotation());
-                    break;
-                }
-            }
-            /*if (landingCell.hasWall(newRobotPos.getDirection())) {
-                newRobotPos.changePosition(stepstaken, instrToExecute.getRotation());
-                break;
-            }*/
-            // non si è su una cella con un muro, continuo a muovermi
-            newRobotPos.changePosition(1, instrToExecute.getRotation());
-            landingCell = this.theRobodrome.getCell(newRobotPos.getPosX(), newRobotPos.getPosY());
-            if (landingCell instanceof PitCell) {
-                // il robot è finito su un buco nero?
-                // faccio animazione inversa
-                animationInstr[1] = stepstaken+":"+Direction.getOppositeDirection(chosendir)+":"+instrToExecute.getRotation();
-                stepstaken = 0;
-                newRobotPos = robotPos; // ripristino posizione iniziale
+            // controllo che non ci siano muri
+            if (this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), chosendir)) {
                 break;
             }
+            // il percorso per la prossima cella è libero, continuo a muovermi
+            robotPos.changePosition(1, instrRot);
             stepstaken++;
         }
-        if (steps == -1) {
-            stepstaken = 1;
+        // se instruzione backup
+        if (steps == -1 && !this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), Direction.getOppositeDirection(chosendir))) {
+            stepstaken = Math.abs(steps);
+            robotPos.changePosition(steps, instrRot);
             chosendir = Direction.getOppositeDirection(chosendir);
         }
-        animationInstr[0] = stepstaken+":"+chosendir+":"+instrToExecute.getRotation();
-        if (stepstaken == instrToExecute.getStepsToTake()) // tutti i passi che si dovevano fare sono stati fatti
-            newRobotPos.changePosition(instrToExecute.getStepsToTake(), instrToExecute.getRotation());
-        this.robot.setPosition(newRobotPos);
+        if (instrToExecute.getStepsToTake() == 0) { // se istruzione rotazione
+            robotPos.changePosition(0, instrRot);
+        }
 
-        System.out.println("updtrobotpos: "+robot.getPosition().toString());
+        // animazione codificata del movimento fatto con scheda istruzione
+        animationInstr[0] = stepstaken+":"+chosendir+":"+instrRot;
+
+        //System.out.println("updtrobotpos: "+robot.getPosition().toString());
 
         //TODO String[] robodromeAnimation = robodromeActivation() -->attacca alla stringa di animazioni anche quelle di attivazione del robodromo
+        String[] robodromeanim = robodromeActivation();
+        int aLen = animationInstr.length;
+        int bLen = robodromeanim.length;
+        String[] finalAnimList = new String[aLen+bLen];
+        System.arraycopy(animationInstr, 0, finalAnimList, 0, aLen);
+        System.arraycopy(robodromeanim, 0, finalAnimList, aLen, bLen);
 
         setChanged();
-        notifyObservers(animationInstr);
+        notifyObservers(finalAnimList);
 
         this.robot.goToNextInstruction();
     }
+
+    /**
+     * attivazione robodromo, guarda la pos corrente del robot, se NON è su un elem attivo return null
+     * se è su elemnto attivo crea animazione in base ad elemento:
+     *  nastro singolo: muove di 1 nella direzione direzione in cui è puntato il nastro
+     *  nastro doppio: muove di due
+     *  pitt cell: il robot viene rimesso alla posizione salvata dall'ultimo checkpoint
+     *  floor cell checkpoint: salva posizione check point robot
+     *  floor cell rotator: fa animazione rotazione
+     */
+    private String[] robodromeActivation() {
+        //posizione iniziale del robot (nel caso cada in buco nero)
+        String[] animation = new String[3]; // max 3 animazioni: doppio nastro + curva
+        Position robotPos = this.robot.getPosition();
+        // rotazione da fare
+        Rotation rotation = Rotation.NO;
+        Direction dir = robotPos.getDirection();
+        int movement = 0;
+        BoardCell currentcell = this.theRobodrome.getCell(robotPos.getPosX(), robotPos.getPosY());
+        // TODO: while robot is on active cell?
+        if (currentcell instanceof BeltCell) {
+            BeltCell bcell = (BeltCell) currentcell;
+            Direction output = bcell.getOutputDirection();
+            if (this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), output)) {
+                return animation;
+            }
+
+            // quando il nastro trasportatore ha input direction != output direction allora è un nastro curva
+            // se nastro è curva il robot oltre a spostarsi ruota
+            boolean turn = false;
+            System.out.println("-> cell output dir: "+bcell.getOutputDirection());
+            if (bcell.hasInputDirection(Direction.getOppositeDirection(bcell.getOutputDirection()))) { // primo nastro è pezzo dritto
+                // guarda se il nastro trasportatore ha un input nella data direzione, se si = nastro dritto, se no = curva
+                System.out.println("-> 1:straight belt odir= "+bcell.getOutputDirection());
+                robotPos.changePosition(1, bcell.getOutputDirection(), rotation);
+                movement = 1;
+                animation[0] = movement+":"+bcell.getOutputDirection()+":"+rotation;
+                System.out.println("-> 1:robot posx="+robotPos.getPosX()+", posy="+robotPos.getPosY());
+            } else {
+                //nastro è curva
+                turn = true;
+                Rotation trot = BeltCell.getTurnRotation(bcell);
+                System.out.println("-> 1:turn belt rot= "+trot);
+                robotPos.changePosition(0, trot);
+                animation[0] = "0:"+robotPos.getDirection()+":"+trot;
+            }
+
+            BoardCell nextcell = theRobodrome.getCell(robotPos.getPosX(), robotPos.getPosY());
+            if ((nextcell instanceof BeltCell && bcell.getType() == 'E') || turn) { //continua il viaggio
+                bcell = (BeltCell) nextcell;
+                turn = false;
+                if (movement == 1 && !bcell.hasInputDirection(Direction.getOppositeDirection(bcell.getOutputDirection()))) { // nastro trasportatore è curva
+                    turn = true;
+                    // mette animation di rotazione in animation 1
+                    Rotation trot = BeltCell.getTurnRotation(bcell);
+                    System.out.println("-> 2:turn belt rot= "+trot);
+                    robotPos.changePosition(0, trot);
+                    animation[1] = "0:"+robotPos.getDirection()+":"+trot;
+                    dir = robotPos.getDirection();
+                }
+
+                if (!turn && movement == 0 && bcell.getType() == 'E') {
+                    //movimento nastro doppio senza curve partendo da curva
+                    movement = 2;
+                    robotPos.changePosition(movement, bcell.getOutputDirection(), rotation);
+                    animation[1] = movement+":"+bcell.getOutputDirection()+":"+rotation;
+                } else {
+                    robotPos.changePosition(movement, bcell.getOutputDirection(), rotation);
+                    animation[turn ? 2 : 1] = movement + ":" + bcell.getOutputDirection() + ":" + rotation;
+                }
+            }
+        } else if (currentcell instanceof PitCell) {
+            // ripristina pos robot a ultima salvata e fa animazione muovi robot a quella
+            // posx:posy:direction:pitfall
+            Position checkpointPos = robot.getLastCheckpointPosition();
+            animation[0] = checkpointPos.getPosX()+":"+checkpointPos.getPosY()+":"+checkpointPos.getDirection()+":pitfall";
+            robot.setPosition(checkpointPos.clone());
+            //System.out.println("after fall posX="+robot.getPosition().getPosX()+", posY="+robot.getPosition().getPosY());
+        } else if (currentcell instanceof FloorCell) {
+            FloorCell fcell = (FloorCell) currentcell;
+            if (fcell.isCheckpoint()) {
+                this.robot.setLastCheckpointPosition(robotPos.clone());
+            } else if (fcell.isLeftRotator()) {
+                // TODO: animazione gira a sinistra
+            } else if (fcell.isRightRotator()) {
+                // TODO: animazione gira a destra
+            }
+        }
+        return animation;
+    }
+
     /**
      * metodi sincronizzati per la fine/inizio animazioni
      */
-
     private synchronized  void  setReadyAnimation() {
         while(readyAnimation){
             try {
@@ -192,18 +255,6 @@ public class Training extends Observable implements  RobodromeAnimationObserver 
         }
         readyAnimation = false;
         notify();
-    }
-
-    /**
-     * fase di attivatione del robodromo, crea lista di animazioni di robodrome view
-     * e le manda a observers con notify
-     */
-    private void robodromeActivation() {
-        //posizione iniziale del robot (nel caso cada in buco nero)
-        Position robotPos = this.robot.getPosition();
-        // copia posizione corrente e modifica quella, nel caso che
-        Position newRobotPos = robotPos.clone();
-
     }
 
     public void setRobodrome(Robodrome robodrome) {

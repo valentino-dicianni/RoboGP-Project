@@ -172,6 +172,45 @@ public class Robodrome {
     }
 
     /**
+     * data una posizione e una direzione guarda se il le prime due caselle sul percorso hanno un muro
+     * che impedirebbe il movimento nella casella successiva
+     * TODO: scrivere il metodo i maniera più corta, ciclo while?
+     * @param posX
+     * @param posY
+     * @param dir
+     * @return true se il percorso non è ostruito da muro, false altrimenti
+     */
+    public boolean pathHasWall(int posX, int posY, Direction dir) {
+        BoardCell landingCell = getCell(posX, posY);
+        if (landingCell instanceof FloorCell) {
+            FloorCell fcell = (FloorCell)landingCell;
+            if (fcell.hasWall(dir)) {
+                return true;
+            }
+        } else if (landingCell instanceof PitCell) {
+            PitCell pcell = (PitCell)landingCell;
+            if (pcell.hasWall(dir)) {
+                return true;
+            }
+        }
+
+        landingCell = getNextCell(posX, posY, dir);
+        // controlla che la cella successiva non abbia un muro nella direzione opposta
+        if (landingCell instanceof  FloorCell) {
+            FloorCell nfcell = (FloorCell)landingCell;
+            if (nfcell.hasWall(Direction.getOppositeDirection(dir))) {
+                return true;
+            }
+        } else if (landingCell instanceof PitCell) {
+            PitCell pcell = (PitCell)landingCell;
+            if (pcell.hasWall(dir)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * @return il numero di righe nel tabellone
      */
     public int getRowCount() {

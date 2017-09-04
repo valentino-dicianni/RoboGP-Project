@@ -23,6 +23,7 @@ public class RobotMarker implements Serializable {
     private String owner;
     private int dockNumber;
     private Position position;
+    private Position lastCheckpoint;
 
     public RobotMarker(String name, String color) {
         this.name = name;
@@ -70,6 +71,15 @@ public class RobotMarker implements Serializable {
 
     public void setPosition(Position position) {
         this.position = position;
+        if (this.lastCheckpoint == null) {
+            this.lastCheckpoint = position.clone();
+        }
+    }
+
+    public void setLastCheckpointPosition(Position position) { this.lastCheckpoint = position; }
+
+    public Position getLastCheckpointPosition() {
+        return lastCheckpoint;
     }
 
     public Position getPosition() {
