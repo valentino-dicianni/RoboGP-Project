@@ -173,6 +173,7 @@ public class TrainingApp implements Observer {
         //======== trainingFrame ========
         {
             trainingFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            trainingFrame.setTitle("RoboGP: Training Mode");
             Container trainingFrameContentPane = trainingFrame.getContentPane();
             trainingFrameContentPane.setLayout(new CardLayout());
 
