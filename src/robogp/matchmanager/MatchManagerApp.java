@@ -24,7 +24,7 @@ public class MatchManagerApp extends javax.swing.JFrame {
 
     private static MatchManagerApp singleInstance;
     private RobotStatePanel[] robotPanel;
-    private final IniziarePartitaController trainingController;
+    private final IniziarePartitaController inizPartController;
     private final RobotChooser robotChooser;
 
     /**
@@ -32,7 +32,7 @@ public class MatchManagerApp extends javax.swing.JFrame {
      */
     private MatchManagerApp() {
         initComponents();
-        this.trainingController = IniziarePartitaController.getInstance();
+        this.inizPartController = IniziarePartitaController.getInstance();
         this.robotChooser = new RobotChooser(this, true);
     }
 
@@ -43,7 +43,7 @@ public class MatchManagerApp extends javax.swing.JFrame {
 
 
     public IniziarePartitaController getIniziarePartitaController() {
-        return this.trainingController;
+        return this.inizPartController;
     }
 
     /**
@@ -438,7 +438,7 @@ public class MatchManagerApp extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "La porta deve essere un numero\ncompreso fra 1024 e 65535");
         }
         if (ok) {
-            this.trainingController.iniziaCreazionePartita(num, this.keyField.getText().trim());
+            this.inizPartController.iniziaCreazionePartita(num, this.keyField.getText().trim());
             this.setupMatchPanel();
             ((CardLayout) this.getContentPane().getLayout()).show(this.getContentPane(), "match");
         }
@@ -457,8 +457,8 @@ public class MatchManagerApp extends javax.swing.JFrame {
                     + "Il massimo numero di robot nel gioco è " + Match.ROBOTSINGAME);
         }
         if (ok) {
-            this.trainingController.creaPartita(rbdName, nPl, nRob, Match.EndGame.values()[endGameOpt], upgradeOpt);
-            this.requestList.setModel(this.trainingController.getRequestList());
+            this.inizPartController.creaPartita(rbdName, nPl, nRob, Match.EndGame.values()[endGameOpt], upgradeOpt);
+            this.requestList.setModel(this.inizPartController.getRequestList());
             ArrayList<RobotMarker> allRobots = Match.getInstance().getAllRobots();
             this.robotPanel = new RobotStatePanel[allRobots.size()];
             this.robotRecapPanel.removeAll();
@@ -472,12 +472,12 @@ public class MatchManagerApp extends javax.swing.JFrame {
 
     private void requestListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_requestListValueChanged
         boolean enabled = (this.requestList.getSelectedIndex() >= 0);
-        this.acceptRequestButton.setEnabled(enabled && this.trainingController.canAcceptMoreRequests());
+        this.acceptRequestButton.setEnabled(enabled && this.inizPartController.canAcceptMoreRequests());
         this.rejectRequestButton.setEnabled(enabled);
     }//GEN-LAST:event_requestListValueChanged
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
-        this.trainingController.chiudi();
+        this.inizPartController.chiudi();
     }//GEN-LAST:event_formWindowClosing
 
     private void acceptRequestButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptRequestButtonActionPerformed
@@ -488,9 +488,9 @@ public class MatchManagerApp extends javax.swing.JFrame {
         this.robotChooser.setVisible(true);
         if (this.robotChooser.getCloseStatus() == JOptionPane.OK_OPTION) {
             ((DefaultListModel<String>) this.requestList.getModel()).remove(pos);
-            this.trainingController.accettaRichiesta(nickname, this.robotChooser.getSelection());
-            this.acceptRequestButton.setEnabled(this.requestList.getSelectedIndex() >= 0 && this.trainingController.canAcceptMoreRequests());
-            this.startMatchButton.setEnabled(this.trainingController.canStartMatch());
+            this.inizPartController.accettaRichiesta(nickname, this.robotChooser.getSelection());
+            this.acceptRequestButton.setEnabled(this.requestList.getSelectedIndex() >= 0 && this.inizPartController.canAcceptMoreRequests());
+            this.startMatchButton.setEnabled(this.inizPartController.canStartMatch());
             for (RobotStatePanel rsp: robotPanel) {
                 rsp.update();
             }
@@ -501,18 +501,18 @@ public class MatchManagerApp extends javax.swing.JFrame {
     private void rejectRequestButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rejectRequestButtonActionPerformed
         int pos = this.requestList.getSelectedIndex();
         String nickname = this.requestList.getSelectedValue();
-        this.trainingController.rifiutaRichiesta(nickname);
+        this.inizPartController.rifiutaRichiesta(nickname);
         ((DefaultListModel<String>) this.requestList.getModel()).remove(pos);
 
     }//GEN-LAST:event_rejectRequestButtonActionPerformed
 
     private void cancelMatchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelMatchButtonActionPerformed
-        this.trainingController.annullaPartita();
+        this.inizPartController.annullaPartita();
         ((CardLayout) this.getContentPane().getLayout()).show(this.getContentPane(), "match");
     }//GEN-LAST:event_cancelMatchButtonActionPerformed
 
     private void startMatchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startMatchButtonActionPerformed
-        this.trainingController.avviaPartita();
+        this.inizPartController.avviaPartita();
         ((CardLayout) this.getContentPane().getLayout()).show(this.getContentPane(), "ongoing");
     }//GEN-LAST:event_startMatchButtonActionPerformed
 

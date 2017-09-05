@@ -152,7 +152,7 @@ new FormModel {
 				"value": "prog"
 			} )
 		}, new FormLayoutConstraints( null ) {
-			"location": new java.awt.Point( 15, 20 )
+			"location": new java.awt.Point( 95, 35 )
 			"size": new java.awt.Dimension( 585, 275 )
 		} )
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.BorderLayout ) ) {
@@ -215,7 +215,7 @@ new FormModel {
 				"value": "Center"
 			} )
 		}, new FormLayoutConstraints( null ) {
-			"location": new java.awt.Point( 25, 325 )
+			"location": new java.awt.Point( 140, 315 )
 			"size": new java.awt.Dimension( 525, 445 )
 		} )
 	}

@@ -1,6 +1,6 @@
 Checkmate;
 16x12;
-F;F-D72;P;F;F-Ar;F;F-Wnynn;F;F-Wnynn;F;F;F-Wnynn;F;F-Wnynn;F;F;
+F;F-D72;F;F;F-Ar;F;F-Wnynn;F;F-Wnynn;F;F;F-Wnynn;F;F-Wnynn;F;F;
 F;F-Wnynn-D52;F;F;F;E-O2-Inny;E-O2;E-O2;E-O2;E-O2;E-O2;E-O2;E-O2;E-O2;E-O3-Inny;F;
 F-Wynnn;F;F;F-Wnnyn;F-Wynnn;E-O1;F;B-O3;F;B-O3;F-Wnynn;B-O3;F-Wnynn;B-O3;E-O3;F-Wnnyn;
 F;F-Wnynn-D32;F;F;F;E-O1;B-O3;F-Ac2;B-O3;F;B-O3;F;P;F-Wnnyn;E-O3;F;

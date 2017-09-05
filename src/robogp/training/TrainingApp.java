@@ -9,7 +9,6 @@ import javax.swing.*;
 import javax.swing.plaf.metal.MetalBorders;
 import net.miginfocom.swing.*;
 import robogp.common.Instruction;
-import robogp.matchmanager.RobotMarker;
 import robogp.robodrome.Direction;
 import robogp.robodrome.Position;
 import robogp.robodrome.Rotation;
@@ -181,7 +180,12 @@ public class TrainingApp implements Observer {
             {
 
                 // JFormDesigner evaluation mark
-                
+                roboPanel.setBorder(new javax.swing.border.CompoundBorder(
+                    new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
+                        "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
+                        javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
+                        java.awt.Color.red), roboPanel.getBorder())); roboPanel.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
+
                 roboPanel.setLayout(new MigLayout(
                     "hidemode 3",
                     // columns
@@ -354,6 +358,11 @@ public class TrainingApp implements Observer {
                 trainPanel.setBackground(Color.black);
 
                 // JFormDesigner evaluation mark
+                trainPanel.setBorder(new javax.swing.border.CompoundBorder(
+                    new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
+                        "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
+                        javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
+                        java.awt.Color.red), trainPanel.getBorder())); trainPanel.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
 
                 trainPanel.setLayout(new BorderLayout());
 
@@ -424,6 +433,7 @@ public class TrainingApp implements Observer {
         }
         /* azione per fare vedere le animazioni del robot sulla robodrome view, lista di stringhe tipo "stepsToTake:direction:rotation" */
         else if (arg instanceof String[]) {
+            //se il robot è caduto in un buco nero nella manche predcedente
             if(rv.isInPit(trainingController.getTrainingRobot())){
                 TrainingRobot robot =Training.getInstance().getRobot();
                 rv.changeRobotPosition(robot, robot.getLastCheckpointPosition().getDirection(),robot.getLastCheckpointPosition().getPosX(),robot.getLastCheckpointPosition().getPosY() , true);
@@ -446,7 +456,6 @@ public class TrainingApp implements Observer {
                         int posY = Integer.parseInt(animdata[1]);
                         Direction dir = Direction.valueOf(animdata[2]);
                         rv.addRobotFall(trainingController.getTrainingRobot());
-                        //rv.changeRobotPosition(Training.getInstance().getRobot(), dir, posY, posX, true);
                     }
                     rv.addPause(600);
                 }
