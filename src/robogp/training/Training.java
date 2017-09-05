@@ -151,7 +151,7 @@ public class Training extends Observable implements  RobodromeAnimationObserver 
      */
     private String[] robodromeActivation() {
         //posizione iniziale del robot (nel caso cada in buco nero)
-        String[] animation = new String[3]; // max 3 animazioni: doppio nastro + curva
+        String[] animation = new String[3]; // max 3 animazioni: doppio nastro + curva, animation[
         Position robotPos = this.robot.getPosition();
         // rotazione da fare
         Rotation rotation = Rotation.NO;
@@ -159,56 +159,70 @@ public class Training extends Observable implements  RobodromeAnimationObserver 
         int movement = 0;
         BoardCell currentcell = this.theRobodrome.getCell(robotPos.getPosX(), robotPos.getPosY());
         // TODO: while robot is on active cell?
+
         if (currentcell instanceof BeltCell) {
             BeltCell bcell = (BeltCell) currentcell;
             Direction output = bcell.getOutputDirection();
-            if (this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), output)) {
-                return animation;
-            }
-
-            // quando il nastro trasportatore ha input direction != output direction allora è un nastro curva
-            // se nastro è curva il robot oltre a spostarsi ruota
-            boolean turn = false;
-            //System.out.println("-> cell output dir: "+bcell.getOutputDirection());
-            if (bcell.hasInputDirection(Direction.getOppositeDirection(bcell.getOutputDirection()))) { // primo nastro è pezzo dritto
-                // guarda se il nastro trasportatore ha un input nella data direzione, se si = nastro dritto, se no = curva
-                //System.out.println("-> 1:straight belt odir= "+bcell.getOutputDirection());
-                robotPos.changePosition(1, bcell.getOutputDirection(), rotation);
-                movement = 1;
-                animation[0] = movement+":"+bcell.getOutputDirection()+":"+rotation;
-                //System.out.println("-> 1:robot posx="+robotPos.getPosX()+", posy="+robotPos.getPosY());
-            } else {
-                //nastro è curva
-                turn = true;
-                Rotation trot = BeltCell.getTurnRotation(bcell);
-                //System.out.println("-> 1:turn belt rot= "+trot);
-                robotPos.changePosition(0, trot);
-                animation[0] = "0:"+robotPos.getDirection()+":"+trot;
-            }
-
-            BoardCell nextcell = theRobodrome.getCell(robotPos.getPosX(), robotPos.getPosY());
-            if ((nextcell instanceof BeltCell && bcell.getType() == 'E') || turn) { //continua il viaggio
-                bcell = (BeltCell) nextcell;
-                turn = false;
-                if (movement == 1 && !bcell.hasInputDirection(Direction.getOppositeDirection(bcell.getOutputDirection()))) { // nastro trasportatore è curva
-                    turn = true;
-                    // mette animation di rotazione in animation 1
-                    Rotation trot = BeltCell.getTurnRotation(bcell);
-                    //System.out.println("-> 2:turn belt rot= "+trot);
-                    robotPos.changePosition(0, trot);
-                    animation[1] = "0:"+robotPos.getDirection()+":"+trot;
-                    dir = robotPos.getDirection();
+            try {
+                if (this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), output)) {
+                    return animation;
                 }
 
-                if (!turn && movement == 0 && bcell.getType() == 'E') {
-                    //movimento nastro doppio senza curve partendo da curva
-                    movement = 2;
-                    robotPos.changePosition(movement, bcell.getOutputDirection(), rotation);
-                    animation[1] = movement+":"+bcell.getOutputDirection()+":"+rotation;
+                // quando il nastro trasportatore ha input direction != output direction allora è un nastro curva
+                // se nastro è curva il robot oltre a spostarsi ruota
+                boolean turn = false;
+                //System.out.println("-> cell output dir: "+bcell.getOutputDirection());
+                if (bcell.hasInputDirection(Direction.getOppositeDirection(bcell.getOutputDirection()))) { // primo nastro è pezzo dritto
+                    // guarda se il nastro trasportatore ha un input nella data direzione, se si = nastro dritto, se no = curva
+                    //System.out.println("-> 1:straight belt odir= "+bcell.getOutputDirection());
+                    robotPos.changePosition(1, bcell.getOutputDirection(), rotation);
+                    movement = 1;
+                    animation[0] = movement + ":" + bcell.getOutputDirection() + ":" + rotation;
+                    //System.out.println("-> 1:robot posx="+robotPos.getPosX()+", posy="+robotPos.getPosY());
                 } else {
-                    robotPos.changePosition(movement, bcell.getOutputDirection(), rotation);
-                    animation[turn ? 2 : 1] = movement + ":" + bcell.getOutputDirection() + ":" + rotation;
+                    //nastro è curva
+                    turn = true;
+                    Rotation trot = BeltCell.getTurnRotation(bcell);
+                    //System.out.println("-> 1:turn belt rot= "+trot);
+                    robotPos.changePosition(0, trot);
+                    animation[0] = "0:" + robotPos.getDirection() + ":" + trot;
                 }
+
+                BoardCell nextcell = theRobodrome.getCell(robotPos.getPosX(), robotPos.getPosY());
+
+                if ((nextcell instanceof BeltCell && bcell.getType() == 'E') || turn) { //continua il viaggio
+                    bcell = (BeltCell) nextcell;
+                    turn = false;
+                    if (this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), bcell.getOutputDirection())) {
+                        return animation;
+                    }
+                    if (movement == 1 && !bcell.hasInputDirection(Direction.getOppositeDirection(bcell.getOutputDirection()))) { // nastro trasportatore è curva
+                        turn = true;
+                        // mette animation di rotazione in animation 1
+                        Rotation trot = BeltCell.getTurnRotation(bcell);
+                        //System.out.println("-> 2:turn belt rot= "+trot);
+                        robotPos.changePosition(0, trot);
+                        animation[1] = "0:" + robotPos.getDirection() + ":" + trot;
+                        dir = robotPos.getDirection();
+                    }
+
+                    if (!turn && movement == 0 && bcell.getType() == 'E') {
+                        //movimento nastro doppio senza curve partendo da curva
+                        movement = 2;
+                        robotPos.changePosition(movement, bcell.getOutputDirection(), rotation);
+                        animation[1] = movement + ":" + bcell.getOutputDirection() + ":" + rotation;
+                    } else {
+                        robotPos.changePosition(movement, bcell.getOutputDirection(), rotation);
+                        animation[turn ? 2 : 1] = movement + ":" + bcell.getOutputDirection() + ":" + rotation;
+                    }
+                }
+                currentcell = bcell;
+            } catch (ArrayIndexOutOfBoundsException e) {
+                Position checkpointPos = robot.getLastCheckpointPosition();
+                animation[1] = "1:"+output+":"+Rotation.NO;
+                animation[2] = checkpointPos.getPosX()+":"+checkpointPos.getPosY()+":"+checkpointPos.getDirection()+":outofrobodrome";
+                robot.setPosition(checkpointPos.clone());
+                //return animation;
             }
         } else if (currentcell instanceof PitCell) {
             // ripristina pos robot a ultima salvata e fa animazione muovi robot a quella
@@ -222,11 +236,19 @@ public class Training extends Observable implements  RobodromeAnimationObserver 
             if (fcell.isCheckpoint()) {
                 this.robot.setLastCheckpointPosition(robotPos.clone());
             } else if (fcell.isLeftRotator()) {
-                // TODO: animazione gira a sinistra
+                animation[0] = "0:"+robotPos.getDirection()+":"+Rotation.CCW90;
+                robotPos.changePosition(0, Rotation.CCW90);
             } else if (fcell.isRightRotator()) {
-                // TODO: animazione gira a destra
+                animation[0] = "0:"+robotPos.getDirection()+":"+Rotation.CW90;
+                robotPos.changePosition(0, Rotation.CW90);
             }
         }
+
+        if (currentcell.hasHorizontalLaser())
+            System.out.println("H laser cell");
+        if (currentcell.hasVerticalLaser())
+            System.out.println("V laser cell");
+
         return animation;
     }
 
