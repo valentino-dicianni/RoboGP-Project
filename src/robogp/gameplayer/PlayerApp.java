@@ -13,7 +13,6 @@ import javax.swing.*;
 import connection.Connection;
 import connection.Message;
 import connection.MessageObserver;
-import connection.PartnerShutDownException;
 import net.miginfocom.swing.*;
 import robogp.matchmanager.Match;
 import robogp.matchmanager.RobotMarker;
@@ -22,7 +21,7 @@ import robogp.matchmanager.RobotMarker;
  * @author valka getz
  */
 public class PlayerApp extends JFrame implements MessageObserver {
-    Connection connection;
+    PlayerController controller = new PlayerController();
 
     public PlayerApp() {
         initComponents();
@@ -32,14 +31,14 @@ public class PlayerApp extends JFrame implements MessageObserver {
         InetAddress address;
         try {
             address = InetAddress.getByName(addressInput.getText());
-            this.connection = Connection.connectToHost(address, Integer.parseInt(portInput.getText()));
-            connection.addMessageObserver(this);
+            controller.setConnection(Connection.connectToHost(address, Integer.parseInt(portInput.getText())));
+            controller.getConnection().addMessageObserver(this);
             Message msg = new Message(Match.MatchJoinRequestMsg);
             Object[] pars = new Object[2];
             pars[0] = nickInput.getText();
             pars[1] = psswdInput.getPassword();
             msg.setParameters(pars);
-            connection.sendMessage(msg);
+            controller.sendMessage(msg);
             ((CardLayout) this.getContentPane().getLayout()).show(
                     this.getContentPane(), "wait");
 
@@ -47,10 +46,7 @@ public class PlayerApp extends JFrame implements MessageObserver {
             e1.printStackTrace();
         } catch (IOException e1) {
             e1.printStackTrace();
-        } catch (PartnerShutDownException e1) {
-            e1.printStackTrace();
         }
-
     }
 
     private void backButtonActionPerformed(ActionEvent e) {
@@ -291,7 +287,6 @@ public class PlayerApp extends JFrame implements MessageObserver {
             boolean reply = (Boolean)msg.getParameter(0);
             if(reply){
                 waitLabel.setText("Richiesta Accettata");
-//                waitLabel.setHorizontalAlignment(SwingConstants.CENTER);
                 //gameRobot
                 RobotMarker[] robots= (RobotMarker[]) msg.getParameter(1);
                 for(RobotMarker robot : robots)
