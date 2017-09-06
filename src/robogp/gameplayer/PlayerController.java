@@ -3,6 +3,7 @@ package robogp.gameplayer;
 import connection.Connection;
 import connection.Message;
 import connection.PartnerShutDownException;
+import robogp.robodrome.Robodrome;
 
 public class PlayerController {
     Connection connection;
@@ -24,6 +25,9 @@ public class PlayerController {
         } catch (PartnerShutDownException e) {
             e.printStackTrace();
         }
+    }
 
+    public Robodrome getRobodrome(){
+        return null;
     }
 }

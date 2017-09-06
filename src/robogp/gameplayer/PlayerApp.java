@@ -10,24 +10,30 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import javax.swing.*;
+import javax.swing.border.*;
 import connection.Connection;
 import connection.Message;
 import connection.MessageObserver;
 import net.miginfocom.swing.*;
 import robogp.matchmanager.Match;
 import robogp.matchmanager.RobotMarker;
+import robogp.robodrome.Robodrome;
+import robogp.robodrome.view.RobodromeView;
 
 /**
  * @author valka getz
  */
-public class PlayerApp extends JFrame implements MessageObserver {
+public class PlayerApp implements MessageObserver {
     PlayerController controller = new PlayerController();
+    private RobodromeView rv;
+
 
     public PlayerApp() {
         initComponents();
     }
 
     private void accessButtonActionPerformed(ActionEvent e) {
+        // TODO qggiungere controllo porta, password e nome necessario
         InetAddress address;
         try {
             address = InetAddress.getByName(addressInput.getText());
@@ -39,8 +45,8 @@ public class PlayerApp extends JFrame implements MessageObserver {
             pars[1] = psswdInput.getPassword();
             msg.setParameters(pars);
             controller.sendMessage(msg);
-            ((CardLayout) this.getContentPane().getLayout()).show(
-                    this.getContentPane(), "wait");
+            ((CardLayout) setupFrame.getContentPane().getLayout()).show(
+                    setupFrame.getContentPane(), "wait");
 
         } catch (UnknownHostException e1) {
             e1.printStackTrace();
@@ -50,17 +56,21 @@ public class PlayerApp extends JFrame implements MessageObserver {
     }
 
     private void backButtonActionPerformed(ActionEvent e) {
-        ((CardLayout) this.getContentPane().getLayout()).show(
-                this.getContentPane(), "access");
+        ((CardLayout) setupFrame.getContentPane().getLayout()).show(
+                setupFrame.getContentPane(), "access");
     }
 
     private void playButtonActionPerformed(ActionEvent e) {
-        // TODO add your code here
+        rv = new RobodromeView(new Robodrome("robodromes/checkmate.txt"), 55);
+        robodromePanel.add(rv,BorderLayout.CENTER);
+        setupFrame.dispose();
+        playFrame.setVisible(true);
     }
 
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner Evaluation license - valka getz
+        setupFrame = new JFrame();
         accessPanel = new JPanel();
         label3 = new JLabel();
         label4 = new JLabel();
@@ -83,173 +93,292 @@ public class PlayerApp extends JFrame implements MessageObserver {
         playButton = new JButton();
         label6 = new JLabel();
         robotLabel = new JLabel();
+        playFrame = new JFrame();
+        robodromePanel = new JPanel();
+        label2 = new JLabel();
+        scrollPane1 = new JScrollPane();
+        playerMoves = new JList();
+        panel2 = new JPanel();
+        panel3 = new JPanel();
+        scrollPane3 = new JScrollPane();
+        logText = new JTextArea();
+        scrollPane2 = new JScrollPane();
+        robotList = new JList();
+        panel4 = new JPanel();
+        button8 = new JButton();
+        button9 = new JButton();
+        button10 = new JButton();
+        button11 = new JButton();
 
-        //======== this ========
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setTitle("RoboGP: The Game");
-        Container contentPane = getContentPane();
-        contentPane.setLayout(new CardLayout());
-
-        //======== accessPanel ========
+        //======== setupFrame ========
         {
+            setupFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            setupFrame.setTitle("RoboGP: The Game");
+            Container setupFrameContentPane = setupFrame.getContentPane();
+            setupFrameContentPane.setLayout(new CardLayout());
 
-            // JFormDesigner evaluation mark
-            accessPanel.setBorder(new javax.swing.border.CompoundBorder(
-                new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
-                    "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
-                    javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
-                    java.awt.Color.red), accessPanel.getBorder())); accessPanel.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
+            //======== accessPanel ========
+            {
 
-            accessPanel.setLayout(new MigLayout(
-                "hidemode 3,alignx center",
-                // columns
-                "[fill]" +
-                "[fill]" +
-                "[fill]" +
-                "[fill]",
-                // rows
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]"));
+                // JFormDesigner evaluation mark
+                accessPanel.setBorder(new javax.swing.border.CompoundBorder(
+                    new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
+                        "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
+                        javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
+                        java.awt.Color.red), accessPanel.getBorder())); accessPanel.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
 
-            //---- label3 ----
-            label3.setText("Benvenuto nella modalit\u00e0 sfida di RoboGP");
-            label3.setFont(new Font("Lucida Grande", Font.BOLD, 16));
-            accessPanel.add(label3, "cell 1 0");
+                accessPanel.setLayout(new MigLayout(
+                    "hidemode 3,alignx center",
+                    // columns
+                    "[fill]" +
+                    "[fill]" +
+                    "[fill]" +
+                    "[fill]",
+                    // rows
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]"));
 
-            //---- label4 ----
-            label4.setText("Accedi al server per giocare con i tuoi amici!");
-            label4.setHorizontalAlignment(SwingConstants.CENTER);
-            accessPanel.add(label4, "cell 1 1");
+                //---- label3 ----
+                label3.setText("Benvenuto nella modalit\u00e0 sfida di RoboGP");
+                label3.setFont(new Font("Lucida Grande", Font.BOLD, 16));
+                accessPanel.add(label3, "cell 1 0");
 
-            //---- label8 ----
-            label8.setText("IndirizzoIP:");
-            accessPanel.add(label8, "cell 0 3");
+                //---- label4 ----
+                label4.setText("Accedi al server per giocare con i tuoi amici!");
+                label4.setHorizontalAlignment(SwingConstants.CENTER);
+                accessPanel.add(label4, "cell 1 1");
 
-            //---- addressInput ----
-            addressInput.setText("localhost");
-            accessPanel.add(addressInput, "cell 1 3");
+                //---- label8 ----
+                label8.setText("IndirizzoIP:");
+                accessPanel.add(label8, "cell 0 3");
 
-            //---- label1 ----
-            label1.setText("Porta: ");
-            accessPanel.add(label1, "cell 0 4");
-            accessPanel.add(portInput, "cell 1 4");
+                //---- addressInput ----
+                addressInput.setText("localhost");
+                accessPanel.add(addressInput, "cell 1 3");
 
-            //---- nickLabel ----
-            nickLabel.setText("Nickname:");
-            accessPanel.add(nickLabel, "cell 0 7");
-            accessPanel.add(nickInput, "cell 1 7");
+                //---- label1 ----
+                label1.setText("Porta: ");
+                accessPanel.add(label1, "cell 0 4");
 
-            //---- psswdLabel ----
-            psswdLabel.setText("Password: ");
-            accessPanel.add(psswdLabel, "cell 0 8");
-            accessPanel.add(psswdInput, "cell 1 8");
+                //---- portInput ----
+                portInput.setText("2222");
+                accessPanel.add(portInput, "cell 1 4");
 
-            //---- accessButton ----
-            accessButton.setText("Accedi");
-            accessButton.addActionListener(e -> accessButtonActionPerformed(e));
-            accessPanel.add(accessButton, "cell 1 10");
+                //---- nickLabel ----
+                nickLabel.setText("Nickname:");
+                accessPanel.add(nickLabel, "cell 0 7");
+                accessPanel.add(nickInput, "cell 1 7");
+
+                //---- psswdLabel ----
+                psswdLabel.setText("Password: ");
+                accessPanel.add(psswdLabel, "cell 0 8");
+                accessPanel.add(psswdInput, "cell 1 8");
+
+                //---- accessButton ----
+                accessButton.setText("Accedi");
+                accessButton.addActionListener(e -> accessButtonActionPerformed(e));
+                accessPanel.add(accessButton, "cell 1 10");
+            }
+            setupFrameContentPane.add(accessPanel, "access");
+
+            //======== refusePanel ========
+            {
+                refusePanel.setLayout(new MigLayout(
+                    "hidemode 3,alignx center",
+                    // columns
+                    "[fill]" +
+                    "[fill]",
+                    // rows
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]"));
+
+                //---- label7 ----
+                label7.setText("Richiesta rifiutata:");
+                label7.setFont(new Font("Lucida Grande", Font.BOLD, 16));
+                refusePanel.add(label7, "cell 0 0");
+
+                //---- refuseLabel ----
+                refuseLabel.setText("text");
+                refusePanel.add(refuseLabel, "cell 0 1");
+
+                //---- backButton ----
+                backButton.setText("Indietro");
+                backButton.addActionListener(e -> backButtonActionPerformed(e));
+                refusePanel.add(backButton, "cell 0 3");
+            }
+            setupFrameContentPane.add(refusePanel, "refuse");
+
+            //======== waitPanel ========
+            {
+                waitPanel.setLayout(new MigLayout(
+                    "hidemode 3,alignx center",
+                    // columns
+                    "[fill]" +
+                    "[fill]",
+                    // rows
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]" +
+                    "[]"));
+
+                //---- waitLabel ----
+                waitLabel.setText("Elaborazione Richiesta in corso...");
+                waitLabel.setFont(new Font("Lucida Grande", Font.BOLD, 16));
+                waitLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                waitPanel.add(waitLabel, "cell 0 1");
+
+                //---- indietroButton ----
+                indietroButton.setText("Indietro");
+                indietroButton.setVisible(false);
+                indietroButton.addActionListener(e -> backButtonActionPerformed(e));
+                waitPanel.add(indietroButton, "cell 0 3");
+
+                //---- playButton ----
+                playButton.setText("Gioca");
+                playButton.setVisible(false);
+                playButton.addActionListener(e -> playButtonActionPerformed(e));
+                waitPanel.add(playButton, "cell 0 8");
+
+                //---- label6 ----
+                label6.setText("In attesa di altri giocatori...");
+                label6.setHorizontalAlignment(SwingConstants.CENTER);
+                label6.setVisible(false);
+                waitPanel.add(label6, "cell 0 7");
+
+                //---- robotLabel ----
+                robotLabel.setVisible(false);
+                robotLabel.setText("<html>Robot assegnato:<br> ");
+                robotLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                waitPanel.add(robotLabel, "cell 0 2");
+            }
+            setupFrameContentPane.add(waitPanel, "wait");
+            setupFrame.pack();
+            setupFrame.setLocationRelativeTo(setupFrame.getOwner());
         }
-        contentPane.add(accessPanel, "access");
 
-        //======== refusePanel ========
+        //======== playFrame ========
         {
-            refusePanel.setLayout(new MigLayout(
-                "hidemode 3,alignx center",
-                // columns
-                "[fill]" +
-                "[fill]",
-                // rows
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]"));
+            playFrame.setTitle("RoboGP: The Game");
+            playFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            Container playFrameContentPane = playFrame.getContentPane();
+            playFrameContentPane.setLayout(new CardLayout());
 
-            //---- label7 ----
-            label7.setText("Richiesta rifiutata:");
-            label7.setFont(new Font("Lucida Grande", Font.BOLD, 16));
-            refusePanel.add(label7, "cell 0 0");
+            //======== robodromePanel ========
+            {
+                robodromePanel.setMinimumSize(new Dimension(500, 400));
+                robodromePanel.setVisible(false);
+                robodromePanel.setPreferredSize(new Dimension(900, 700));
 
-            //---- refuseLabel ----
-            refuseLabel.setText("text");
-            refusePanel.add(refuseLabel, "cell 0 1");
+                // JFormDesigner evaluation mark
+                robodromePanel.setBorder(new javax.swing.border.CompoundBorder(
+                    new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
+                        "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
+                        javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
+                        java.awt.Color.red), robodromePanel.getBorder())); robodromePanel.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
 
-            //---- backButton ----
-            backButton.setText("Indietro");
-            backButton.addActionListener(e -> backButtonActionPerformed(e));
-            refusePanel.add(backButton, "cell 0 3");
+                robodromePanel.setLayout(new BorderLayout());
+
+                //---- label2 ----
+                label2.setText("AVVISI: ");
+                robodromePanel.add(label2, BorderLayout.NORTH);
+
+                //======== scrollPane1 ========
+                {
+                    scrollPane1.setViewportView(playerMoves);
+                }
+                robodromePanel.add(scrollPane1, BorderLayout.EAST);
+
+                //======== panel2 ========
+                {
+                    panel2.setLayout(new BorderLayout());
+
+                    //======== panel3 ========
+                    {
+                        panel3.setBorder(new TitledBorder("LOG Area"));
+                        panel3.setLayout(new FlowLayout());
+
+                        //======== scrollPane3 ========
+                        {
+
+                            //---- logText ----
+                            logText.setText("Area di testo:");
+                            logText.setEditable(false);
+                            scrollPane3.setViewportView(logText);
+                        }
+                        panel3.add(scrollPane3);
+                    }
+                    panel2.add(panel3, BorderLayout.EAST);
+
+                    //======== scrollPane2 ========
+                    {
+                        scrollPane2.setViewportView(robotList);
+                    }
+                    panel2.add(scrollPane2, BorderLayout.CENTER);
+
+                    //======== panel4 ========
+                    {
+                        panel4.setLayout(new MigLayout(
+                            "hidemode 3",
+                            // columns
+                            "[fill]",
+                            // rows
+                            "[]" +
+                            "[]" +
+                            "[]" +
+                            "[]" +
+                            "[]"));
+
+                        //---- button8 ----
+                        button8.setText("text");
+                        panel4.add(button8, "cell 0 0");
+
+                        //---- button9 ----
+                        button9.setText("text");
+                        panel4.add(button9, "cell 0 1");
+
+                        //---- button10 ----
+                        button10.setText("text");
+                        panel4.add(button10, "cell 0 2");
+
+                        //---- button11 ----
+                        button11.setText("text");
+                        panel4.add(button11, "cell 0 3");
+                    }
+                    panel2.add(panel4, BorderLayout.WEST);
+                }
+                robodromePanel.add(panel2, BorderLayout.SOUTH);
+            }
+            playFrameContentPane.add(robodromePanel, "play");
+            playFrame.pack();
+            playFrame.setLocationRelativeTo(playFrame.getOwner());
         }
-        contentPane.add(refusePanel, "refuse");
-
-        //======== waitPanel ========
-        {
-            waitPanel.setLayout(new MigLayout(
-                "hidemode 3,alignx center",
-                // columns
-                "[fill]" +
-                "[fill]",
-                // rows
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]" +
-                "[]"));
-
-            //---- waitLabel ----
-            waitLabel.setText("Elaborazione Richiesta in corso...");
-            waitLabel.setFont(new Font("Lucida Grande", Font.BOLD, 16));
-            waitLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            waitPanel.add(waitLabel, "cell 0 1");
-
-            //---- indietroButton ----
-            indietroButton.setText("Indietro");
-            indietroButton.setVisible(false);
-            indietroButton.addActionListener(e -> backButtonActionPerformed(e));
-            waitPanel.add(indietroButton, "cell 0 3");
-
-            //---- playButton ----
-            playButton.setText("Gioca");
-            playButton.setVisible(false);
-            playButton.addActionListener(e -> playButtonActionPerformed(e));
-            waitPanel.add(playButton, "cell 0 8");
-
-            //---- label6 ----
-            label6.setText("In attesa di altri giocatori...");
-            label6.setHorizontalAlignment(SwingConstants.CENTER);
-            label6.setVisible(false);
-            waitPanel.add(label6, "cell 0 7");
-
-            //---- robotLabel ----
-            robotLabel.setVisible(false);
-            robotLabel.setText("<html>Robot assegnato:<br> ");
-            robotLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            waitPanel.add(robotLabel, "cell 0 2");
-        }
-        contentPane.add(waitPanel, "wait");
-        pack();
-        setLocationRelativeTo(getOwner());
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
 
     // JFormDesigner - Variables declaration - DO NOT MODIFY  //GEN-BEGIN:variables
     // Generated using JFormDesigner Evaluation license - valka getz
+    private JFrame setupFrame;
     private JPanel accessPanel;
     private JLabel label3;
     private JLabel label4;
@@ -272,12 +401,28 @@ public class PlayerApp extends JFrame implements MessageObserver {
     private JButton playButton;
     private JLabel label6;
     private JLabel robotLabel;
+    private JFrame playFrame;
+    private JPanel robodromePanel;
+    private JLabel label2;
+    private JScrollPane scrollPane1;
+    private JList playerMoves;
+    private JPanel panel2;
+    private JPanel panel3;
+    private JScrollPane scrollPane3;
+    private JTextArea logText;
+    private JScrollPane scrollPane2;
+    private JList robotList;
+    private JPanel panel4;
+    private JButton button8;
+    private JButton button9;
+    private JButton button10;
+    private JButton button11;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 
     public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(() -> {
-            PlayerApp player= new PlayerApp();
-            player.setVisible(true);
+            PlayerApp player = new PlayerApp();
+            player.setupFrame.setVisible(true);
         });
     }
 
@@ -294,6 +439,7 @@ public class PlayerApp extends JFrame implements MessageObserver {
                 robotLabel.setText(robotLabel.getText() +"</html>");
                 robotLabel.setVisible(true);
                 label6.setVisible(true);
+                playButton.setVisible(true);
 
             }
             else{
