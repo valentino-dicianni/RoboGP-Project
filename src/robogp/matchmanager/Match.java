@@ -43,8 +43,7 @@ public class Match implements MessageObserver {
     private final int nRobotsXPlayer;
     private final boolean initUpgrades;
     private State status;
-    //private int readyPlayers;
-    //private MatchHelper matchThread;
+    private int readyPlayers = 0;
 
     private final HashMap<String, Connection> waiting;
     private final HashMap<String, Connection> players;
@@ -54,24 +53,47 @@ public class Match implements MessageObserver {
 
 
     /** TODO
-     * 	private class MatchHelper implements Runnable {
-     *
-     * 	    controlla ogni tot tempo che ci sia il numero di giocatori
-     * 	    necessari per iniziare la partita invocando checkPlayersReady(){}
-     * 	}
-     *
-     *
-     *
-     *
-     * 	public syncronized boolean checkPlayersReady(){
-     * 	    while (!available) {
-     * 	        wait();
-     * 	    }
-     * 	    notifyAll();
-     * 	    return readyPlayers == availablePlayers ;
-     *
-     * 	}
+     * 	quando un giocatore ha finito di programmare il robot per quella
+     * 	manche chiama il metodo setReadyPlayers per aumentare di 1 il counter
+     * 	una volta che sono tutti pronti si attiva il thread che eseguirà le istruzioni
+     * 	e comunica tutto ai giocatori
      */
+
+    private class MatchHelper implements Runnable {
+
+        @Override
+        public void run() {
+            while(true){
+                getReadyPlayers();
+                //esegui le istruzioni
+            }
+
+        }
+    }
+
+    private synchronized  void  setReadyPlayers() {
+        while(readyPlayers == getPlayerCount()){
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        readyPlayers++;
+        notifyAll();
+    }
+
+    private  synchronized void getReadyPlayers() {
+        while(readyPlayers != getPlayerCount()){
+            try{
+                wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        readyPlayers = 0;
+        notifyAll();
+    }
 
     private Match(String rbdName, int nMaxPlayers, int nRobotsXPlayer, EndGame endGameCond, boolean initUpg) {
         this.nMaxPlayers = nMaxPlayers;
@@ -88,9 +110,9 @@ public class Match implements MessageObserver {
         waiting = new HashMap<>();
         players = new HashMap<>();
         this.status = State.Created;
-        //TODO
-        //matchThread = new MatchHelper();
-        //(new Thread(matchThread)).start();
+
+        MatchHelper matchThread = new MatchHelper();
+        (new Thread(matchThread)).start();
 
     }
 

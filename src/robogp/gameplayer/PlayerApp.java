@@ -61,16 +61,17 @@ public class PlayerApp implements MessageObserver {
         String address = addressInput.getText();
         String nick = nickInput.getText();
 
-        if(!(port < 1024 || port > 65535)){
+        if((port < 1024 || port > 65535)){
+            System.out.println("PORTA : "+port);
             JOptionPane.showMessageDialog(setupFrame, "La porta deve essere un numero\ncompreso fra 1024 e 65535");
             return false;
         }
-        else if(nick == null){
+        else if(nick.equals("")){
             JOptionPane.showMessageDialog(setupFrame, "Devi inserire un nickname per giocare");
             return false;
         }
-        else if(address == null){
-            JOptionPane.showMessageDialog(setupFrame, "Devi inserire indirizzoIP per giocare");
+        else if(address.equals("")){
+            JOptionPane.showMessageDialog(setupFrame, "Devi inserire un indirizzoIP per giocare");
             return false;
         }
         else return true;
@@ -145,7 +146,7 @@ public class PlayerApp implements MessageObserver {
                     new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
                         "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
                         javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
-                        java.awt.Color.red), accessPanel.getBorder())); accessPanel.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
+                        java.awt.Color.red), accessPanel.getBorder())); accessPanel.addPropertyChangeListener(e -> {if("border".equals(e.getPropertyName()))throw new RuntimeException();});
 
                 accessPanel.setLayout(new MigLayout(
                     "hidemode 3,alignx center",
@@ -310,7 +311,7 @@ public class PlayerApp implements MessageObserver {
                 robodromePanel.setBorder(new javax.swing.border.CompoundBorder(
                     new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
                         "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
-                        javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
+                            javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
                         java.awt.Color.red), robodromePanel.getBorder())); robodromePanel.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
 
                 robodromePanel.setLayout(new BorderLayout());
@@ -454,7 +455,6 @@ public class PlayerApp implements MessageObserver {
                 robotLabel.setText(robotLabel.getText() +"</html>");
                 robotLabel.setVisible(true);
                 label6.setVisible(true);
-                playButton.setVisible(true);
 
             }
             else{
@@ -470,7 +470,10 @@ public class PlayerApp implements MessageObserver {
             refuseLabel.setText((String)msg.getParameter(0));
 
         }
+        else if(msg.getName().equals((Match.MatchStartMsg))){
+            playButton.setVisible(true);
 
+        }
 
     }
 }
