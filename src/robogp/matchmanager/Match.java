@@ -5,6 +5,7 @@ import connection.Message;
 import connection.MessageObserver;
 import connection.PartnerShutDownException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
@@ -23,6 +24,7 @@ public class Match implements MessageObserver {
     public static final String MatchJoinReplyMsg = "joinMatchReply";
     public static final String MatchStartMsg = "startMatch";
     public static final String MatchCancelMsg = "cancelMatch";
+    public static final String MatchErrorMsg = "errorMessage";
 
     public enum EndGame {
         First, First3, AllButLast
@@ -111,8 +113,27 @@ public class Match implements MessageObserver {
     public void notifyMessageReceived(Message msg) {
         if (msg.getName().equals(Match.MatchJoinRequestMsg)) {
             String nickName = (String) msg.getParameter(0);
-            this.waiting.put(nickName, msg.getSenderConnection());
-            MatchManagerApp.getAppInstance().getIniziarePartitaController().matchJoinRequestArrived(msg);
+            boolean isCorrect = true;
+            if(msg.getParameter(1) != null){
+                char[] psswd =  MatchManagerApp.getAppInstance().getIniziarePartitaController().getServerAccessKey().toCharArray();
+                isCorrect = Arrays.equals(psswd, (char[])msg.getParameter(1));
+                System.out.println("\tpassword->  " +( isCorrect ? "Correct" : "Incorrect"));
+                if(!isCorrect) {
+                    Message reply = new Message(Match.MatchErrorMsg);
+                    Object[] parameters = new Object[1];
+                    parameters[0] = "Incorrect Password";
+                    reply.setParameters(parameters);
+                    try {
+                        msg.getSenderConnection().sendMessage(reply);
+                    } catch (PartnerShutDownException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            if(isCorrect){
+                this.waiting.put(nickName, msg.getSenderConnection());
+                MatchManagerApp.getAppInstance().getIniziarePartitaController().matchJoinRequestArrived(msg);
+            }
         }
 
         /**

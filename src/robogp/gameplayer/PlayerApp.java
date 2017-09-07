@@ -33,26 +33,47 @@ public class PlayerApp implements MessageObserver {
     }
 
     private void accessButtonActionPerformed(ActionEvent e) {
-        // TODO qggiungere controllo porta, password e nome necessario
-        InetAddress address;
-        try {
-            address = InetAddress.getByName(addressInput.getText());
-            controller.setConnection(Connection.connectToHost(address, Integer.parseInt(portInput.getText())));
-            controller.getConnection().addMessageObserver(this);
-            Message msg = new Message(Match.MatchJoinRequestMsg);
-            Object[] pars = new Object[2];
-            pars[0] = nickInput.getText();
-            pars[1] = psswdInput.getPassword();
-            msg.setParameters(pars);
-            controller.sendMessage(msg);
-            ((CardLayout) setupFrame.getContentPane().getLayout()).show(
-                    setupFrame.getContentPane(), "wait");
+        if(ceckCredentials()){
+            InetAddress address;
+            try {
+                address = InetAddress.getByName(addressInput.getText());
+                controller.setConnection(Connection.connectToHost(address, Integer.parseInt(portInput.getText())));
+                controller.getConnection().addMessageObserver(this);
+                Message msg = new Message(Match.MatchJoinRequestMsg);
+                Object[] pars = new Object[2];
+                pars[0] = nickInput.getText();
+                pars[1] = psswdInput.getPassword();
+                msg.setParameters(pars);
+                controller.sendMessage(msg);
+                ((CardLayout) setupFrame.getContentPane().getLayout()).show(
+                        setupFrame.getContentPane(), "wait");
 
-        } catch (UnknownHostException e1) {
-            e1.printStackTrace();
-        } catch (IOException e1) {
-            e1.printStackTrace();
+            } catch (UnknownHostException e1) {
+                e1.printStackTrace();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
         }
+    }
+
+    private boolean ceckCredentials(){
+        int port = Integer.parseInt(portInput.getText());
+        String address = addressInput.getText();
+        String nick = nickInput.getText();
+
+        if(!(port < 1024 || port > 65535)){
+            JOptionPane.showMessageDialog(setupFrame, "La porta deve essere un numero\ncompreso fra 1024 e 65535");
+            return false;
+        }
+        else if(nick == null){
+            JOptionPane.showMessageDialog(setupFrame, "Devi inserire un nickname per giocare");
+            return false;
+        }
+        else if(address == null){
+            JOptionPane.showMessageDialog(setupFrame, "Devi inserire indirizzoIP per giocare");
+            return false;
+        }
+        else return true;
     }
 
     private void backButtonActionPerformed(ActionEvent e) {
@@ -89,7 +110,6 @@ public class PlayerApp implements MessageObserver {
         backButton = new JButton();
         waitPanel = new JPanel();
         waitLabel = new JLabel();
-        indietroButton = new JButton();
         playButton = new JButton();
         label6 = new JLabel();
         robotLabel = new JLabel();
@@ -209,10 +229,12 @@ public class PlayerApp implements MessageObserver {
                 //---- label7 ----
                 label7.setText("Richiesta rifiutata:");
                 label7.setFont(new Font("Lucida Grande", Font.BOLD, 16));
+                label7.setHorizontalAlignment(SwingConstants.LEFT);
                 refusePanel.add(label7, "cell 0 0");
 
                 //---- refuseLabel ----
                 refuseLabel.setText("text");
+                refuseLabel.setHorizontalAlignment(SwingConstants.LEFT);
                 refusePanel.add(refuseLabel, "cell 0 1");
 
                 //---- backButton ----
@@ -245,14 +267,8 @@ public class PlayerApp implements MessageObserver {
                 //---- waitLabel ----
                 waitLabel.setText("Elaborazione Richiesta in corso...");
                 waitLabel.setFont(new Font("Lucida Grande", Font.BOLD, 16));
-                waitLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                waitLabel.setHorizontalAlignment(SwingConstants.LEFT);
                 waitPanel.add(waitLabel, "cell 0 1");
-
-                //---- indietroButton ----
-                indietroButton.setText("Indietro");
-                indietroButton.setVisible(false);
-                indietroButton.addActionListener(e -> backButtonActionPerformed(e));
-                waitPanel.add(indietroButton, "cell 0 3");
 
                 //---- playButton ----
                 playButton.setText("Gioca");
@@ -397,7 +413,6 @@ public class PlayerApp implements MessageObserver {
     private JButton backButton;
     private JPanel waitPanel;
     private JLabel waitLabel;
-    private JButton indietroButton;
     private JButton playButton;
     private JLabel label6;
     private JLabel robotLabel;
@@ -443,13 +458,18 @@ public class PlayerApp implements MessageObserver {
 
             }
             else{
-                waitLabel.setText("Richiesta Rifiutata");
-                indietroButton.setVisible(true);
+                ((CardLayout) setupFrame.getContentPane().getLayout()).show(
+                        setupFrame.getContentPane(), "refuse");
+                refuseLabel.setText("La tua richiesta di partecipazione è stata rifiutata dal managaer di partita");
 
             }
+        }//Se password è errata
+        else if(msg.getName().equals((Match.MatchErrorMsg))){
+            ((CardLayout) setupFrame.getContentPane().getLayout()).show(
+                        setupFrame.getContentPane(), "refuse");
+            refuseLabel.setText((String)msg.getParameter(0));
 
         }
-
 
 
     }

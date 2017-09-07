@@ -105,4 +105,8 @@ public class IniziarePartitaController {
         this.theMatch.cancel();
         this.theServer.stop();
     }
+
+    public String getServerAccessKey() {
+        return serverAccessKey;
+    }
 }

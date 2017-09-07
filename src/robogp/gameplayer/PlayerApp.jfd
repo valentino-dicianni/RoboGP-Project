@@ -93,12 +93,14 @@ new FormModel {
 					name: "label7"
 					"text": "Richiesta rifiutata:"
 					"font": new java.awt.Font( "Lucida Grande", 1, 16 )
+					"horizontalAlignment": 2
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 					"value": "cell 0 0"
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "refuseLabel"
 					"text": "text"
+					"horizontalAlignment": 2
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 					"value": "cell 0 1"
 				} )
@@ -122,17 +124,9 @@ new FormModel {
 					name: "waitLabel"
 					"text": "Elaborazione Richiesta in corso..."
 					"font": new java.awt.Font( "Lucida Grande", 1, 16 )
-					"horizontalAlignment": 0
+					"horizontalAlignment": 2
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 					"value": "cell 0 1"
-				} )
-				add( new FormComponent( "javax.swing.JButton" ) {
-					name: "indietroButton"
-					"text": "Indietro"
-					"visible": false
-					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "backButtonActionPerformed", true ) )
-				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 0 3"
 				} )
 				add( new FormComponent( "javax.swing.JButton" ) {
 					name: "playButton"
