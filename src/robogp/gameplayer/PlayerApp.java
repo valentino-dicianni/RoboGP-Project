@@ -94,6 +94,15 @@ public class PlayerApp implements MessageObserver {
         playFrame.setVisible(true);
     }
 
+
+    private void progRobotActionPerformed(ActionEvent e) {
+        programDialog.setVisible(true);
+    }
+
+    private void confirmButtonActionPerformed(ActionEvent e) {
+        programDialog.setVisible(true);
+    }
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner Evaluation license - valka getz
@@ -131,10 +140,23 @@ public class PlayerApp implements MessageObserver {
         scrollPane2 = new JScrollPane();
         robotList = new JList();
         panel4 = new JPanel();
-        button8 = new JButton();
+        progRobot = new JButton();
         button9 = new JButton();
         button10 = new JButton();
         button11 = new JButton();
+        programDialog = new JDialog();
+        label5 = new JLabel();
+        label9 = new JLabel();
+        regI = new JComboBox<>();
+        label10 = new JLabel();
+        regII = new JComboBox<>();
+        label11 = new JLabel();
+        regIII = new JComboBox<>();
+        label12 = new JLabel();
+        regIV = new JComboBox<>();
+        label13 = new JLabel();
+        regV = new JComboBox<>();
+        confirmButton = new JButton();
 
         //======== setupFrame ========
         {
@@ -151,7 +173,7 @@ public class PlayerApp implements MessageObserver {
                     new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
                         "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
                         javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
-                        java.awt.Color.red), accessPanel.getBorder())); accessPanel.addPropertyChangeListener(e -> {if("border".equals(e.getPropertyName()))throw new RuntimeException();});
+                        java.awt.Color.red), accessPanel.getBorder())); accessPanel.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
 
                 accessPanel.setLayout(new MigLayout(
                     "hidemode 3,alignx center",
@@ -316,7 +338,7 @@ public class PlayerApp implements MessageObserver {
                 robodromePanel.setBorder(new javax.swing.border.CompoundBorder(
                     new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
                         "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
-                            javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
+                        javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
                         java.awt.Color.red), robodromePanel.getBorder())); robodromePanel.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
 
                 robodromePanel.setLayout(new BorderLayout());
@@ -371,9 +393,10 @@ public class PlayerApp implements MessageObserver {
                             "[]" +
                             "[]"));
 
-                        //---- button8 ----
-                        button8.setText("text");
-                        panel4.add(button8, "cell 0 0");
+                        //---- progRobot ----
+                        progRobot.setText("Programma Robot");
+                        progRobot.addActionListener(e -> progRobotActionPerformed(e));
+                        panel4.add(progRobot, "cell 0 0");
 
                         //---- button9 ----
                         button9.setText("text");
@@ -394,6 +417,89 @@ public class PlayerApp implements MessageObserver {
             playFrameContentPane.add(robodromePanel, "play");
             playFrame.pack();
             playFrame.setLocationRelativeTo(playFrame.getOwner());
+        }
+
+        //======== programDialog ========
+        {
+            Container programDialogContentPane = programDialog.getContentPane();
+            programDialogContentPane.setLayout(new MigLayout(
+                "hidemode 3,alignx center",
+                // columns
+                "[fill]" +
+                "[fill]" +
+                "[fill]",
+                // rows
+                "[]" +
+                "[]" +
+                "[]" +
+                "[]" +
+                "[]" +
+                "[]" +
+                "[]" +
+                "[]" +
+                "[]"));
+
+            //---- label5 ----
+            label5.setText("Programma i registri del tuo Robot");
+            label5.setFont(new Font("Lucida Grande", Font.BOLD, 16));
+            programDialogContentPane.add(label5, "cell 1 0");
+
+            //---- label9 ----
+            label9.setText("Registo I");
+            programDialogContentPane.add(label9, "cell 0 2");
+
+            //---- regI ----
+            regI.setModel(new DefaultComboBoxModel<>(new String[] {
+                "--Selezionare una scheda--"
+            }));
+            programDialogContentPane.add(regI, "cell 1 2");
+
+            //---- label10 ----
+            label10.setText("Registro II");
+            programDialogContentPane.add(label10, "cell 0 3");
+
+            //---- regII ----
+            regII.setModel(new DefaultComboBoxModel<>(new String[] {
+                "--Selezionare una scheda--"
+            }));
+            programDialogContentPane.add(regII, "cell 1 3");
+
+            //---- label11 ----
+            label11.setText("Registro III");
+            programDialogContentPane.add(label11, "cell 0 4");
+
+            //---- regIII ----
+            regIII.setModel(new DefaultComboBoxModel<>(new String[] {
+                "--Selezionare una scheda--"
+            }));
+            programDialogContentPane.add(regIII, "cell 1 4");
+
+            //---- label12 ----
+            label12.setText("Registro IV");
+            programDialogContentPane.add(label12, "cell 0 5");
+
+            //---- regIV ----
+            regIV.setModel(new DefaultComboBoxModel<>(new String[] {
+                "--Selezionare una scheda--"
+            }));
+            programDialogContentPane.add(regIV, "cell 1 5");
+
+            //---- label13 ----
+            label13.setText("Registro V");
+            programDialogContentPane.add(label13, "cell 0 6");
+
+            //---- regV ----
+            regV.setModel(new DefaultComboBoxModel<>(new String[] {
+                "--Selezionare una scheda--"
+            }));
+            programDialogContentPane.add(regV, "cell 1 6");
+
+            //---- confirmButton ----
+            confirmButton.setText("Conferma");
+            confirmButton.addActionListener(e -> confirmButtonActionPerformed(e));
+            programDialogContentPane.add(confirmButton, "cell 1 8");
+            programDialog.pack();
+            programDialog.setLocationRelativeTo(programDialog.getOwner());
         }
         // JFormDesigner - End of component initialization  //GEN-END:initComponents
     }
@@ -434,10 +540,23 @@ public class PlayerApp implements MessageObserver {
     private JScrollPane scrollPane2;
     private JList robotList;
     private JPanel panel4;
-    private JButton button8;
+    private JButton progRobot;
     private JButton button9;
     private JButton button10;
     private JButton button11;
+    private JDialog programDialog;
+    private JLabel label5;
+    private JLabel label9;
+    private JComboBox<String> regI;
+    private JLabel label10;
+    private JComboBox<String> regII;
+    private JLabel label11;
+    private JComboBox<String> regIII;
+    private JLabel label12;
+    private JComboBox<String> regIV;
+    private JLabel label13;
+    private JComboBox<String> regV;
+    private JButton confirmButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 
     public static void main(String[] args) {

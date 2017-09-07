@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JOptionPane;
 import robogp.robodrome.Robodrome;
 
 /**
