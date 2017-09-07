@@ -89,8 +89,7 @@ public class PlayerApp implements MessageObserver {
         Object[] pars = new Object[1];
         pars[0] = nickname;
         msg.setParameters(pars);
-        rv = new RobodromeView(new Robodrome("robodromes/checkmate.txt"), 55);
-        robodromePanel.add(rv,BorderLayout.CENTER);
+        controller.sendMessage(msg);
         setupFrame.dispose();
         playFrame.setVisible(true);
     }
@@ -477,7 +476,12 @@ public class PlayerApp implements MessageObserver {
 
         }
         else if(msg.getName().equals((Match.MatchStartMsg))){
+            String path = ((String)msg.getParameter(0)).replaceAll("\\s+","");
+            path = "robodromes/" + path.toLowerCase()+ ".txt";
+            rv = new RobodromeView(new Robodrome(path), 55);
+            robodromePanel.add(rv,BorderLayout.CENTER);
             playButton.setVisible(true);
+
 
         }
 

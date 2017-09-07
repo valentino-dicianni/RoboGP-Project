@@ -68,7 +68,7 @@ public class Match implements MessageObserver {
             while(true){
                 getReadyPlayers();
                 System.out.println("-->NO");
-                //esegui le istruzioni
+                readyPlayers =0;
             }
 
         }
@@ -203,6 +203,9 @@ public class Match implements MessageObserver {
         this.status = State.Started;
         numPlayers = getPlayerCount();
         Message msg = new Message(Match.MatchStartMsg);
+        Object[]param = new Object[1];
+        param[0] = theRobodrome.getName();
+        msg.setParameters(param);
 
         players.values().stream().forEach((conn) -> {
             try {
