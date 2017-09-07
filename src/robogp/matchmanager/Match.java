@@ -45,6 +45,7 @@ public class Match implements MessageObserver {
     private final boolean initUpgrades;
     private State status;
     private int readyPlayers = 0;
+    private int numPlayers;
 
     private final HashMap<String, Connection> waiting;
     private final HashMap<String, Connection> players;
@@ -66,6 +67,7 @@ public class Match implements MessageObserver {
         public void run() {
             while(true){
                 getReadyPlayers();
+                System.out.println("-->NO");
                 //esegui le istruzioni
             }
 
@@ -73,7 +75,7 @@ public class Match implements MessageObserver {
     }
 
     private synchronized  void  setReadyPlayers() {
-        while(readyPlayers == getPlayerCount()){
+        while(readyPlayers == numPlayers){
             try {
                 wait();
             } catch (InterruptedException e) {
@@ -85,7 +87,7 @@ public class Match implements MessageObserver {
     }
 
     private  synchronized void getReadyPlayers() {
-        while(readyPlayers != getPlayerCount()){
+        while(readyPlayers != numPlayers){
             try{
                 wait();
             } catch (InterruptedException e) {
@@ -98,6 +100,7 @@ public class Match implements MessageObserver {
 
     private Match(String rbdName, int nMaxPlayers, int nRobotsXPlayer, EndGame endGameCond, boolean initUpg) {
         this.nMaxPlayers = nMaxPlayers;
+        this.numPlayers = nMaxPlayers;
         this.nRobotsXPlayer = nRobotsXPlayer;
         this.endGameCondition = endGameCond;
         this.initUpgrades = initUpg;
@@ -198,7 +201,7 @@ public class Match implements MessageObserver {
 
     public void start() {
         this.status = State.Started;
-
+        numPlayers = getPlayerCount();
         Message msg = new Message(Match.MatchStartMsg);
 
         players.values().stream().forEach((conn) -> {
