@@ -7,18 +7,17 @@ import java.util.Observable;
 
 public class Training extends Observable implements  RobodromeAnimationObserver {
 
-    private class TrainingHelper implements Runnable{
+    private class TrainingHelper implements Runnable {
 
         @Override
         public void run() {
             while(true){
                 getReadyAnimation();
-                if(robot.getCurrentInstruction() !=null && !isPaused()){
+                if(robot.getCurrentInstruction() != null && !isPaused()){
                     executeNextInstruction();
 
                     //System.out.println("TtrainingThread: inst executed");
-                }
-                else{
+                } else {
                     setChanged();
                     notifyObservers("endInstructions");
                     //System.out.println("Fine dei giochi");

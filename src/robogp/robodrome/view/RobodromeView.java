@@ -25,7 +25,7 @@ import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JComponent;
-import robogp.matchmanager.RobotMarker;
+import robogp.common.RobotMarker;
 import robogp.robodrome.BoardCell;
 import robogp.robodrome.Direction;
 import robogp.robodrome.MovableElement;

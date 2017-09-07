@@ -1,7 +1,7 @@
 package robogp.training;
 
 import robogp.common.Instruction;
-import robogp.matchmanager.RobotMarker;
+import robogp.common.RobotMarker;
 import robogp.robodrome.Position;
 
 import java.util.ArrayList;

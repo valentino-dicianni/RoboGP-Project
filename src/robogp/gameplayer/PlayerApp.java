@@ -16,7 +16,7 @@ import connection.Message;
 import connection.MessageObserver;
 import net.miginfocom.swing.*;
 import robogp.matchmanager.Match;
-import robogp.matchmanager.RobotMarker;
+import robogp.common.RobotMarker;
 import robogp.robodrome.Robodrome;
 import robogp.robodrome.view.RobodromeView;
 

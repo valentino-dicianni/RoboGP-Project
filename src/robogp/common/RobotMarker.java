@@ -1,4 +1,4 @@
-package robogp.matchmanager;
+package robogp.common;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
