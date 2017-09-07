@@ -25,6 +25,7 @@ public class Match implements MessageObserver {
     public static final String MatchStartMsg = "startMatch";
     public static final String MatchCancelMsg = "cancelMatch";
     public static final String MatchErrorMsg = "errorMessage";
+    public static final String MatchReadyMsg = "readyMessage";
 
     public enum EndGame {
         First, First3, AllButLast
@@ -158,11 +159,21 @@ public class Match implements MessageObserver {
             }
         }
 
-        /**
-         * else{  msg.getName().equals(Match.ALTRO) } nel caso il match debba ricevere altri messaggi
-         **/
+        else if(msg.getName().equals(Match.MatchReadyMsg)){
+            setReadyPlayers();
+            sendInstrucionPool((String)msg.getParameter(0));
+        }
+
 
     }
+
+    /**
+     *Invia lista istruzioni al giocatore per ogni robot
+     *@param name è il nome del giocatore
+     */
+    private void sendInstrucionPool(String name) {
+    }
+
 
     public State getStatus() {
         return this.status;
@@ -254,9 +265,10 @@ public class Match implements MessageObserver {
             Connection conn = this.waiting.get(nickname);
 
             Message reply = new Message(Match.MatchJoinReplyMsg);
-            Object[] parameters = new Object[2];
+            Object[] parameters = new Object[3];
             parameters[0] = new Boolean(true);
             parameters[1] = selection.toArray(new RobotMarker[selection.size()]);
+            parameters[2] = theRobodrome.getName();
             reply.setParameters(parameters);
 
             conn.sendMessage(reply);

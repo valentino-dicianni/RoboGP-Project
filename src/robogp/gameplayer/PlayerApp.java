@@ -25,6 +25,7 @@ import robogp.robodrome.view.RobodromeView;
  */
 public class PlayerApp implements MessageObserver {
     PlayerController controller = new PlayerController();
+    private String nickname;
     private RobodromeView rv;
 
 
@@ -34,6 +35,7 @@ public class PlayerApp implements MessageObserver {
 
     private void accessButtonActionPerformed(ActionEvent e) {
         if(ceckCredentials()){
+            this.nickname = nickInput.getText();
             InetAddress address;
             try {
                 address = InetAddress.getByName(addressInput.getText());
@@ -83,6 +85,10 @@ public class PlayerApp implements MessageObserver {
     }
 
     private void playButtonActionPerformed(ActionEvent e) {
+        Message msg = new Message(Match.MatchReadyMsg);
+        Object[] pars = new Object[1];
+        pars[0] = nickname;
+        msg.setParameters(pars);
         rv = new RobodromeView(new Robodrome("robodromes/checkmate.txt"), 55);
         robodromePanel.add(rv,BorderLayout.CENTER);
         setupFrame.dispose();

@@ -31,4 +31,8 @@ public class PlayerController {
     public Robodrome getRobodrome(){
         return null;
     }
+
+    public void setReadyPlayer() {
+
+    }
 }
