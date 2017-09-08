@@ -1,10 +1,12 @@
 package robogp.matchmanager;
 
 public class Registry {
+    public int regNumber;
     private boolean locked;
     private MatchInstruction instruction;
 
-    public Registry() {
+    public Registry(int regNumber) {
+        this.regNumber = regNumber;
         locked = false;
         instruction = null;
     }

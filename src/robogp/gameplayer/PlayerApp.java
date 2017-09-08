@@ -17,6 +17,7 @@ import connection.MessageObserver;
 import net.miginfocom.swing.*;
 import robogp.matchmanager.Match;
 import robogp.common.RobotMarker;
+import robogp.matchmanager.MatchRobot;
 import robogp.robodrome.Robodrome;
 import robogp.robodrome.view.RobodromeView;
 
@@ -572,9 +573,8 @@ public class PlayerApp implements MessageObserver {
             boolean reply = (Boolean)msg.getParameter(0);
             if(reply){
                 waitLabel.setText("Richiesta Accettata");
-                //gameRobot
-                RobotMarker[] robots= (RobotMarker[]) msg.getParameter(1);
-                for(RobotMarker robot : robots)
+                MatchRobot[] robots = (MatchRobot[]) msg.getParameter(1);
+                for(MatchRobot robot : robots)
                     robotLabel.setText(robotLabel.getText() +"<br>- "+robot.getName()+ " al dock: " +robot.getDock());
                 robotLabel.setText(robotLabel.getText() +"</html>");
                 robotLabel.setVisible(true);

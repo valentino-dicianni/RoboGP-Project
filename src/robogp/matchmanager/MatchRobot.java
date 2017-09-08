@@ -18,6 +18,8 @@ public class MatchRobot extends RobotMarker {
         this.hitPoints = 5;
         this.lifePoints = 3;
         this.registries = new Registry[5];
+        for(int i = 0; i < 5; i++)
+            this.registries[i] = new Registry(i + 1);
         this.instructionsPool = new ArrayList<MatchInstruction>();
     }
 
