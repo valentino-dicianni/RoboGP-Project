@@ -13,10 +13,8 @@ public class MatchInstruction extends Instruction {
     }
 
     public static MatchInstruction getInstructionByName(String instructionName, int priority) {
-        MatchInstruction newinstr = (MatchInstruction)Instruction.getInstructionByName(instructionName);
-        //newinstr.priority = priority;
-        newinstr.setPriority(priority);
-        return newinstr;
+        Instruction instr = Instruction.getInstructionByName(instructionName);
+        return new MatchInstruction(instr.getName(), instr.getStepsToTake(), instr.getRotation(), priority);
     }
 
     public int getPriority() {

@@ -24,24 +24,23 @@ public class MatchInstructionManager {
         // quando si prendono oggetti dalla pool, si fa una copia di quesi nella pool di riserva
         // quando si vuole resettare la pool, si prendono quelli della pool di riserva e si mettono
         // nella pool principale (svutando la pool di riserva) così da non leggere dal file ogni volta
-        StringBuilder stringBuilder = new StringBuilder();
+        ArrayList<String> lines = new ArrayList<String>();
         try {
             BufferedReader reader;
             reader = new BufferedReader(new FileReader(path));
             String line;
             while ((line = reader.readLine()) != null) {
-                stringBuilder.append(line.trim());
+                lines.add(line.trim());
             }
         } catch (IOException ex) {
             System.out.println("UNABLE TO FIND INSTRUCTIONS FILE");
             return;
         }
-        String[] all = stringBuilder.toString().split("\\n");
 
         usedInstructionsPool = new ArrayList<MatchInstruction>();
         pool = new ArrayList<MatchInstruction>();
 
-        for (String line : all) {
+        for (String line : lines) {
             // data[0] è il nome della scheda istruzione
             String[] data = line.split(",");
             int start = Integer.parseInt(data[1]);
@@ -55,7 +54,7 @@ public class MatchInstructionManager {
 
     public static MatchInstructionManager getInstance() {
         if (MatchInstructionManager.singleInstance == null) {
-            MatchInstructionManager.singleInstance = new MatchInstructionManager("tiles/schede_instruzione.csv");
+            MatchInstructionManager.singleInstance = new MatchInstructionManager("tiles/schede_istruzione.csv");
         }
         return MatchInstructionManager.singleInstance;
     }

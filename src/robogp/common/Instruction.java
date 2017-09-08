@@ -66,6 +66,6 @@ public class Instruction {
 
     @Override
     public String toString() {
-        return "Steps: "+stepsToTake+", Angle: "+rotation.toString();
+        return "Name: "+name+", Steps: "+stepsToTake+", Angle: "+rotation.toString();
     }
 }
