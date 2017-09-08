@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import robogp.common.RobotMarker;
 import robogp.robodrome.Robodrome;
 
 /**
@@ -39,7 +37,7 @@ public class Match implements MessageObserver {
     private static final String[] ROBOT_COLORS = {"blue", "red", "yellow", "emerald", "violet", "orange", "turquoise", "green"};
     private static final String[] ROBOT_NAMES = {"robot-blue", "robot-red", "robot-yellow", "robot-emerald", "robot-violet", "robot-orange", "robot-turquoise", "robot-green"};
     private final Robodrome theRobodrome;
-    private final RobotMarker[] robots;
+    private final MatchRobot[] robots;
     private final EndGame endGameCondition;
     private final int nMaxPlayers;
     private final int nRobotsXPlayer;
@@ -106,10 +104,10 @@ public class Match implements MessageObserver {
         this.endGameCondition = endGameCond;
         this.initUpgrades = initUpg;
         String rbdFileName = "robodromes/" + rbdName + ".txt";
-        this.robots = new RobotMarker[Match.ROBOT_NAMES.length];
+        this.robots = new MatchRobot[Match.ROBOT_NAMES.length];
         this.theRobodrome = new Robodrome(rbdFileName);
         for (int i = 0; i < Match.ROBOT_NAMES.length; i++) {
-            this.robots[i] = new RobotMarker(Match.ROBOT_NAMES[i], Match.ROBOT_COLORS[i]);
+            this.robots[i] = new MatchRobot(Match.ROBOT_NAMES[i], Match.ROBOT_COLORS[i]);
         }
 
         waiting = new HashMap<>();
@@ -221,9 +219,9 @@ public class Match implements MessageObserver {
         // PROBABILMENTE NON IMPLEMENTATO NEL CORSO DI QUESTO PROGETTO
     }
 
-    public ArrayList<RobotMarker> getAvailableRobots() {
-        ArrayList<RobotMarker> ret = new ArrayList<>();
-        for (RobotMarker m : this.robots) {
+    public ArrayList<MatchRobot> getAvailableRobots() {
+        ArrayList<MatchRobot> ret = new ArrayList<>();
+        for (MatchRobot m : this.robots) {
             if (!m.isAssigned()) {
                 ret.add(m);
             }
@@ -231,9 +229,9 @@ public class Match implements MessageObserver {
         return ret;
     }
 
-    public ArrayList<RobotMarker> getAllRobots() {
-        ArrayList<RobotMarker> ret = new ArrayList<>();
-        for (RobotMarker m : this.robots) {
+    public ArrayList<MatchRobot> getAllRobots() {
+        ArrayList<MatchRobot> ret = new ArrayList<>();
+        for (MatchRobot m : this.robots) {
             ret.add(m);
         }
         return ret;
@@ -261,10 +259,10 @@ public class Match implements MessageObserver {
         }
     }
 
-    public boolean addPlayer(String nickname, List<RobotMarker> selection) {
+    public boolean addPlayer(String nickname, List<MatchRobot> selection) {
         boolean added = false;
         try {
-            for (RobotMarker rob : selection) {
+            for (MatchRobot rob : selection) {
                 int dock = this.getFreeDock();
                 rob.assign(nickname, dock);
             }
@@ -274,7 +272,7 @@ public class Match implements MessageObserver {
             Message reply = new Message(Match.MatchJoinReplyMsg);
             Object[] parameters = new Object[3];
             parameters[0] = new Boolean(true);
-            parameters[1] = selection.toArray(new RobotMarker[selection.size()]);
+            parameters[1] = selection.toArray(new MatchRobot[selection.size()]);
             parameters[2] = theRobodrome.getName();
             reply.setParameters(parameters);
 
@@ -292,7 +290,7 @@ public class Match implements MessageObserver {
 
     private int getFreeDock() {
         boolean[] docks = new boolean[this.theRobodrome.getDocksCount()];
-        for (RobotMarker rob : this.robots) {
+        for (MatchRobot rob : this.robots) {
             if (rob.isAssigned()) {
                 docks[rob.getDock() - 1] = true;
             }

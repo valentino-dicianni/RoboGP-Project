@@ -6,7 +6,7 @@
 package mockups;
 
 import javax.swing.JFrame;
-import robogp.matchmanager.RobotMarker;
+import robogp.common.RobotMarker;
 import robogp.robodrome.Direction;
 import robogp.robodrome.Robodrome;
 import robogp.robodrome.Rotation;

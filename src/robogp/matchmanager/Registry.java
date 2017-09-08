@@ -1,6 +1,8 @@
 package robogp.matchmanager;
 
-public class Registry {
+import java.io.Serializable;
+
+public class Registry implements Serializable{
     public int regNumber;
     private boolean locked;
     private MatchInstruction instruction;

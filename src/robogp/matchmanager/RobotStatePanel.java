@@ -1,6 +1,5 @@
 package robogp.matchmanager;
 
-import robogp.common.RobotMarker;
 
 import javax.swing.ImageIcon;
 
@@ -10,11 +9,11 @@ import javax.swing.ImageIcon;
  */
 public class RobotStatePanel extends javax.swing.JPanel {
 
-    private final RobotMarker robot;
+    private final MatchRobot robot;
     /**
      * Creates new form RobotStatePanel
      */
-    public RobotStatePanel(RobotMarker rob) {
+    public RobotStatePanel(MatchRobot rob) {
         this.robot = rob;
         initComponents();
         this.update();

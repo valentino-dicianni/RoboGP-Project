@@ -1,7 +1,6 @@
 package robogp.matchmanager;
 
 import connection.Message;
-import robogp.common.RobotMarker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +70,7 @@ public class IniziarePartitaController {
         }
     }
 
-    public ArrayList<RobotMarker> getAvailableRobots() {
+    public ArrayList<MatchRobot> getAvailableRobots() {
         return this.theMatch.getAvailableRobots();
     }
 
@@ -84,10 +83,10 @@ public class IniziarePartitaController {
     }
 
     public boolean canStartMatch() {
-        return (this.theMatch.getPlayerCount() >= 2);
+        return (this.theMatch.getPlayerCount() >= 1);
     }
 
-    public void accettaRichiesta(String nickname, List<RobotMarker> selection) {
+    public void accettaRichiesta(String nickname, List<MatchRobot> selection) {
         if (this.canAcceptMoreRequests()) {
             this.theMatch.addPlayer(nickname, selection);
         }

@@ -34,4 +34,14 @@ public class MatchRobot extends RobotMarker {
     public boolean isShutDown() {
         return shutDown;
     }
+
+    public ArrayList<Integer> getLocked(){
+        ArrayList<Integer> locks = new ArrayList<>();
+        for(int i=0;i<registries.length;i++){
+            if(registries[i].isLocked()) {
+                locks.add(registries[i].regNumber);
+            }
+        }
+        return locks;
+    }
 }

@@ -11,7 +11,7 @@ import connection.PartnerShutDownException;
 import java.io.IOException;
 import java.util.ArrayList;
 import robogp.matchmanager.Match;
-import robogp.matchmanager.RobotMarker;
+import robogp.common.RobotMarker;
 
 /**
  *

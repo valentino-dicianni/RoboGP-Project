@@ -16,7 +16,6 @@ import connection.Message;
 import connection.MessageObserver;
 import net.miginfocom.swing.*;
 import robogp.matchmanager.Match;
-import robogp.common.RobotMarker;
 import robogp.matchmanager.MatchRobot;
 import robogp.robodrome.Robodrome;
 import robogp.robodrome.view.RobodromeView;
@@ -28,6 +27,8 @@ public class PlayerApp implements MessageObserver {
     PlayerController controller = new PlayerController();
     private String nickname;
     private RobodromeView rv;
+    private DefaultListModel<MatchRobot> modelRobot = new DefaultListModel<>();
+
 
 
     public PlayerApp() {
@@ -98,10 +99,35 @@ public class PlayerApp implements MessageObserver {
 
     private void progRobotActionPerformed(ActionEvent e) {
         programDialog.setVisible(true);
+
     }
 
     private void confirmButtonActionPerformed(ActionEvent e) {
-        programDialog.setVisible(true);
+        programDialog.setVisible(false);
+    }
+
+    private void ok1ActionPerformed(ActionEvent e) {
+        ok2.setEnabled(true);
+        regII.setEnabled(true);
+    }
+
+    private void button2ActionPerformed(ActionEvent e) {
+        ok3.setEnabled(true);
+        regIII.setEnabled(true);
+    }
+
+    private void button3ActionPerformed(ActionEvent e) {
+        ok4.setEnabled(true);
+        regIV.setEnabled(true);
+    }
+
+    private void button4ActionPerformed(ActionEvent e) {
+        ok5.setEnabled(true);
+        regV.setEnabled(true);
+    }
+
+    private void ok5ActionPerformed(ActionEvent e) {
+        confirmButton.setEnabled(true);
     }
 
     private void initComponents() {
@@ -149,14 +175,19 @@ public class PlayerApp implements MessageObserver {
         label5 = new JLabel();
         label9 = new JLabel();
         regI = new JComboBox<>();
+        ok1 = new JButton();
         label10 = new JLabel();
         regII = new JComboBox<>();
+        ok2 = new JButton();
         label11 = new JLabel();
         regIII = new JComboBox<>();
+        ok3 = new JButton();
         label12 = new JLabel();
         regIV = new JComboBox<>();
+        ok4 = new JButton();
         label13 = new JLabel();
         regV = new JComboBox<>();
+        ok5 = new JButton();
         confirmButton = new JButton();
 
         //======== setupFrame ========
@@ -377,6 +408,10 @@ public class PlayerApp implements MessageObserver {
 
                     //======== scrollPane2 ========
                     {
+
+                        //---- robotList ----
+                        robotList.setModel(modelRobot);
+                        robotList.setCellRenderer(new RobotCellRenderer());
                         scrollPane2.setViewportView(robotList);
                     }
                     panel2.add(scrollPane2, BorderLayout.CENTER);
@@ -455,6 +490,11 @@ public class PlayerApp implements MessageObserver {
             }));
             programDialogContentPane.add(regI, "cell 1 2");
 
+            //---- ok1 ----
+            ok1.setText("ok");
+            ok1.addActionListener(e -> ok1ActionPerformed(e));
+            programDialogContentPane.add(ok1, "cell 2 2");
+
             //---- label10 ----
             label10.setText("Registro II");
             programDialogContentPane.add(label10, "cell 0 3");
@@ -463,7 +503,14 @@ public class PlayerApp implements MessageObserver {
             regII.setModel(new DefaultComboBoxModel<>(new String[] {
                 "--Selezionare una scheda--"
             }));
+            regII.setEnabled(false);
             programDialogContentPane.add(regII, "cell 1 3");
+
+            //---- ok2 ----
+            ok2.setText("ok");
+            ok2.setEnabled(false);
+            ok2.addActionListener(e -> button2ActionPerformed(e));
+            programDialogContentPane.add(ok2, "cell 2 3");
 
             //---- label11 ----
             label11.setText("Registro III");
@@ -473,7 +520,14 @@ public class PlayerApp implements MessageObserver {
             regIII.setModel(new DefaultComboBoxModel<>(new String[] {
                 "--Selezionare una scheda--"
             }));
+            regIII.setEnabled(false);
             programDialogContentPane.add(regIII, "cell 1 4");
+
+            //---- ok3 ----
+            ok3.setText("ok");
+            ok3.setEnabled(false);
+            ok3.addActionListener(e -> button3ActionPerformed(e));
+            programDialogContentPane.add(ok3, "cell 2 4");
 
             //---- label12 ----
             label12.setText("Registro IV");
@@ -483,7 +537,14 @@ public class PlayerApp implements MessageObserver {
             regIV.setModel(new DefaultComboBoxModel<>(new String[] {
                 "--Selezionare una scheda--"
             }));
+            regIV.setEnabled(false);
             programDialogContentPane.add(regIV, "cell 1 5");
+
+            //---- ok4 ----
+            ok4.setText("ok");
+            ok4.setEnabled(false);
+            ok4.addActionListener(e -> button4ActionPerformed(e));
+            programDialogContentPane.add(ok4, "cell 2 5");
 
             //---- label13 ----
             label13.setText("Registro V");
@@ -493,10 +554,18 @@ public class PlayerApp implements MessageObserver {
             regV.setModel(new DefaultComboBoxModel<>(new String[] {
                 "--Selezionare una scheda--"
             }));
+            regV.setEnabled(false);
             programDialogContentPane.add(regV, "cell 1 6");
+
+            //---- ok5 ----
+            ok5.setText("ok");
+            ok5.setEnabled(false);
+            ok5.addActionListener(e -> ok5ActionPerformed(e));
+            programDialogContentPane.add(ok5, "cell 2 6");
 
             //---- confirmButton ----
             confirmButton.setText("Conferma");
+            confirmButton.setEnabled(false);
             confirmButton.addActionListener(e -> confirmButtonActionPerformed(e));
             programDialogContentPane.add(confirmButton, "cell 1 8");
             programDialog.pack();
@@ -549,14 +618,19 @@ public class PlayerApp implements MessageObserver {
     private JLabel label5;
     private JLabel label9;
     private JComboBox<String> regI;
+    private JButton ok1;
     private JLabel label10;
     private JComboBox<String> regII;
+    private JButton ok2;
     private JLabel label11;
     private JComboBox<String> regIII;
+    private JButton ok3;
     private JLabel label12;
     private JComboBox<String> regIV;
+    private JButton ok4;
     private JLabel label13;
     private JComboBox<String> regV;
+    private JButton ok5;
     private JButton confirmButton;
     // JFormDesigner - End of variables declaration  //GEN-END:variables
 
@@ -569,40 +643,80 @@ public class PlayerApp implements MessageObserver {
 
     @Override
     public void notifyMessageReceived(Message msg) {
-        if(msg.getName().equals(Match.MatchJoinReplyMsg)) {
-            boolean reply = (Boolean)msg.getParameter(0);
-            if(reply){
-                waitLabel.setText("Richiesta Accettata");
-                MatchRobot[] robots = (MatchRobot[]) msg.getParameter(1);
-                for(MatchRobot robot : robots)
-                    robotLabel.setText(robotLabel.getText() +"<br>- "+robot.getName()+ " al dock: " +robot.getDock());
-                robotLabel.setText(robotLabel.getText() +"</html>");
-                robotLabel.setVisible(true);
-                label6.setVisible(true);
+        switch (msg.getName()) {
+            case Match.MatchJoinReplyMsg:
+                boolean reply = (Boolean) msg.getParameter(0);
+                if (reply) {
+                    waitLabel.setText("Richiesta Accettata");
+                    //gameRobot
+                    MatchRobot[] robots = (MatchRobot[]) msg.getParameter(1);
+                    for (MatchRobot robot : robots){
+                        modelRobot.addElement(robot);
+                        robotLabel.setText(robotLabel.getText() + "<br>- " + robot.getName() + " al dock: " + robot.getDock());
+                    }
+                    robotLabel.setText(robotLabel.getText() + "</html>");
+                    robotLabel.setVisible(true);
+                    label6.setVisible(true);
+                    controller.setRobots(robots);
 
-            }
-            else{
+                } else {
+                    ((CardLayout) setupFrame.getContentPane().getLayout()).show(
+                            setupFrame.getContentPane(), "refuse");
+                    refuseLabel.setText("La tua richiesta di partecipazione è stata rifiutata dal managaer di partita");
+
+                }
+                break;
+
+            case (Match.MatchErrorMsg):
                 ((CardLayout) setupFrame.getContentPane().getLayout()).show(
                         setupFrame.getContentPane(), "refuse");
-                refuseLabel.setText("La tua richiesta di partecipazione è stata rifiutata dal managaer di partita");
+                refuseLabel.setText((String) msg.getParameter(0));
+                break;
 
-            }
-        }//Se password è errata
-        else if(msg.getName().equals((Match.MatchErrorMsg))){
-            ((CardLayout) setupFrame.getContentPane().getLayout()).show(
-                        setupFrame.getContentPane(), "refuse");
-            refuseLabel.setText((String)msg.getParameter(0));
+            case (Match.MatchStartMsg):
+                String path = ((String) msg.getParameter(0)).replaceAll("\\s+", "");
+                path = "robodromes/" + path.toLowerCase() + ".txt";
+                rv = new RobodromeView(new Robodrome(path), 55);
+                robodromePanel.add(rv, BorderLayout.CENTER);
+                playButton.setVisible(true);
+                break;
 
-        }
-        else if(msg.getName().equals((Match.MatchStartMsg))){
-            String path = ((String)msg.getParameter(0)).replaceAll("\\s+","");
-            path = "robodromes/" + path.toLowerCase()+ ".txt";
-            rv = new RobodromeView(new Robodrome(path), 55);
-            robodromePanel.add(rv,BorderLayout.CENTER);
-            playButton.setVisible(true);
 
 
         }
 
     }
 }
+
+class RobotCellRenderer extends DefaultListCellRenderer {
+    private final JLabel label;
+
+    RobotCellRenderer() {
+        label = new JLabel();
+        label.setOpaque(true);
+    }
+
+    @Override
+    public Component getListCellRendererComponent(
+            JList list,
+            Object value,
+            int index,
+            boolean selected,
+            boolean expanded) {
+
+        MatchRobot robot = (MatchRobot) value;
+        label.setIcon(new ImageIcon(robot.getImage(60)));
+        label.setText("<html><b>Nome:</b> "+robot.getName()+"<br><b>Punti vita:</b> "+robot.getHitPoints()+"<br><b>Vite rimaste:</b> " +robot.getLifePoints()+"</html>");
+
+        if (selected) {
+            label.setBackground(Color.CYAN);
+            label.setForeground(Color.BLACK);
+        } else {
+            label.setBackground(Color.WHITE);
+            label.setForeground(Color.BLACK);
+        }
+
+        return label;
+    }
+}
+

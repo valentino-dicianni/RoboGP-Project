@@ -1,6 +1,5 @@
 package robogp.matchmanager;
 
-import robogp.common.RobotMarker;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -19,7 +18,7 @@ import javax.swing.JOptionPane;
  */
 public class RobotChooser extends javax.swing.JDialog {
 
-    private final DefaultListModel<RobotMarker> model;
+    private final DefaultListModel<MatchRobot> model;
     private int closeStatus;
     private int nRobots;
     /**
@@ -34,7 +33,7 @@ public class RobotChooser extends javax.swing.JDialog {
         this.closeStatus = JOptionPane.CANCEL_OPTION;
     }
     
-    public void setup(ArrayList<RobotMarker> availableRobots, int nRobots) {
+    public void setup(ArrayList<MatchRobot> availableRobots, int nRobots) {
         this.nRobots = nRobots;
         this.choiceLabel.setText("Scegli " + nRobots + " robots da assegnare.");
         this.model.clear();
@@ -43,7 +42,7 @@ public class RobotChooser extends javax.swing.JDialog {
         });
     }
     
-    public List<RobotMarker> getSelection() {
+    public List<MatchRobot> getSelection() {
         return this.robotList.getSelectedValuesList();
     }
     
@@ -139,7 +138,7 @@ class RobotCellRenderer extends DefaultListCellRenderer {
             boolean selected,
             boolean expanded) {
 
-        RobotMarker robot = (RobotMarker)value;
+        MatchRobot robot = (MatchRobot)value;
         label.setIcon(new ImageIcon(robot.getImage(60)));
         label.setText(robot.getName());
 
@@ -160,6 +159,6 @@ class RobotCellRenderer extends DefaultListCellRenderer {
     private javax.swing.JLabel choiceLabel;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton okButton;
-    private javax.swing.JList<RobotMarker> robotList;
+    private javax.swing.JList<MatchRobot> robotList;
     // End of variables declaration//GEN-END:variables
 }

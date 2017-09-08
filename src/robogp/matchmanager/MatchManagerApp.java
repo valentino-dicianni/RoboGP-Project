@@ -5,7 +5,6 @@
  */
 package robogp.matchmanager;
 
-import robogp.common.RobotMarker;
 
 import java.awt.*;
 import java.awt.CardLayout;
@@ -461,7 +460,7 @@ public class MatchManagerApp extends javax.swing.JFrame {
         if (ok) {
             this.inizPartController.creaPartita(rbdName, nPl, nRob, Match.EndGame.values()[endGameOpt], upgradeOpt);
             this.requestList.setModel(this.inizPartController.getRequestList());
-            ArrayList<RobotMarker> allRobots = Match.getInstance().getAllRobots();
+            ArrayList<MatchRobot> allRobots = Match.getInstance().getAllRobots();
             this.robotPanel = new RobotStatePanel[allRobots.size()];
             this.robotRecapPanel.removeAll();
             for (int i=0; i < robotPanel.length; i++) {
@@ -485,7 +484,7 @@ public class MatchManagerApp extends javax.swing.JFrame {
     private void acceptRequestButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_acceptRequestButtonActionPerformed
         int pos = this.requestList.getSelectedIndex();
         String nickname = this.requestList.getSelectedValue();
-        ArrayList<RobotMarker> robots = Match.getInstance().getAvailableRobots();
+        ArrayList<MatchRobot> robots = Match.getInstance().getAvailableRobots();
         this.robotChooser.setup(robots, Match.getInstance().getRobotsPerPlayer());
         this.robotChooser.setVisible(true);
         if (this.robotChooser.getCloseStatus() == JOptionPane.OK_OPTION) {
