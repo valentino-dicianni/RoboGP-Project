@@ -12,7 +12,7 @@ public class MatchInstruction extends Instruction {
         this.priority = priority;
     }
 
-    public static Instruction getInstructionByName(String instructionName, int priority) {
+    public static MatchInstruction getInstructionByName(String instructionName, int priority) {
         MatchInstruction newinstr = (MatchInstruction)Instruction.getInstructionByName(instructionName);
         //newinstr.priority = priority;
         newinstr.setPriority(priority);
