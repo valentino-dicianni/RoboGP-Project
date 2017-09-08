@@ -117,7 +117,7 @@ new FormModel {
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 				"$layoutConstraints": "hidemode 3,alignx center"
 				"$columnConstraints": "[fill][fill]"
-				"$rowConstraints": "[][][][][][][][][][][]"
+				"$rowConstraints": "[][][][][][][][][][][][][]"
 			} ) {
 				name: "waitPanel"
 				add( new FormComponent( "javax.swing.JLabel" ) {
@@ -134,7 +134,7 @@ new FormModel {
 					"visible": false
 					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "playButtonActionPerformed", true ) )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 0 8"
+					"value": "cell 0 7"
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "label6"
@@ -142,7 +142,7 @@ new FormModel {
 					"horizontalAlignment": 0
 					"visible": false
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 0 7"
+					"value": "cell 0 6"
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "robotLabel"
@@ -178,6 +178,9 @@ new FormModel {
 					name: "scrollPane1"
 					add( new FormComponent( "javax.swing.JList" ) {
 						name: "playerMoves"
+						auxiliary() {
+							"JavaCodeGenerator.postInitCode": "robotList.setModel(modelList);\nrobotList.setCellRenderer(new ListCellRenderer());\n"
+						}
 					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "East"
@@ -250,8 +253,8 @@ new FormModel {
 				"value": "play"
 			} )
 		}, new FormLayoutConstraints( null ) {
-			"location": new java.awt.Point( 0, 525 )
-			"size": new java.awt.Dimension( 550, 370 )
+			"location": new java.awt.Point( 0, 400 )
+			"size": new java.awt.Dimension( 555, 425 )
 		} )
 		add( new FormWindow( "javax.swing.JDialog", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 			"$layoutConstraints": "hidemode 3,alignx center"
@@ -393,8 +396,8 @@ new FormModel {
 				"value": "cell 1 8"
 			} )
 		}, new FormLayoutConstraints( null ) {
-			"location": new java.awt.Point( 570, 375 )
-			"size": new java.awt.Dimension( 420, 325 )
+			"location": new java.awt.Point( 635, 290 )
+			"size": new java.awt.Dimension( 475, 345 )
 		} )
 	}
 }

@@ -16,6 +16,7 @@ import connection.Message;
 import connection.MessageObserver;
 import net.miginfocom.swing.*;
 import robogp.matchmanager.Match;
+import robogp.matchmanager.MatchInstruction;
 import robogp.matchmanager.MatchRobot;
 import robogp.robodrome.Robodrome;
 import robogp.robodrome.view.RobodromeView;
@@ -28,6 +29,7 @@ public class PlayerApp implements MessageObserver {
     private String nickname;
     private RobodromeView rv;
     private DefaultListModel<MatchRobot> modelRobot = new DefaultListModel<>();
+    private DefaultListModel<MatchInstruction> modelList = new DefaultListModel<>();
 
 
 
@@ -322,6 +324,8 @@ public class PlayerApp implements MessageObserver {
                     "[]" +
                     "[]" +
                     "[]" +
+                    "[]" +
+                    "[]" +
                     "[]"));
 
                 //---- waitLabel ----
@@ -334,13 +338,13 @@ public class PlayerApp implements MessageObserver {
                 playButton.setText("Gioca");
                 playButton.setVisible(false);
                 playButton.addActionListener(e -> playButtonActionPerformed(e));
-                waitPanel.add(playButton, "cell 0 8");
+                waitPanel.add(playButton, "cell 0 7");
 
                 //---- label6 ----
                 label6.setText("In attesa di altri giocatori...");
                 label6.setHorizontalAlignment(SwingConstants.CENTER);
                 label6.setVisible(false);
-                waitPanel.add(label6, "cell 0 7");
+                waitPanel.add(label6, "cell 0 6");
 
                 //---- robotLabel ----
                 robotLabel.setVisible(false);
@@ -381,6 +385,10 @@ public class PlayerApp implements MessageObserver {
 
                 //======== scrollPane1 ========
                 {
+
+                    //---- playerMoves ----
+                    robotList.setModel(modelList);
+                    robotList.setCellRenderer(new ListCellRenderer());
                     scrollPane1.setViewportView(playerMoves);
                 }
                 robodromePanel.add(scrollPane1, BorderLayout.EAST);
@@ -657,7 +665,6 @@ public class PlayerApp implements MessageObserver {
                     robotLabel.setText(robotLabel.getText() + "</html>");
                     robotLabel.setVisible(true);
                     label6.setVisible(true);
-                    controller.setRobots(robots);
 
                 } else {
                     ((CardLayout) setupFrame.getContentPane().getLayout()).show(
@@ -694,6 +701,7 @@ class RobotCellRenderer extends DefaultListCellRenderer {
     RobotCellRenderer() {
         label = new JLabel();
         label.setOpaque(true);
+
     }
 
     @Override
@@ -720,3 +728,25 @@ class RobotCellRenderer extends DefaultListCellRenderer {
     }
 }
 
+class ListCellRenderer extends DefaultListCellRenderer{
+    private  JLabel label;
+
+
+    ListCellRenderer() {}
+
+
+    @Override
+    public Component getListCellRendererComponent(
+            JList list,
+            Object value,
+            int index,
+            boolean selected,
+            boolean expanded) {
+
+        //label = new JLabel("<html><b>Nome:</b> "++"<br><b>Scheda:</b> "++"<br><b>Priorità:</b> " ++"</html>",new ImageIcon(robot.getImage(60)),JLabel.CENTER);
+        label.setVerticalTextPosition(JLabel.BOTTOM);
+        label.setHorizontalTextPosition(JLabel.CENTER);
+        label.setOpaque(true);
+        return label;
+    }
+}

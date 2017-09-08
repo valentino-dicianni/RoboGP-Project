@@ -12,7 +12,6 @@ import java.util.HashMap;
 
 public class PlayerController {
     private Connection connection;
-    private HashMap<String,MatchRobot> robots = new HashMap<>();
 
 
     public void setConnection(Connection connection) {
@@ -29,25 +28,6 @@ public class PlayerController {
         } catch (PartnerShutDownException e) {
             e.printStackTrace();
         }
-    }
-
-    public void setRobots(MatchRobot[]robots) {
-        for(MatchRobot rob : robots){
-            this.robots.put(rob.getName(),rob);
-        }
-    }
-    public ArrayList<Integer> getLockedReg(MatchRobot robot){
-        return (robots.get(robot.getName())).getLocked();
-    }
-
-
-    //TODO
-    public void setRegistry(MatchRobot robot, int regNum, Instruction instr){}
-
-
-    //TODO
-    public Robodrome getRobodrome(){
-        return null;
     }
 
 }

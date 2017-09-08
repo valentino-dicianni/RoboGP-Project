@@ -66,8 +66,15 @@ public class Match implements MessageObserver {
         public void run() {
             while(true){
                 getReadyPlayers();
-                System.out.println("-->NO");
-                readyPlayers =0;
+                System.out.println("\t-->Giocatori Pronti");
+                for(int i=0;i<5;i++){
+                    //manda schede
+                    getReadyPlayers();
+                    //dichiarazione
+                    getReadyPlayers();
+                    //esecuzione con robodromo
+                }
+
             }
 
         }
@@ -231,9 +238,7 @@ public class Match implements MessageObserver {
 
     public ArrayList<MatchRobot> getAllRobots() {
         ArrayList<MatchRobot> ret = new ArrayList<>();
-        for (MatchRobot m : this.robots) {
-            ret.add(m);
-        }
+        ret.addAll(Arrays.asList(this.robots));
         return ret;
     }
 
