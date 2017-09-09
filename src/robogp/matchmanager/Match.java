@@ -4,10 +4,8 @@ import connection.Connection;
 import connection.Message;
 import connection.MessageObserver;
 import connection.PartnerShutDownException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import robogp.robodrome.Robodrome;
@@ -25,6 +23,8 @@ public class Match implements MessageObserver {
     public static final String MatchCancelMsg = "cancelMatch";
     public static final String MatchErrorMsg = "errorMessage";
     public static final String MatchReadyMsg = "readyMessage";
+
+    public static final String MancheInstructionPoolMsg = "instructionPool";
 
     public enum EndGame {
         First, First3, AllButLast
@@ -49,6 +49,8 @@ public class Match implements MessageObserver {
     private final HashMap<String, Connection> waiting;
     private final HashMap<String, Connection> players;
 
+    private HashMap<String, List<MatchRobot>> ownedRobots;
+
     /* Gestione pattern singleton */
     private static Match singleInstance;
 
@@ -67,7 +69,10 @@ public class Match implements MessageObserver {
             while(true){
                 getReadyPlayers();
                 System.out.println("\t-->Giocatori Pronti");
-                for(int i=0;i<5;i++){
+                sendInstructionPools();
+                getReadyPlayers();
+
+                for(int i = 0; i < 5; i++){
                     //manda schede
                     getReadyPlayers();
                     //dichiarazione
@@ -79,6 +84,44 @@ public class Match implements MessageObserver {
 
         }
     }
+
+    /*
+    * metodi del ciclo principale di giocare
+    * */
+
+    /**
+     * manda i pool di schede instruzione ai giocatori, calcolati in base ai punti vita dei robot
+     */
+    public void sendInstructionPools() {
+        MatchInstructionManager instructionManager = MatchInstructionManager.getInstance();
+        for(Map.Entry<String, Connection> player : players.entrySet()) {
+            String nickname = player.getKey();
+            Connection conn = player.getValue();
+
+            Message msg = new Message(Match.MancheInstructionPoolMsg);
+            Object[] param = new Object[1];
+
+            HashMap<String, ArrayList<MatchInstruction>> robotsPool =  new HashMap<>();
+
+            for (MatchRobot robot : this.ownedRobots.get(nickname)) {
+                // per ogni robot di un giocatore
+                if (robot.getLifePoints() > 0)
+                    robotsPool.put(robot.getName(), instructionManager.getRandomInstructionPool(robot.getHitPoints()));
+            }
+
+            param[0] = robotsPool;
+            msg.setParameters(param);
+
+            try {
+                conn.sendMessage(msg);
+            } catch (PartnerShutDownException ex) {
+                Logger.getLogger(Match.class.getName()).log(Level.SEVERE, "Unable to send robot instruction pool to player: "+nickname, ex);
+            }
+        }
+        instructionManager.resetInstructionPool();
+    }
+
+    /**/
 
     private synchronized  void  setReadyPlayers() {
         while(readyPlayers == numPlayers){
@@ -117,9 +160,11 @@ public class Match implements MessageObserver {
             this.robots[i] = new MatchRobot(Match.ROBOT_NAMES[i], Match.ROBOT_COLORS[i]);
         }
 
-        waiting = new HashMap<>();
-        players = new HashMap<>();
+        this.waiting = new HashMap<>();
+        this.players = new HashMap<>();
         this.status = State.Created;
+
+        this.ownedRobots = new HashMap<>();
 
         MatchHelper matchThread = new MatchHelper();
         (new Thread(matchThread)).start();
@@ -271,6 +316,8 @@ public class Match implements MessageObserver {
                 int dock = this.getFreeDock();
                 rob.assign(nickname, dock);
             }
+
+            ownedRobots.put(nickname, selection);
 
             Connection conn = this.waiting.get(nickname);
 
