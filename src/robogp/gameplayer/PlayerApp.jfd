@@ -169,8 +169,9 @@ new FormModel {
 				"visible": false
 				"preferredSize": new java.awt.Dimension( 900, 700 )
 				add( new FormComponent( "javax.swing.JLabel" ) {
-					name: "label2"
+					name: "notifications"
 					"text": "AVVISI: "
+					"font": new java.awt.Font( "Lucida Grande", 1, 16 )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "North"
 				} )
@@ -178,6 +179,12 @@ new FormModel {
 					name: "scrollPane1"
 					add( new FormComponent( "javax.swing.JList" ) {
 						name: "playerMoves"
+						"model": new javax.swing.DefaultListModel {
+							addElement( "roba1" )
+							addElement( "roba2" )
+							addElement( "roba3" )
+							addElement( "roba4" )
+						}
 						auxiliary() {
 							"JavaCodeGenerator.postInitCode": "robotList.setModel(modelList);\nrobotList.setCellRenderer(new ListCellRenderer());\n"
 						}

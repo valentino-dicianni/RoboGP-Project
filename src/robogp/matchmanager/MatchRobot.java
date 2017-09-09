@@ -35,7 +35,7 @@ public class MatchRobot extends RobotMarker {
         return isShutDown;
     }
 
-    public ArrayList<Integer> getLocked(){
+    public ArrayList<Integer> getLockedRegs(){
         ArrayList<Integer> locks = new ArrayList<>();
         for(int i=0;i<registries.length;i++){
             if(registries[i].isLocked()) {

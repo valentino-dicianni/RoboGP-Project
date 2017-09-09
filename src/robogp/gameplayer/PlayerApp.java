@@ -9,6 +9,7 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import javax.swing.*;
 import javax.swing.border.*;
 import connection.Connection;
@@ -25,11 +26,12 @@ import robogp.robodrome.view.RobodromeView;
  * @author valka getz
  */
 public class PlayerApp implements MessageObserver {
-    PlayerController controller = new PlayerController();
+    private PlayerController controller = new PlayerController();
     private String nickname;
     private RobodromeView rv;
     private DefaultListModel<MatchRobot> modelRobot = new DefaultListModel<>();
     private DefaultListModel<MatchInstruction> modelList = new DefaultListModel<>();
+    private HashMap<String,String> poolInstr = new HashMap<>();
 
 
 
@@ -99,9 +101,16 @@ public class PlayerApp implements MessageObserver {
     }
 
 
+    private void setRegister(JComboBox reg){
+        String pool = poolInstr.get(((MatchRobot)robotList.getSelectedValue()).getName());
+        String[] schede = pool.split(",");
+        for(String item : schede)
+            reg.addItem(item);
+    }
+
     private void progRobotActionPerformed(ActionEvent e) {
         programDialog.setVisible(true);
-
+        setRegister(regI);
     }
 
     private void confirmButtonActionPerformed(ActionEvent e) {
@@ -109,21 +118,35 @@ public class PlayerApp implements MessageObserver {
     }
 
     private void ok1ActionPerformed(ActionEvent e) {
+        setRegister(regII);
+        regII.removeItemAt(regI.getSelectedIndex());
         ok2.setEnabled(true);
         regII.setEnabled(true);
     }
 
     private void button2ActionPerformed(ActionEvent e) {
+        setRegister(regIII);
+        regIII.removeItemAt(regI.getSelectedIndex());
+        regIII.removeItemAt(regII.getSelectedIndex());
         ok3.setEnabled(true);
         regIII.setEnabled(true);
     }
 
     private void button3ActionPerformed(ActionEvent e) {
+        setRegister(regIV);
+        regIV.removeItemAt(regI.getSelectedIndex());
+        regIV.removeItemAt(regII.getSelectedIndex());
+        regIV.removeItemAt(regIII.getSelectedIndex());
         ok4.setEnabled(true);
         regIV.setEnabled(true);
     }
 
     private void button4ActionPerformed(ActionEvent e) {
+        setRegister(regV);
+        regV.removeItemAt(regI.getSelectedIndex());
+        regV.removeItemAt(regII.getSelectedIndex());
+        regV.removeItemAt(regIII.getSelectedIndex());
+        regV.removeItemAt(regIV.getSelectedIndex());
         ok5.setEnabled(true);
         regV.setEnabled(true);
     }
@@ -159,9 +182,9 @@ public class PlayerApp implements MessageObserver {
         robotLabel = new JLabel();
         playFrame = new JFrame();
         robodromePanel = new JPanel();
-        label2 = new JLabel();
+        notifications = new JLabel();
         scrollPane1 = new JScrollPane();
-        playerMoves = new JList();
+        playerMoves = new JList<>();
         panel2 = new JPanel();
         panel3 = new JPanel();
         scrollPane3 = new JScrollPane();
@@ -379,14 +402,27 @@ public class PlayerApp implements MessageObserver {
 
                 robodromePanel.setLayout(new BorderLayout());
 
-                //---- label2 ----
-                label2.setText("AVVISI: ");
-                robodromePanel.add(label2, BorderLayout.NORTH);
+                //---- notifications ----
+                notifications.setText("AVVISI: ");
+                notifications.setFont(new Font("Lucida Grande", Font.BOLD, 16));
+                robodromePanel.add(notifications, BorderLayout.NORTH);
 
                 //======== scrollPane1 ========
                 {
 
                     //---- playerMoves ----
+                    playerMoves.setModel(new AbstractListModel<String>() {
+                        String[] values = {
+                            "roba1",
+                            "roba2",
+                            "roba3",
+                            "roba4"
+                        };
+                        @Override
+                        public int getSize() { return values.length; }
+                        @Override
+                        public String getElementAt(int i) { return values[i]; }
+                    });
                     robotList.setModel(modelList);
                     robotList.setCellRenderer(new ListCellRenderer());
                     scrollPane1.setViewportView(playerMoves);
@@ -608,9 +644,9 @@ public class PlayerApp implements MessageObserver {
     private JLabel robotLabel;
     private JFrame playFrame;
     private JPanel robodromePanel;
-    private JLabel label2;
+    private JLabel notifications;
     private JScrollPane scrollPane1;
-    private JList playerMoves;
+    private JList<String> playerMoves;
     private JPanel panel2;
     private JPanel panel3;
     private JScrollPane scrollPane3;
@@ -672,6 +708,7 @@ public class PlayerApp implements MessageObserver {
                     refuseLabel.setText("La tua richiesta di partecipazione è stata rifiutata dal managaer di partita");
 
                 }
+                logText.append("\nReceived Message: joinMatchReply");
                 break;
 
             case (Match.MatchErrorMsg):
@@ -686,8 +723,15 @@ public class PlayerApp implements MessageObserver {
                 rv = new RobodromeView(new Robodrome(path), 55);
                 robodromePanel.add(rv, BorderLayout.CENTER);
                 playButton.setVisible(true);
+                logText.append("\nReceived Message: startMatch");
                 break;
 
+            case (Match.MancheInstructionPoolMsg):
+                poolInstr = ( HashMap<String,String>) msg.getParameter(0);
+                System.out.println("\t-> Schede Ricevute: " + poolInstr.get(modelRobot.elementAt(0).getName()));
+                notifications.setText("AVVISO: Nuovo pool di schede istruzione ricevute. Ora puoi programmare i tuoi robot!");
+                logText.append("\nReceived Message: instructionPool");
+                break;
 
 
         }
