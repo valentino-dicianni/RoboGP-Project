@@ -71,7 +71,8 @@ public class Match implements MessageObserver {
                 System.out.println("\t-->Giocatori Pronti");
                 sendInstructionPools();
                 getReadyPlayers();
-
+                // a questo punto tutti i giocatori hanno programmato i propri robot
+                // inizio ciclo principale della manche
                 for(int i = 0; i < 5; i++){
                     //manda schede
                     getReadyPlayers();
@@ -101,12 +102,15 @@ public class Match implements MessageObserver {
             Message msg = new Message(Match.MancheInstructionPoolMsg);
             Object[] param = new Object[1];
 
-            HashMap<String, ArrayList<MatchInstruction>> robotsPool =  new HashMap<>();
+            //HashMap<String, ArrayList<String>> robotsPool =  new HashMap<>();
+            HashMap<String, String> robotsPool =  new HashMap<>();
 
             for (MatchRobot robot : this.ownedRobots.get(nickname)) {
                 // per ogni robot di un giocatore
-                if (robot.getLifePoints() > 0)
-                    robotsPool.put(robot.getName(), instructionManager.getRandomInstructionPool(robot.getHitPoints()));
+                if (robot.getLifePoints() > 0) {
+                    //ArrayList<String> stringpool = new ArrayList<>();
+                    robotsPool.put(robot.getName(), instructionManager.getRandomInstructionPool(robot.getHitPoints()).toString());
+                }
             }
 
             param[0] = robotsPool;
@@ -211,23 +215,13 @@ public class Match implements MessageObserver {
                 this.waiting.put(nickName, msg.getSenderConnection());
                 MatchManagerApp.getAppInstance().getIniziarePartitaController().matchJoinRequestArrived(msg);
             }
-        }
-
-        else if(msg.getName().equals(Match.MatchReadyMsg)){
+        } else if(msg.getName().equals(Match.MatchReadyMsg)){
+            // messaggio che il giocatore è pronto per iniziare il match
             setReadyPlayers();
-            sendInstrucionPool((String)msg.getParameter(0));
         }
 
 
     }
-
-    /**
-     *Invia lista istruzioni al giocatore per ogni robot
-     *@param name è il nome del giocatore
-     */
-    private void sendInstrucionPool(String name) {
-    }
-
 
     public State getStatus() {
         return this.status;

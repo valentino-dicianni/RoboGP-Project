@@ -24,4 +24,9 @@ public class MatchInstruction extends Instruction {
     public void setPriority(int priority) {
         this.priority = priority;
     }
+
+    @Override
+    public String toString() {
+        return this.getName()+":"+this.priority;
+    }
 }
