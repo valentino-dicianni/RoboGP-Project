@@ -25,6 +25,7 @@ public class Match implements MessageObserver {
     public static final String MatchReadyMsg = "readyMessage";
 
     public static final String MancheInstructionPoolMsg = "instructionPool";
+    public static final String MancheProgrammedRegistriesMsg = "programmedRegistries";
 
     public enum EndGame {
         First, First3, AllButLast
@@ -71,6 +72,7 @@ public class Match implements MessageObserver {
                 System.out.println("\t-->Giocatori Pronti");
                 sendInstructionPools();
                 getReadyPlayers();
+                System.out.println("\t-->Robot programmati");
                 // a questo punto tutti i giocatori hanno programmato i propri robot
                 // inizio ciclo principale della manche
                 for(int i = 0; i < 5; i++){
@@ -107,9 +109,9 @@ public class Match implements MessageObserver {
 
             for (MatchRobot robot : this.ownedRobots.get(nickname)) {
                 // per ogni robot di un giocatore
-                if (robot.getLifePoints() > 0) {
+                if (robot.getLifePoints() > 1) {
                     //ArrayList<String> stringpool = new ArrayList<>();
-                    robotsPool.put(robot.getName(), instructionManager.getRandomInstructionPool(robot.getHitPoints()).toString());
+                    robotsPool.put(robot.getName(), instructionManager.getRandomInstructionPool(robot.getHitPoints() - 1).toString().replaceAll("[\\[\\]]", ""));
                 }
             }
 
@@ -215,12 +217,41 @@ public class Match implements MessageObserver {
                 this.waiting.put(nickName, msg.getSenderConnection());
                 MatchManagerApp.getAppInstance().getIniziarePartitaController().matchJoinRequestArrived(msg);
             }
-        } else if(msg.getName().equals(Match.MatchReadyMsg)){
-            // messaggio che il giocatore è pronto per iniziare il match
+        } else if (msg.getName().equals(Match.MatchReadyMsg)) {
+            // messaggio da un giocatore, indica che è pronto per iniziare il match
+            setReadyPlayers();
+        } else if (msg.getName().equals(Match.MancheProgrammedRegistriesMsg)) {
+            // messaggio da un giocatore contenente i registri dei suoi robot programmati
+            try {
+                setProgrammedRegistries((String) msg.getParameter(0), (HashMap<String, String>) msg.getParameter(1));
+            } catch (Exception e) {
+                Logger.getLogger(Match.class.getName()).log(Level.SEVERE, "MancheProgrammedRegistriesMsg: unable to cast message arguments", e);
+            }
             setReadyPlayers();
         }
+    }
 
+    /**
+     * metodo che aggiorna i registri dei robot del giocatore dato con i registri dati
+     * @param nickname
+     * @param registries
+     */
+    private void setProgrammedRegistries(String nickname, HashMap<String, String> registries) {
+        // formato: hashmap<robot_name, string registri> registri è nel formato "numeroregistro:nomeistruzione:priorità" separato da ","
+        // se un registro è bloccato ci sarà la stringa "--"
+        for (MatchRobot robot : getPlayerRobots(nickname)) {
+            for (String registry : registries.get(robot.getName()).split(",")) {
+                if (registry.equals("--")) continue;
+                String[] regData = registry.split(":");
+                if (regData.length != 3) continue;
 
+                int regNumber = Integer.parseInt(regData[0]);
+                String instrName = regData[1];
+                int regPriority = Integer.parseInt(regData[2]);
+
+                robot.setRegistry(regNumber, MatchInstruction.getInstructionByName(instrName, regPriority));
+            }
+        }
     }
 
     public State getStatus() {
@@ -283,6 +314,16 @@ public class Match implements MessageObserver {
 
     public int getRobotsPerPlayer() {
         return this.nRobotsXPlayer;
+    }
+
+    public ArrayList<MatchRobot> getPlayerRobots(String nickname) {
+        ArrayList<MatchRobot> playerRobots = new ArrayList<MatchRobot>();
+        for (MatchRobot robot : robots) {
+            if (robot.getOwner().equals(nickname)) {
+                playerRobots.add(robot);
+            }
+        }
+        return playerRobots;
     }
 
     public void refusePlayer(String nickname) {

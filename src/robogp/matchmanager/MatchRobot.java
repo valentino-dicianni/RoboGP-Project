@@ -15,7 +15,7 @@ public class MatchRobot extends RobotMarker {
 
     public MatchRobot(String name, String color) {
         super(name, color);
-        this.hitPoints = 5;
+        this.hitPoints = 10;
         this.lifePoints = 3;
         this.registries = new Registry[5];
         for(int i = 0; i < 5; i++)
@@ -33,6 +33,11 @@ public class MatchRobot extends RobotMarker {
 
     public boolean isShutDown() {
         return isShutDown;
+    }
+
+    public void setRegistry(int regNumber, MatchInstruction instruction) {
+        if (!this.registries[regNumber-1].isLocked())
+            this.registries[regNumber-1].setInstruction(instruction);
     }
 
     public ArrayList<Integer> getLockedRegs(){
