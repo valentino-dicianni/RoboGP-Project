@@ -250,4 +250,7 @@ public class Robodrome {
     public HashMap<Integer, Position> getDockTable() {
         return dockTable;
     }
+    public Position getDockPosition(int dockNum){
+        return dockTable.get(dockNum);
+    }
 }

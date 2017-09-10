@@ -258,26 +258,7 @@ public class Match extends Observable implements MessageObserver{
         }
     }
 
-    private ArrayList<MatchInstruction> getRegistryInstructionList(int regNum) {
-        // ritorna una lista ordinata in base alla priorità da alta a bassa delle istruzioni presenti nel registo x dei robot in partita
-        ArrayList<MatchInstruction> orderedInstr = new ArrayList<>();
-        for(Map.Entry<String, List<MatchRobot>> robotlist : ownedRobots.entrySet()) {
-            for (MatchRobot robot : robotlist.getValue()) {
-                Registry rReg = robot.getRegistry(regNum);
-                if (!rReg.isLocked() && rReg.getInstruction() != null) {
-                    orderedInstr.add(rReg.getInstruction());
-                }
-            }
-        }
-        orderedInstr.sort((o1, o2) -> {
-            if (o1.getPriority() > o2.getPriority()) return -1;
-            else if (o1.getPriority() < o2.getPriority()) return 1;
-            return 0;
-        });
-        return orderedInstr;
-    }
 
-    /**/
 
     public void log(String message) {
         setChanged();
@@ -513,8 +494,11 @@ public class Match extends Observable implements MessageObserver{
             parameters[1] = selection.toArray(new MatchRobot[selection.size()]);
             parameters[2] = theRobodrome.getName();
             reply.setParameters(parameters);
-
             conn.sendMessage(reply);
+
+            for (MatchRobot rob : selection) {
+                rob.setPosition(theRobodrome.getDockPosition(rob.getDock()));
+            }
             this.players.put(nickname, conn);
             added = true;
         } catch (PartnerShutDownException ex) {
