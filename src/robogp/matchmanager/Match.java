@@ -26,6 +26,7 @@ public class Match extends Observable implements MessageObserver{
 
     public static final String MancheInstructionPoolMsg = "instructionPool";
     public static final String MancheProgrammedRegistriesMsg = "programmedRegistries";
+    public static final String MancheDeclarationSubPhaseMsg = "declarationSubPhase";
 
     public enum EndGame {
         First, First3, AllButLast
@@ -70,13 +71,11 @@ public class Match extends Observable implements MessageObserver{
             while(true){
                 getReadyPlayers();
                 System.out.println("\t-->Giocatori Pronti");
-                setChanged();
-                notifyObservers("Giocatori Pronti...");
+                log("Giocatori Pronti...");
 
                 sendInstructionPools();
                 getReadyPlayers();
-                setChanged();
-                notifyObservers("Tutti i robot sono stati programmati correttamente...");
+                log("Tutti i robot sono stati programmati correttamente...");
 
                 System.out.println("\t-->Robot programmati");
                 // a questo punto tutti i giocatori hanno programmato i propri robot
@@ -141,11 +140,71 @@ public class Match extends Observable implements MessageObserver{
      * @param regNum numero del registro attualmente in eseguzione
      */
     public void declarationSubPhase(int regNum) {
-        // messaggio: String strutturato "nomerobot:instname:priority"
+        // messaggio: String strutturato "nomerobot:instrname:priority" separatore ","
+        ArrayList<String> orderedInstr = new ArrayList<>();
+        for(Map.Entry<String, List<MatchRobot>> robotlist : ownedRobots.entrySet()) {
+            for (MatchRobot robot : robotlist.getValue()) {
+                // per ogni robot di un giocatore
+                Registry rReg = robot.getRegistry(regNum);
+                if (!rReg.isLocked() && rReg.getInstruction() != null) {
+                    orderedInstr.add(robot.getName()+":"+rReg.getInstruction().getName()+":"+rReg.getInstruction().getPriority());
+                }
+            }
+        }
 
+        orderedInstr.sort((str1, str2) -> -Integer.compare(Integer.parseInt(str1.split(":")[2]), Integer.parseInt(str2.split(":")[2])));
+        //str1.split(":")[2].compareTo(str2.split(":")[2])
+
+        //sperando che l'arraylist sia ordinata
+        String message = orderedInstr.toString().replaceAll("[\\[\\]\\s]", "");
+
+        for(Map.Entry<String, Connection> player : players.entrySet()) {
+            String nickname = player.getKey();
+            Connection conn = player.getValue();
+
+            Message msg = new Message(Match.MancheDeclarationSubPhaseMsg);
+            Object[] param = new Object[1];
+
+            param[0] = message;
+            msg.setParameters(param);
+
+            try {
+                conn.sendMessage(msg);
+            } catch (PartnerShutDownException ex) {
+                Logger.getLogger(Match.class.getName()).log(Level.SEVERE, "Unable to send registry instructions to player: "+nickname, ex);
+            }
+        }
+    }
+
+    public void moveSubPhase(int regNum) {
+        // sottofase dove vengono calcolate
+    }
+
+    private ArrayList<MatchInstruction> getRegistryInstructionList(int regNum) {
+        // ritorna una lista ordinata in base alla priorità da alta a bassa delle istruzioni presenti nel registo x dei robot in partita
+        ArrayList<MatchInstruction> orderedInstr = new ArrayList<>();
+        for(Map.Entry<String, List<MatchRobot>> robotlist : ownedRobots.entrySet()) {
+            for (MatchRobot robot : robotlist.getValue()) {
+                Registry rReg = robot.getRegistry(regNum);
+                if (!rReg.isLocked() && rReg.getInstruction() != null) {
+                    orderedInstr.add(rReg.getInstruction());
+                }
+            }
+        }
+        orderedInstr.sort((o1, o2) -> {
+            if (o1.getPriority() > o2.getPriority()) return -1;
+            else if (o1.getPriority() < o2.getPriority()) return 1;
+            return 0;
+        });
+        return orderedInstr;
     }
 
     /**/
+
+    public void log(String message) {
+        setChanged();
+        notifyObservers(message);
+    }
 
     private synchronized  void  setReadyPlayers() {
         while(readyPlayers == numPlayers){

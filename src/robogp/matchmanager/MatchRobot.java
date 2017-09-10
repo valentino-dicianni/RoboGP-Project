@@ -41,6 +41,10 @@ public class MatchRobot extends RobotMarker {
             this.registries[regNumber-1].setInstruction(instruction);
     }
 
+    public Registry getRegistry(int regNumber) {
+        return this.registries[regNumber-1];
+    }
+
     public ArrayList<Integer> getLockedRegs(){
         ArrayList<Integer> locks = new ArrayList<>();
         for(int i=0;i<registries.length;i++){
@@ -59,11 +63,11 @@ public class MatchRobot extends RobotMarker {
         for (Registry reG : registries) {
             i++;
             if (reG.isLocked())
-                reg += i+": locked"+(i < 6?sep:"");
+                reg += i+": locked"+(i < 5?sep:"");
             else if (reG.getInstruction() == null)
-                reg += i+": x"+(i < 6?sep:"");
+                reg += i+": x"+(i < 5?sep:"");
             else
-                reg += i+": "+reG.getInstruction().toString()+(i < 6?sep:"");
+                reg += i+": "+reG.getInstruction().toString()+(i < 5?sep:"");
         }
         //Position pos = this.getPosition();
         return this.getName()+": reg= "+reg;
