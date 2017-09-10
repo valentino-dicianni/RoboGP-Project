@@ -14,7 +14,7 @@ import robogp.robodrome.Robodrome;
  *
  * @author claudia
  */
-public class Match implements MessageObserver {
+public class Match extends Observable implements MessageObserver{
 
     public static final int ROBOTSINGAME = 8;
     public static final String MatchJoinRequestMsg = "joinMatchRequest";
@@ -70,8 +70,14 @@ public class Match implements MessageObserver {
             while(true){
                 getReadyPlayers();
                 System.out.println("\t-->Giocatori Pronti");
+                setChanged();
+                notifyObservers("Giocatori Pronti...");
+
                 sendInstructionPools();
                 getReadyPlayers();
+                setChanged();
+                notifyObservers("Tutti i robot sono stati programmati correttamente...");
+
                 System.out.println("\t-->Robot programmati");
                 // a questo punto tutti i giocatori hanno programmato i propri robot
                 // inizio ciclo principale della manche
@@ -84,6 +90,7 @@ public class Match implements MessageObserver {
                     getReadyPlayers();
                     //esecuzione con robodromo
                 }
+
 
             }
 
@@ -205,40 +212,46 @@ public class Match implements MessageObserver {
 
     @Override
     public void notifyMessageReceived(Message msg) {
-        if (msg.getName().equals(Match.MatchJoinRequestMsg)) {
-            String nickName = (String) msg.getParameter(0);
-            boolean isCorrect = true;
-            if(msg.getParameter(1) != null){
-                char[] psswd =  MatchManagerApp.getAppInstance().getIniziarePartitaController().getServerAccessKey().toCharArray();
-                isCorrect = Arrays.equals(psswd, (char[])msg.getParameter(1));
-                System.out.println("\tpassword->  " +( isCorrect ? "Correct" : "Incorrect"));
-                if(!isCorrect) {
-                    Message reply = new Message(Match.MatchErrorMsg);
-                    Object[] parameters = new Object[1];
-                    parameters[0] = "Incorrect Password";
-                    reply.setParameters(parameters);
-                    try {
-                        msg.getSenderConnection().sendMessage(reply);
-                    } catch (PartnerShutDownException e) {
-                        e.printStackTrace();
+        switch (msg.getName()) {
+            case Match.MatchJoinRequestMsg:
+                String nickName = (String) msg.getParameter(0);
+                boolean isCorrect = true;
+                if (msg.getParameter(1) != null) {
+                    char[] psswd = MatchManagerApp.getAppInstance().getIniziarePartitaController().getServerAccessKey().toCharArray();
+                    isCorrect = Arrays.equals(psswd, (char[]) msg.getParameter(1));
+                    System.out.println("\tpassword->  " + (isCorrect ? "Correct" : "Incorrect"));
+                    if (!isCorrect) {
+                        Message reply = new Message(Match.MatchErrorMsg);
+                        Object[] parameters = new Object[1];
+                        parameters[0] = "Incorrect Password";
+                        reply.setParameters(parameters);
+                        try {
+                            msg.getSenderConnection().sendMessage(reply);
+                        } catch (PartnerShutDownException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
-            }
-            if(isCorrect){
-                this.waiting.put(nickName, msg.getSenderConnection());
-                MatchManagerApp.getAppInstance().getIniziarePartitaController().matchJoinRequestArrived(msg);
-            }
-        } else if (msg.getName().equals(Match.MatchReadyMsg)) {
-            // messaggio da un giocatore, indica che è pronto per iniziare il match
-            setReadyPlayers();
-        } else if (msg.getName().equals(Match.MancheProgrammedRegistriesMsg)) {
-            // messaggio da un giocatore contenente i registri dei suoi robot programmati, arg0 = nome giocatore
-            try {
-                setProgrammedRegistries((String) msg.getParameter(0), (HashMap<String, String>) msg.getParameter(1));
-            } catch (Exception e) {
-                Logger.getLogger(Match.class.getName()).log(Level.SEVERE, "MancheProgrammedRegistriesMsg: unable to cast message arguments", e);
-            }
-            setReadyPlayers();
+                if (isCorrect) {
+                    this.waiting.put(nickName, msg.getSenderConnection());
+                    MatchManagerApp.getAppInstance().getIniziarePartitaController().matchJoinRequestArrived(msg);
+                }
+                break;
+
+            case Match.MatchReadyMsg:
+                // messaggio da un giocatore, indica che è pronto per iniziare il match
+                setReadyPlayers();
+                break;
+
+            case Match.MancheProgrammedRegistriesMsg:
+                // messaggio da un giocatore contenente i registri dei suoi robot programmati, arg0 = nome giocatore
+                try {
+                    setProgrammedRegistries((String) msg.getParameter(0), (HashMap<String, String>) msg.getParameter(1));
+                } catch (Exception e) {
+                    Logger.getLogger(Match.class.getName()).log(Level.SEVERE, "MancheProgrammedRegistriesMsg: unable to cast message arguments", e);
+                }
+                setReadyPlayers();
+                break;
         }
     }
 

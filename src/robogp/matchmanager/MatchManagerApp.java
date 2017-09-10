@@ -11,6 +11,8 @@ import java.awt.CardLayout;
 import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 import javax.swing.*;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
@@ -21,7 +23,7 @@ import javax.swing.border.*;
  *
  * @author claudia
  */
-public class MatchManagerApp extends javax.swing.JFrame {
+public class MatchManagerApp extends javax.swing.JFrame implements Observer{
 
     private static MatchManagerApp singleInstance;
     private RobotStatePanel[] robotPanel;
@@ -97,7 +99,11 @@ public class MatchManagerApp extends javax.swing.JFrame {
         startMatchButton = new JButton();
         cancelMatchButton = new JButton();
         ongoingMatchPanel = new JPanel();
-        JLabel jLabel7 = new JLabel();
+        label1 = new JLabel();
+        scrollPane1 = new JScrollPane();
+        managerLog = new JTextArea();
+        panel1 = new JPanel();
+        button1 = new JButton();
 
         //======== this ========
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -168,7 +174,7 @@ public class MatchManagerApp extends javax.swing.JFrame {
                 }
                 jPanel4.add(jPanel1);
             }
-            initPanel.add(jPanel4, BorderLayout.NORTH);
+            initPanel.add(jPanel4, BorderLayout.CENTER);
 
             //======== jPanel5 ========
             {
@@ -414,11 +420,34 @@ public class MatchManagerApp extends javax.swing.JFrame {
 
         //======== ongoingMatchPanel ========
         {
-            ongoingMatchPanel.setLayout(new FlowLayout());
+            ongoingMatchPanel.setLayout(new BorderLayout());
 
-            //---- jLabel7 ----
-            jLabel7.setText("Qui dovrebbe comparire la GUI di gestione della partita in corso");
-            ongoingMatchPanel.add(jLabel7);
+            //---- label1 ----
+            label1.setText("Match Manager Log ");
+            label1.setHorizontalAlignment(SwingConstants.CENTER);
+            label1.setFont(new Font("Lucida Grande", Font.BOLD, 16));
+            ongoingMatchPanel.add(label1, BorderLayout.NORTH);
+
+            //======== scrollPane1 ========
+            {
+
+                //---- managerLog ----
+                managerLog.setBackground(Color.black);
+                managerLog.setForeground(Color.green);
+                managerLog.setText("Inizializzazione Log...");
+                scrollPane1.setViewportView(managerLog);
+            }
+            ongoingMatchPanel.add(scrollPane1, BorderLayout.CENTER);
+
+            //======== panel1 ========
+            {
+                panel1.setLayout(new FlowLayout());
+
+                //---- button1 ----
+                button1.setText("Interrompi Match");
+                panel1.add(button1);
+            }
+            ongoingMatchPanel.add(panel1, BorderLayout.SOUTH);
         }
         contentPane.add(ongoingMatchPanel, "ongoing");
         setSize(737, 373);
@@ -515,6 +544,7 @@ public class MatchManagerApp extends javax.swing.JFrame {
     private void startMatchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startMatchButtonActionPerformed
         this.inizPartController.avviaPartita();
         ((CardLayout) this.getContentPane().getLayout()).show(this.getContentPane(), "ongoing");
+        Match.getInstance().addObserver(this);
     }//GEN-LAST:event_startMatchButtonActionPerformed
 
     /**
@@ -573,6 +603,11 @@ public class MatchManagerApp extends javax.swing.JFrame {
     private JButton startMatchButton;
     private JButton cancelMatchButton;
     private JPanel ongoingMatchPanel;
+    private JLabel label1;
+    private JScrollPane scrollPane1;
+    private JTextArea managerLog;
+    private JPanel panel1;
+    private JButton button1;
     // End of variables declaration//GEN-END:variables
 
     private void setupMatchPanel() {
@@ -583,5 +618,13 @@ public class MatchManagerApp extends javax.swing.JFrame {
             opts[i] = robodromeFiles[i].getName().split("\\.")[0];
         }
         this.robodromeCombo.setModel(new DefaultComboBoxModel<>(opts));
+    }
+    public void appendToLog(String text){
+        managerLog.append("\n"+text);
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        appendToLog((String)arg);
     }
 }

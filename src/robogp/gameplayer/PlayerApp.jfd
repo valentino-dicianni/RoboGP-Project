@@ -197,12 +197,14 @@ new FormModel {
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) ) {
 						name: "panel3"
 						"border": new javax.swing.border.TitledBorder( "LOG Area" )
+						"preferredSize": new java.awt.Dimension( 150, 100 )
 						add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 							name: "scrollPane3"
 							add( new FormComponent( "javax.swing.JTextArea" ) {
 								name: "logText"
 								"text": "Area di testo:"
 								"editable": false
+								"preferredSize": new java.awt.Dimension( 140, 180 )
 							} )
 						} )
 					}, new FormLayoutConstraints( class java.lang.String ) {
@@ -212,6 +214,8 @@ new FormModel {
 						name: "scrollPane2"
 						add( new FormComponent( "javax.swing.JList" ) {
 							name: "robotList"
+							"preferredSize": new java.awt.Dimension( 39, 25 )
+							"maximumSize": new java.awt.Dimension( 39, 25 )
 							auxiliary() {
 								"JavaCodeGenerator.postInitCode": "robotList.setModel(modelRobot);\nrobotList.setCellRenderer(new RobotCellRenderer());\n"
 							}
@@ -228,6 +232,7 @@ new FormModel {
 						add( new FormComponent( "javax.swing.JButton" ) {
 							name: "progRobot"
 							"text": "Programma Robot"
+							"enabled": false
 							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "progRobotActionPerformed", true ) )
 						}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 							"value": "cell 0 0"

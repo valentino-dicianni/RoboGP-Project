@@ -175,6 +175,7 @@ public class PlayerApp implements MessageObserver {
         regIV.setSelectedIndex(0);
         regV.setEnabled(false);
         ok5.setEnabled(false);
+        confirmButton.setEnabled(false);
         regV.setSelectedIndex(0);
         if(regResponseMsg.size() == modelRobot.size()){
             iniziaButton.setEnabled(true);
@@ -184,12 +185,15 @@ public class PlayerApp implements MessageObserver {
     }
 
     private void iniziaButtonActionPerformed(ActionEvent e) {
+        progRobot.setEnabled(false);
         Message msg = new Message(Match.MancheProgrammedRegistriesMsg);
         Object[] pars = new Object[2];
         pars[0] = nickname;
         pars[1] = regResponseMsg;
         msg.setParameters(pars);
         controller.sendMessage(msg);
+        logText.append("\nSchede istruzione inviate al server");
+        iniziaButton.setEnabled(false);
     }
 
 
@@ -474,6 +478,7 @@ public class PlayerApp implements MessageObserver {
                     //======== panel3 ========
                     {
                         panel3.setBorder(new TitledBorder("LOG Area"));
+                        panel3.setPreferredSize(new Dimension(150, 100));
                         panel3.setLayout(new FlowLayout());
 
                         //======== scrollPane3 ========
@@ -482,6 +487,7 @@ public class PlayerApp implements MessageObserver {
                             //---- logText ----
                             logText.setText("Area di testo:");
                             logText.setEditable(false);
+                            logText.setPreferredSize(new Dimension(140, 180));
                             scrollPane3.setViewportView(logText);
                         }
                         panel3.add(scrollPane3);
@@ -492,6 +498,8 @@ public class PlayerApp implements MessageObserver {
                     {
 
                         //---- robotList ----
+                        robotList.setPreferredSize(new Dimension(39, 25));
+                        robotList.setMaximumSize(new Dimension(39, 25));
                         robotList.setModel(modelRobot);
                         robotList.setCellRenderer(new RobotCellRenderer());
                         scrollPane2.setViewportView(robotList);
@@ -513,6 +521,7 @@ public class PlayerApp implements MessageObserver {
 
                         //---- progRobot ----
                         progRobot.setText("Programma Robot");
+                        progRobot.setEnabled(false);
                         progRobot.addActionListener(e -> progRobotActionPerformed(e));
                         panel4.add(progRobot, "cell 0 0");
 
@@ -770,6 +779,7 @@ public class PlayerApp implements MessageObserver {
                 poolInstr = ( HashMap<String,String>) msg.getParameter(0);
                 notifications.setText("AVVISO: Nuovo pool di schede istruzione ricevute. Ora puoi programmare i tuoi robot!");
                 logText.append("\nReceived Message: instructionPool");
+                progRobot.setEnabled(true);
                 break;
 
 

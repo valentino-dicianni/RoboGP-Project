@@ -6,6 +6,7 @@ new FormModel {
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.CardLayout ) ) {
 			name: "trainingFrame"
 			"defaultCloseOperation": 3
+			"title": "RoboGP: Training Mode"
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 				"$layoutConstraints": "hidemode 3"
 				"$columnConstraints": "[fill][fill][fill][fill][fill][fill][fill][fill][fill][fill][fill]"
@@ -152,7 +153,7 @@ new FormModel {
 				"value": "prog"
 			} )
 		}, new FormLayoutConstraints( null ) {
-			"location": new java.awt.Point( 15, 20 )
+			"location": new java.awt.Point( 95, 35 )
 			"size": new java.awt.Dimension( 585, 275 )
 		} )
 		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.BorderLayout ) ) {
@@ -160,17 +161,24 @@ new FormModel {
 			"defaultCloseOperation": 3
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 				name: "trainPanel"
+				"background": sfield java.awt.Color black
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "label6"
-					"text": "Il Robodromo è pronto!"
+					"text": "Programma di Allenamento RoboGP"
+					"horizontalAlignment": 0
+					"background": sfield java.awt.Color black
+					"foreground": sfield java.awt.Color white
+					"font": new java.awt.Font( "Lucida Grande", 1, 18 )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "North"
 				} )
 				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 					name: "scrollPane1"
+					"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
 					add( new FormComponent( "javax.swing.JList" ) {
 						name: "progRenderList"
 						"background": sfield java.awt.Color black
+						"border": sfield com.jformdesigner.model.FormObject NULL_VALUE
 						auxiliary() {
 							"JavaCodeGenerator.typeParameters": "Instruction"
 							"JavaCodeGenerator.postInitCode": "progRenderList.setModel(new DefaultListModel());"
@@ -182,21 +190,23 @@ new FormModel {
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) ) {
 					name: "buttonPanel"
 					"background": sfield java.awt.Color white
+					"font": new java.awt.Font( "Lucida Grande", 1, 16 )
 					add( new FormComponent( "javax.swing.JButton" ) {
 						name: "iniziaButton"
 						"text": "Start"
 						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "iniziaButtonActionPerformed", true ) )
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "button2"
+						name: "stopButton"
 						"text": "Stop"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "stopButtonActionPerformed", true ) )
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "button3"
+						name: "pauseButton"
 						"text": "Pause"
 					} )
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "button4"
+						name: "resumeButton"
 						"text": "Resume"
 					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
@@ -206,7 +216,7 @@ new FormModel {
 				"value": "Center"
 			} )
 		}, new FormLayoutConstraints( null ) {
-			"location": new java.awt.Point( 25, 325 )
+			"location": new java.awt.Point( 140, 315 )
 			"size": new java.awt.Dimension( 525, 445 )
 		} )
 	}
