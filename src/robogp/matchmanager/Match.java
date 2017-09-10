@@ -8,7 +8,12 @@ import connection.PartnerShutDownException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import robogp.common.RobotMarker;
+import robogp.robodrome.Direction;
+import robogp.robodrome.Position;
 import robogp.robodrome.Robodrome;
+import robogp.robodrome.Rotation;
 
 /**
  *
@@ -27,6 +32,7 @@ public class Match extends Observable implements MessageObserver{
     public static final String MancheInstructionPoolMsg = "instructionPool";
     public static final String MancheProgrammedRegistriesMsg = "programmedRegistries";
     public static final String MancheDeclarationSubPhaseMsg = "declarationSubPhase";
+    public static final String MancheRobotsAnimationsMsg = "robotsMoveAnimations";
 
     public enum EndGame {
         First, First3, AllButLast
@@ -81,11 +87,16 @@ public class Match extends Observable implements MessageObserver{
                 // a questo punto tutti i giocatori hanno programmato i propri robot
                 // inizio ciclo principale della manche
                 //printRobots();
-                for(int i = 1; i <= 5; i++){
+                log("Inizio ciclo principale esecuzione Manche");
+                for(int i = 1; i <= 5; i++) {
+                    log("Inizio esecuzione registro "+i);
                     //manda lista ordinata in base a priorità di schede istr ai giocatori secondo registro corrente
                     declarationSubPhase(i);
+                    log("Tutti i robot sono stati programmati correttamente...");
                     getReadyPlayers();
-                    //dichiarazione
+                    //move subphase
+                    moveSubPhase(i);
+                    log("Tutte le animazioni della sottofase Mossa sono state inviate.");
                     getReadyPlayers();
                     //esecuzione con robodromo
                 }
@@ -158,11 +169,82 @@ public class Match extends Observable implements MessageObserver{
         //sperando che l'arraylist sia ordinata
         String message = orderedInstr.toString().replaceAll("[\\[\\]\\s]", "");
 
+        broadcastMessage(message, Match.MancheDeclarationSubPhaseMsg);
+    }
+
+    public void moveSubPhase(int regNum) {
+        // sottofase dove vengono calcolate le animazioni
+        // si prendono i robot in ordine per
+        ArrayList<MatchRobot> orderedRobotList = new ArrayList<>();
+        for(Map.Entry<String, List<MatchRobot>> robotlist : ownedRobots.entrySet()) {
+            //orderedRobotList.addAll(robotlist.getValue());
+            for (MatchRobot validrobot : robotlist.getValue()) {
+                if (!validrobot.getRegistry(regNum).isLocked() && validrobot.getRegistry(regNum).getInstruction() != null) orderedRobotList.add(validrobot);
+            }
+        }
+
+        orderedRobotList.sort((mr1, mr2) -> -Integer.compare(mr1.getRegistry(regNum).getInstruction().getPriority(), mr2.getRegistry(regNum).getInstruction().getPriority()));
+        /*orderedRobotList.sort((r1, r2) -> {
+            MatchInstruction r1i = r1.getRegistry(regNum).getInstruction();
+            MatchInstruction r2i = r2.getRegistry(regNum).getInstruction();
+            if (r1i != null && r2i != null)
+                return -Integer.compare(r1i.getPriority(), r2i.getPriority());
+            else if (r1i == null && r2i != null)
+                return -1;
+            else if (r1i != null && r2i == null)
+                return 1;
+            return 0;
+        });*/
+
+        // dalla lista ordinata di robot in base alla priorità dell'istruzione del registro regNum si fanno le animazioni di quel registro
+        log("Verranno calcolate "+orderedRobotList.size()+" animazioni");
+        String[] animationInstr = new String[orderedRobotList.size()];
+        int i = 0;
+        for (MatchRobot robot : orderedRobotList) {
+
+            Position robotPos = robot.getPosition();
+            //System.out.println("initial posX="+robotPos.getPosX()+", posY="+robotPos.getPosY());
+            MatchInstruction instrToExecute = robot.getRegistry(regNum).getInstruction();
+            int steps;
+            int stepstaken = 0;
+            Direction chosendir = robotPos.getDirection();
+            Rotation instrRot = instrToExecute.getRotation();
+
+            for (steps = instrToExecute.getStepsToTake(); steps > 0; steps--) {
+                // controllo che non ci siano muri
+                if (this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), chosendir)) {
+                    break;
+                }
+                // il percorso per la prossima cella è libero, continuo a muovermi
+                robotPos.changePosition(1, instrRot);
+                stepstaken++;
+            }
+            // se instruzione backup
+            if (steps == -1 && !this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), Direction.getOppositeDirection(chosendir))) {
+                stepstaken = Math.abs(steps);
+                robotPos.changePosition(steps, instrRot);
+                chosendir = Direction.getOppositeDirection(chosendir);
+            }
+            if (instrToExecute.getStepsToTake() == 0) { // se istruzione rotazione
+                robotPos.changePosition(0, instrRot);
+            }
+
+            // animazione codificata del movimento fatto con scheda istruzione
+            animationInstr[i] = robot.getName()+":"+stepstaken + ":" + chosendir + ":" + instrRot;
+            i++;
+        }
+
+        String message = Arrays.toString(animationInstr).replaceAll("[\\[\\]\\s]", "");;
+
+        broadcastMessage(message, MancheRobotsAnimationsMsg);
+    }
+
+    private void broadcastMessage(String message, String messageType) {
         for(Map.Entry<String, Connection> player : players.entrySet()) {
             String nickname = player.getKey();
             Connection conn = player.getValue();
 
-            Message msg = new Message(Match.MancheDeclarationSubPhaseMsg);
+            Message msg = new Message(messageType);
             Object[] param = new Object[1];
 
             param[0] = message;
@@ -171,13 +253,9 @@ public class Match extends Observable implements MessageObserver{
             try {
                 conn.sendMessage(msg);
             } catch (PartnerShutDownException ex) {
-                Logger.getLogger(Match.class.getName()).log(Level.SEVERE, "Unable to send registry instructions to player: "+nickname, ex);
+                Logger.getLogger(Match.class.getName()).log(Level.SEVERE, "Unable to send broadcast message "+messageType+" to player: "+nickname, ex);
             }
         }
-    }
-
-    public void moveSubPhase(int regNum) {
-        // sottofase dove vengono calcolate
     }
 
     private ArrayList<MatchInstruction> getRegistryInstructionList(int regNum) {
