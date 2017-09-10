@@ -897,6 +897,10 @@ public class RobodromeView extends JComponent {
         }
     }
 
+    public Robodrome getDrome() {
+        return drome;
+    }
+
     /**
      * Aggiunge un Animation Observer al robodromo, che riceverà
      * notifiche sull'inizio e la fine dell'animazione.

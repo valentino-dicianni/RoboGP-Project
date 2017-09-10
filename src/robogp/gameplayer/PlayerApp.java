@@ -19,6 +19,7 @@ import net.miginfocom.swing.*;
 import robogp.common.Instruction;
 import robogp.matchmanager.Match;
 import robogp.matchmanager.MatchRobot;
+import robogp.robodrome.Position;
 import robogp.robodrome.Robodrome;
 import robogp.robodrome.view.RobodromeView;
 
@@ -767,6 +768,7 @@ public class PlayerApp implements MessageObserver {
                 path = "robodromes/" + path.toLowerCase() + ".txt";
                 rv = new RobodromeView(new Robodrome(path), 55);
                 robodromePanel.add(rv, BorderLayout.CENTER);
+                setupRobots(modelRobot);
                 playButton.setVisible(true);
                 logText.append("\nReceived Message: startMatch");
                 break;
@@ -790,6 +792,16 @@ public class PlayerApp implements MessageObserver {
 
         }
 
+    }
+
+    public void setupRobots(DefaultListModel<MatchRobot> upRobots) {
+        Robodrome theDrome = rv.getDrome();
+        HashMap<Integer,Position> dockTable = theDrome.getDockTable();
+        for(int i=0;i<upRobots.size();i++){
+           MatchRobot rob =  upRobots.getElementAt(i);
+           rv.placeRobot(rob,dockTable.get(rob.getDock()).getDirection(),dockTable.get(rob.getDock()).getPosX(),
+                   dockTable.get(rob.getDock()).getPosY(),true);
+        }
     }
 }
 

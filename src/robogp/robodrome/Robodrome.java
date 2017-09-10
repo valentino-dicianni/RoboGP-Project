@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -24,6 +25,9 @@ public class Robodrome {
     private final int columns;
     private final java.util.ArrayList<CellLaser> allLasers;
     private int docksCount;
+    private HashMap<Integer, Position> dockTable= new HashMap<>();
+
+    //TODO modificare training
     private ArrayList<Position> dockPos = new ArrayList();
 
     /**
@@ -72,7 +76,9 @@ public class Robodrome {
                 }
                 if (board[r][c] instanceof FloorCell && ((FloorCell)board[r][c]).isDock()) {
                     this.docksCount++;
+                    //TODO modificare training
                     Position doc = new Position(r,c ,((FloorCell)board[r][c]).getDockDirection());
+                    dockTable.put(((FloorCell)board[r][c]).getDock(), doc);
                     dockPos.add(doc);
                 }
             }
@@ -239,5 +245,9 @@ public class Robodrome {
 
     public ArrayList<Position> getDockPos() {
         return dockPos;
+    }
+
+    public HashMap<Integer, Position> getDockTable() {
+        return dockTable;
     }
 }
