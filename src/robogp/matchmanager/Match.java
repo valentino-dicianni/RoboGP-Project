@@ -75,9 +75,10 @@ public class Match implements MessageObserver {
                 System.out.println("\t-->Robot programmati");
                 // a questo punto tutti i giocatori hanno programmato i propri robot
                 // inizio ciclo principale della manche
-                printRobots();
-                for(int i = 0; i < 5; i++){
-                    //manda schede
+                //printRobots();
+                for(int i = 1; i <= 5; i++){
+                    //manda lista ordinata in base a priorità di schede istr ai giocatori secondo registro corrente
+                    declarationSubPhase(i);
                     getReadyPlayers();
                     //dichiarazione
                     getReadyPlayers();
@@ -126,6 +127,15 @@ public class Match implements MessageObserver {
             }
         }
         instructionManager.resetInstructionPool();
+    }
+
+    /**
+     * manda le schede istruzione che verranno eseguite nella sottofase per il dato registro
+     * @param regNum numero del registro attualmente in eseguzione
+     */
+    public void declarationSubPhase(int regNum) {
+        // messaggio: String strutturato "nomerobot:instname:priority"
+
     }
 
     /**/
@@ -240,7 +250,7 @@ public class Match implements MessageObserver {
     private void setProgrammedRegistries(String nickname, HashMap<String, String> registries) {
         // formato: hashmap<robot_name, string registri> registri è nel formato "numeroregistro:nomeistruzione:priorità" separato da ","
         // se un registro è bloccato ci sarà la stringa "--"
-        for (MatchRobot robot : getPlayerRobots(nickname)) {
+        for (MatchRobot robot : ownedRobots.get(nickname)) {
             for (String registry : registries.get(robot.getName()).split(",")) {
                 if (registry.equals("--")) continue;
                 String[] regData = registry.split(":");
@@ -315,16 +325,6 @@ public class Match implements MessageObserver {
 
     public int getRobotsPerPlayer() {
         return this.nRobotsXPlayer;
-    }
-
-    public ArrayList<MatchRobot> getPlayerRobots(String nickname) {
-        ArrayList<MatchRobot> playerRobots = new ArrayList<MatchRobot>();
-        for (MatchRobot robot : robots) {
-            if (robot != null && robot.getOwner().equals(nickname)) {
-                playerRobots.add(robot);
-            }
-        }
-        return playerRobots;
     }
 
     public void refusePlayer(String nickname) {
