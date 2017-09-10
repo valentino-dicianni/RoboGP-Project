@@ -75,6 +75,7 @@ public class Match implements MessageObserver {
                 System.out.println("\t-->Robot programmati");
                 // a questo punto tutti i giocatori hanno programmato i propri robot
                 // inizio ciclo principale della manche
+                printRobots();
                 for(int i = 0; i < 5; i++){
                     //manda schede
                     getReadyPlayers();
@@ -221,7 +222,7 @@ public class Match implements MessageObserver {
             // messaggio da un giocatore, indica che è pronto per iniziare il match
             setReadyPlayers();
         } else if (msg.getName().equals(Match.MancheProgrammedRegistriesMsg)) {
-            // messaggio da un giocatore contenente i registri dei suoi robot programmati
+            // messaggio da un giocatore contenente i registri dei suoi robot programmati, arg0 = nome giocatore
             try {
                 setProgrammedRegistries((String) msg.getParameter(0), (HashMap<String, String>) msg.getParameter(1));
             } catch (Exception e) {
@@ -319,7 +320,7 @@ public class Match implements MessageObserver {
     public ArrayList<MatchRobot> getPlayerRobots(String nickname) {
         ArrayList<MatchRobot> playerRobots = new ArrayList<MatchRobot>();
         for (MatchRobot robot : robots) {
-            if (robot.getOwner().equals(nickname)) {
+            if (robot != null && robot.getOwner().equals(nickname)) {
                 playerRobots.add(robot);
             }
         }
@@ -398,5 +399,11 @@ public class Match implements MessageObserver {
 
     public int getMaxPlayers() {
         return this.nMaxPlayers;
+    }
+
+    public void printRobots() {
+        for(MatchRobot rb : this.robots) {
+            System.out.println(rb.toString());
+        }
     }
 }

@@ -1,6 +1,7 @@
 package robogp.matchmanager;
 
 import robogp.common.RobotMarker;
+import robogp.robodrome.Position;
 
 import java.util.ArrayList;
 
@@ -48,5 +49,23 @@ public class MatchRobot extends RobotMarker {
             }
         }
         return locks;
+    }
+
+    @Override
+    public String toString() {
+        String reg = "";
+        String sep = ", ";
+        int i = 0;
+        for (Registry reG : registries) {
+            i++;
+            if (reG.isLocked())
+                reg += i+": locked"+(i < 6?sep:"");
+            else if (reG.getInstruction() == null)
+                reg += i+": x"+(i < 6?sep:"");
+            else
+                reg += i+": "+reG.getInstruction().toString()+(i < 6?sep:"");
+        }
+        //Position pos = this.getPosition();
+        return this.getName()+": reg= "+reg;
     }
 }

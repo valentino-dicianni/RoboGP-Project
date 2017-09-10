@@ -768,8 +768,6 @@ public class PlayerApp implements MessageObserver {
 
             case (Match.MancheInstructionPoolMsg):
                 poolInstr = ( HashMap<String,String>) msg.getParameter(0);
-                System.out.println("\t-> Schede Ricevute: " + poolInstr.get(modelRobot.elementAt(0).getName()));
-                System.out.println("\t-> Schede Ricevute: " + poolInstr.get(modelRobot.elementAt(1).getName()));
                 notifications.setText("AVVISO: Nuovo pool di schede istruzione ricevute. Ora puoi programmare i tuoi robot!");
                 logText.append("\nReceived Message: instructionPool");
                 break;
