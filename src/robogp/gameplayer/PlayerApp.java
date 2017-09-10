@@ -102,8 +102,10 @@ public class PlayerApp implements MessageObserver {
 
 
     private void setRegister(JComboBox reg){
+        reg.removeAllItems();
         String pool = poolInstr.get(((MatchRobot)robotList.getSelectedValue()).getName());
         String[] schede = pool.split(",");
+        reg.addItem("--");
         for(String item : schede)
             reg.addItem(item);
     }
@@ -113,9 +115,6 @@ public class PlayerApp implements MessageObserver {
         setRegister(regI);
     }
 
-    private void confirmButtonActionPerformed(ActionEvent e) {
-        programDialog.setVisible(false);
-    }
 
     private void ok1ActionPerformed(ActionEvent e) {
         setRegister(regII);
@@ -155,6 +154,45 @@ public class PlayerApp implements MessageObserver {
         confirmButton.setEnabled(true);
     }
 
+
+    private HashMap<String,String > regResponseMsg = new HashMap<>();
+
+    private void confirmButtonActionPerformed(ActionEvent e) {
+        String str = "1:"+regI.getSelectedItem()+", "+"2:"+regII.getSelectedItem()+", "+"3:"+regIII.getSelectedItem()+", "+
+                "4:"+regIV.getSelectedItem()+", "+"5:"+regV.getSelectedItem();
+        str = str.replaceAll("\\s","");
+        regResponseMsg.put(((MatchRobot)robotList.getSelectedValue()).getName(), str);
+        System.out.println(str);
+        programDialog.setVisible(false);
+        regII.setEnabled(false);
+        ok2.setEnabled(false);
+        regII.setSelectedIndex(0);
+        regIII.setEnabled(false);
+        ok3.setEnabled(false);
+        regIII.setSelectedIndex(0);
+        regIV.setEnabled(false);
+        ok4.setEnabled(false);
+        regIV.setSelectedIndex(0);
+        regV.setEnabled(false);
+        ok5.setEnabled(false);
+        regV.setSelectedIndex(0);
+        if(regResponseMsg.size() == modelRobot.size()){
+            iniziaButton.setEnabled(true);
+        }
+
+
+    }
+
+    private void iniziaButtonActionPerformed(ActionEvent e) {
+        Message msg = new Message(Match.MancheProgrammedRegistriesMsg);
+        Object[] pars = new Object[2];
+        pars[0] = nickname;
+        pars[1] = regResponseMsg;
+        msg.setParameters(pars);
+        controller.sendMessage(msg);
+    }
+
+
     private void initComponents() {
         // JFormDesigner - Component initialization - DO NOT MODIFY  //GEN-BEGIN:initComponents
         // Generated using JFormDesigner Evaluation license - valka getz
@@ -193,7 +231,7 @@ public class PlayerApp implements MessageObserver {
         robotList = new JList();
         panel4 = new JPanel();
         progRobot = new JButton();
-        button9 = new JButton();
+        iniziaButton = new JButton();
         button10 = new JButton();
         button11 = new JButton();
         programDialog = new JDialog();
@@ -478,9 +516,11 @@ public class PlayerApp implements MessageObserver {
                         progRobot.addActionListener(e -> progRobotActionPerformed(e));
                         panel4.add(progRobot, "cell 0 0");
 
-                        //---- button9 ----
-                        button9.setText("text");
-                        panel4.add(button9, "cell 0 1");
+                        //---- iniziaButton ----
+                        iniziaButton.setText("Inizia");
+                        iniziaButton.setEnabled(false);
+                        iniziaButton.addActionListener(e -> iniziaButtonActionPerformed(e));
+                        panel4.add(iniziaButton, "cell 0 1");
 
                         //---- button10 ----
                         button10.setText("text");
@@ -530,7 +570,7 @@ public class PlayerApp implements MessageObserver {
 
             //---- regI ----
             regI.setModel(new DefaultComboBoxModel<>(new String[] {
-                "--Selezionare una scheda--"
+                "--"
             }));
             programDialogContentPane.add(regI, "cell 1 2");
 
@@ -545,7 +585,7 @@ public class PlayerApp implements MessageObserver {
 
             //---- regII ----
             regII.setModel(new DefaultComboBoxModel<>(new String[] {
-                "--Selezionare una scheda--"
+                "--"
             }));
             regII.setEnabled(false);
             programDialogContentPane.add(regII, "cell 1 3");
@@ -562,7 +602,7 @@ public class PlayerApp implements MessageObserver {
 
             //---- regIII ----
             regIII.setModel(new DefaultComboBoxModel<>(new String[] {
-                "--Selezionare una scheda--"
+                "--"
             }));
             regIII.setEnabled(false);
             programDialogContentPane.add(regIII, "cell 1 4");
@@ -579,7 +619,7 @@ public class PlayerApp implements MessageObserver {
 
             //---- regIV ----
             regIV.setModel(new DefaultComboBoxModel<>(new String[] {
-                "--Selezionare una scheda--"
+                "--"
             }));
             regIV.setEnabled(false);
             programDialogContentPane.add(regIV, "cell 1 5");
@@ -596,7 +636,7 @@ public class PlayerApp implements MessageObserver {
 
             //---- regV ----
             regV.setModel(new DefaultComboBoxModel<>(new String[] {
-                "--Selezionare una scheda--"
+                "--"
             }));
             regV.setEnabled(false);
             programDialogContentPane.add(regV, "cell 1 6");
@@ -655,7 +695,7 @@ public class PlayerApp implements MessageObserver {
     private JList robotList;
     private JPanel panel4;
     private JButton progRobot;
-    private JButton button9;
+    private JButton iniziaButton;
     private JButton button10;
     private JButton button11;
     private JDialog programDialog;
@@ -729,6 +769,7 @@ public class PlayerApp implements MessageObserver {
             case (Match.MancheInstructionPoolMsg):
                 poolInstr = ( HashMap<String,String>) msg.getParameter(0);
                 System.out.println("\t-> Schede Ricevute: " + poolInstr.get(modelRobot.elementAt(0).getName()));
+                System.out.println("\t-> Schede Ricevute: " + poolInstr.get(modelRobot.elementAt(1).getName()));
                 notifications.setText("AVVISO: Nuovo pool di schede istruzione ricevute. Ora puoi programmare i tuoi robot!");
                 logText.append("\nReceived Message: instructionPool");
                 break;

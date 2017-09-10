@@ -233,8 +233,10 @@ new FormModel {
 							"value": "cell 0 0"
 						} )
 						add( new FormComponent( "javax.swing.JButton" ) {
-							name: "button9"
-							"text": "text"
+							name: "iniziaButton"
+							"text": "Inizia"
+							"enabled": false
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "iniziaButtonActionPerformed", true ) )
 						}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 							"value": "cell 0 1"
 						} )
@@ -285,8 +287,8 @@ new FormModel {
 			add( new FormComponent( "javax.swing.JComboBox" ) {
 				name: "regI"
 				"model": new javax.swing.DefaultComboBoxModel {
-					selectedItem: "--Selezionare una scheda--"
-					addElement( "--Selezionare una scheda--" )
+					selectedItem: "--"
+					addElement( "--" )
 				}
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 				"value": "cell 1 2"
@@ -307,8 +309,8 @@ new FormModel {
 			add( new FormComponent( "javax.swing.JComboBox" ) {
 				name: "regII"
 				"model": new javax.swing.DefaultComboBoxModel {
-					selectedItem: "--Selezionare una scheda--"
-					addElement( "--Selezionare una scheda--" )
+					selectedItem: "--"
+					addElement( "--" )
 				}
 				"enabled": false
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
@@ -331,8 +333,8 @@ new FormModel {
 			add( new FormComponent( "javax.swing.JComboBox" ) {
 				name: "regIII"
 				"model": new javax.swing.DefaultComboBoxModel {
-					selectedItem: "--Selezionare una scheda--"
-					addElement( "--Selezionare una scheda--" )
+					selectedItem: "--"
+					addElement( "--" )
 				}
 				"enabled": false
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
@@ -355,8 +357,8 @@ new FormModel {
 			add( new FormComponent( "javax.swing.JComboBox" ) {
 				name: "regIV"
 				"model": new javax.swing.DefaultComboBoxModel {
-					selectedItem: "--Selezionare una scheda--"
-					addElement( "--Selezionare una scheda--" )
+					selectedItem: "--"
+					addElement( "--" )
 				}
 				"enabled": false
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
@@ -379,8 +381,8 @@ new FormModel {
 			add( new FormComponent( "javax.swing.JComboBox" ) {
 				name: "regV"
 				"model": new javax.swing.DefaultComboBoxModel {
-					selectedItem: "--Selezionare una scheda--"
-					addElement( "--Selezionare una scheda--" )
+					selectedItem: "--"
+					addElement( "--" )
 				}
 				"enabled": false
 			}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
