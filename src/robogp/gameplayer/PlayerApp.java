@@ -16,8 +16,8 @@ import connection.Connection;
 import connection.Message;
 import connection.MessageObserver;
 import net.miginfocom.swing.*;
+import robogp.common.Instruction;
 import robogp.matchmanager.Match;
-import robogp.matchmanager.MatchInstruction;
 import robogp.matchmanager.MatchRobot;
 import robogp.robodrome.Robodrome;
 import robogp.robodrome.view.RobodromeView;
@@ -30,7 +30,7 @@ public class PlayerApp implements MessageObserver {
     private String nickname;
     private RobodromeView rv;
     private DefaultListModel<MatchRobot> modelRobot = new DefaultListModel<>();
-    private DefaultListModel<MatchInstruction> modelList = new DefaultListModel<>();
+    private DefaultListModel<String> modelList = new DefaultListModel<>();
     private HashMap<String,String> poolInstr = new HashMap<>();
 
 
@@ -194,6 +194,7 @@ public class PlayerApp implements MessageObserver {
         controller.sendMessage(msg);
         logText.append("\nSchede istruzione inviate al server");
         iniziaButton.setEnabled(false);
+        notifications.setText("Attendi che tutti i giocatori abbiano programmato i propri robot");
     }
 
 
@@ -226,7 +227,7 @@ public class PlayerApp implements MessageObserver {
         robodromePanel = new JPanel();
         notifications = new JLabel();
         scrollPane1 = new JScrollPane();
-        playerMoves = new JList<>();
+        playerMoves = new JList();
         panel2 = new JPanel();
         panel3 = new JPanel();
         scrollPane3 = new JScrollPane();
@@ -453,32 +454,23 @@ public class PlayerApp implements MessageObserver {
                 {
 
                     //---- playerMoves ----
-                    playerMoves.setModel(new AbstractListModel<String>() {
-                        String[] values = {
-                            "roba1",
-                            "roba2",
-                            "roba3",
-                            "roba4"
-                        };
-                        @Override
-                        public int getSize() { return values.length; }
-                        @Override
-                        public String getElementAt(int i) { return values[i]; }
-                    });
-                    robotList.setModel(modelList);
-                    robotList.setCellRenderer(new ListCellRenderer());
+                    playerMoves.setMaximumSize(new Dimension(45, 51));
+                    playerMoves.setPreferredSize(new Dimension(45, 51));
+                    playerMoves.setModel(modelList);
+
                     scrollPane1.setViewportView(playerMoves);
                 }
                 robodromePanel.add(scrollPane1, BorderLayout.EAST);
 
                 //======== panel2 ========
                 {
+                    panel2.setPreferredSize(new Dimension(437, 150));
                     panel2.setLayout(new BorderLayout());
 
                     //======== panel3 ========
                     {
                         panel3.setBorder(new TitledBorder("LOG Area"));
-                        panel3.setPreferredSize(new Dimension(150, 100));
+                        panel3.setPreferredSize(new Dimension(300, 100));
                         panel3.setLayout(new FlowLayout());
 
                         //======== scrollPane3 ========
@@ -487,7 +479,7 @@ public class PlayerApp implements MessageObserver {
                             //---- logText ----
                             logText.setText("Area di testo:");
                             logText.setEditable(false);
-                            logText.setPreferredSize(new Dimension(140, 180));
+                            logText.setPreferredSize(new Dimension(280, 110));
                             scrollPane3.setViewportView(logText);
                         }
                         panel3.add(scrollPane3);
@@ -498,8 +490,9 @@ public class PlayerApp implements MessageObserver {
                     {
 
                         //---- robotList ----
-                        robotList.setPreferredSize(new Dimension(39, 25));
+                        robotList.setPreferredSize(new Dimension(39, 120));
                         robotList.setMaximumSize(new Dimension(39, 25));
+                        robotList.setSelectedIndex(0);
                         robotList.setModel(modelRobot);
                         robotList.setCellRenderer(new RobotCellRenderer());
                         scrollPane2.setViewportView(robotList);
@@ -695,7 +688,7 @@ public class PlayerApp implements MessageObserver {
     private JPanel robodromePanel;
     private JLabel notifications;
     private JScrollPane scrollPane1;
-    private JList<String> playerMoves;
+    private JList playerMoves;
     private JPanel panel2;
     private JPanel panel3;
     private JScrollPane scrollPane3;
@@ -781,6 +774,14 @@ public class PlayerApp implements MessageObserver {
                 logText.append("\nReceived Message: instructionPool");
                 progRobot.setEnabled(true);
                 break;
+            case (Match.MancheDeclarationSubPhaseMsg):
+                String[]args = ((String) msg.getParameter(0)).split(",");
+                for (String scheda :args){
+                    modelList.addElement(scheda);
+                }
+                playerMoves.setCellRenderer(new ListCellRenderer());
+                notifications.setText("AVVISO: Sottofase di Dichiarazione. Guarda cosa hanno scelto i tuoi avversari!");
+                break;
 
 
         }
@@ -836,7 +837,11 @@ class ListCellRenderer extends DefaultListCellRenderer{
             boolean selected,
             boolean expanded) {
 
-        //label = new JLabel("<html><b>Nome:</b> "++"<br><b>Scheda:</b> "++"<br><b>Priorità:</b> " ++"</html>",new ImageIcon(robot.getImage(60)),JLabel.CENTER);
+        String[]args = ((String) value).split(":");
+        Instruction instruction = new Instruction(args[1]);
+
+        ImageIcon imageIcon = new ImageIcon(instruction.getImage(100));
+        label = new JLabel("<html><b>Nome:</b> "+args[0]+"<br><b>Scheda:</b> "+args[1]+"<br><b>Priorità:</b> " +args[2]+"</html>",imageIcon,JLabel.CENTER);
         label.setVerticalTextPosition(JLabel.BOTTOM);
         label.setHorizontalTextPosition(JLabel.CENTER);
         label.setOpaque(true);

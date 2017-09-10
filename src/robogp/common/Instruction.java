@@ -19,6 +19,9 @@ public class Instruction {
         this.stepsToTake = stepsToTake;
         this.rotation = rotation;
     }
+    public Instruction(String name){
+        this.name = name;
+    }
 
     public int getStepsToTake() {
         return this.stepsToTake;
