@@ -452,10 +452,12 @@ public class PlayerApp implements MessageObserver {
 
                 //======== scrollPane1 ========
                 {
+                    scrollPane1.setVisible(false);
+                    scrollPane1.setPreferredSize(new Dimension(120, 140));
 
                     //---- playerMoves ----
-                    playerMoves.setMaximumSize(new Dimension(45, 51));
-                    playerMoves.setPreferredSize(new Dimension(45, 51));
+                    playerMoves.setMaximumSize(new Dimension(100, 51));
+                    playerMoves.setPreferredSize(new Dimension(100, 51));
                     playerMoves.setModel(modelList);
 
                     scrollPane1.setViewportView(playerMoves);
@@ -740,6 +742,7 @@ public class PlayerApp implements MessageObserver {
                         modelRobot.addElement(robot);
                         robotLabel.setText(robotLabel.getText() + "<br>- " + robot.getName() + " al dock: " + robot.getDock());
                     }
+                    robotList.setSelectedIndex(0);
                     robotLabel.setText(robotLabel.getText() + "</html>");
                     robotLabel.setVisible(true);
                     label6.setVisible(true);
@@ -780,6 +783,7 @@ public class PlayerApp implements MessageObserver {
                     modelList.addElement(scheda);
                 }
                 playerMoves.setCellRenderer(new ListCellRenderer());
+                scrollPane1.setVisible(true);
                 notifications.setText("AVVISO: Sottofase di Dichiarazione. Guarda cosa hanno scelto i tuoi avversari!");
                 break;
 
