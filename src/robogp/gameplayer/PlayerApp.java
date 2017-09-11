@@ -9,6 +9,7 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -34,6 +35,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
     private PlayerController controller = new PlayerController();
     private String nickname;
     private RobodromeView rv;
+    private ArrayList<MatchRobot> robotsOnRobodrome = new ArrayList<>();
     private DefaultListModel<MatchRobot> modelRobot = new DefaultListModel<>();
     private DefaultListModel<String> modelList = new DefaultListModel<>();
     private HashMap<String,String> poolInstr = new HashMap<>();
@@ -459,11 +461,11 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 //======== scrollPane1 ========
                 {
                     scrollPane1.setVisible(false);
-                    scrollPane1.setPreferredSize(new Dimension(120, 140));
+                    scrollPane1.setPreferredSize(new Dimension(140, 140));
 
                     //---- playerMoves ----
-                    playerMoves.setMaximumSize(new Dimension(100, 51));
-                    playerMoves.setPreferredSize(new Dimension(100, 51));
+                    playerMoves.setMaximumSize(new Dimension(120, 51));
+                    playerMoves.setPreferredSize(new Dimension(120, 51));
                     playerMoves.setModel(modelList);
 
                     scrollPane1.setViewportView(playerMoves);
@@ -771,8 +773,9 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 String path = ((String) msg.getParameter(0)).replaceAll("\\s+", "");
                 path = "robodromes/" + path.toLowerCase() + ".txt";
                 rv = new RobodromeView(new Robodrome(path), 55);
+                rv.addObserver(this);
                 robodromePanel.add(rv, BorderLayout.CENTER);
-                setupRobotsOnRobodrome(modelRobot);
+                setupRobotsOnRobodrome((ArrayList<MatchRobot>)msg.getParameter(1));
                 playButton.setVisible(true);
                 logText.append("\nReceived Message: startMatch");
                 break;
@@ -786,6 +789,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
 
             case (Match.MancheDeclarationSubPhaseMsg):
                 String[]args = ((String) msg.getParameter(0)).split(",");
+                modelList.removeAllElements();
                 for (String scheda :args){
                     modelList.addElement(scheda);
                 }
@@ -824,20 +828,19 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         }
     }
 
-    private void setupRobotsOnRobodrome(DefaultListModel<MatchRobot> upRobots) {
+    private void setupRobotsOnRobodrome(ArrayList<MatchRobot> upRobots) {
         Robodrome theDrome = rv.getDrome();
         HashMap<Integer,Position> dockTable = theDrome.getDockTable();
-        for(int i=0;i<upRobots.size();i++){
-           MatchRobot rob =  upRobots.getElementAt(i);
+        for(MatchRobot rob : upRobots){
            //rob.setPosition(dockTable.get(rob.getDock()));
            rv.placeRobot(rob,dockTable.get(rob.getDock()).getDirection(),dockTable.get(rob.getDock()).getPosX(),
                    dockTable.get(rob.getDock()).getPosY(),true);
         }
+        robotsOnRobodrome.addAll(upRobots);
     }
 
     private RobotMarker getRobotByName(String name){
-        for(int i=0;i<modelRobot.size();i++){
-            RobotMarker robot = modelRobot.elementAt(i);
+        for(MatchRobot robot : robotsOnRobodrome){
             if(robot.getName().equals(name)){
                 return robot;
             }

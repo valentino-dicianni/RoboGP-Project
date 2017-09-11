@@ -76,28 +76,27 @@ public class Match extends Observable implements MessageObserver{
         public void run() {
             while(true){
                 getReadyPlayers();
-                System.out.println("\t-->Giocatori Pronti");
                 log("Giocatori Pronti...");
 
                 sendInstructionPools();
                 getReadyPlayers();
                 log("Tutti i robot sono stati programmati correttamente...");
 
-                System.out.println("\t-->Robot programmati");
                 // a questo punto tutti i giocatori hanno programmato i propri robot
                 // inizio ciclo principale della manche
                 //printRobots();
                 log("Inizio ciclo principale esecuzione Manche");
                 for(int i = 1; i <= 5; i++) {
-                    log("Inizio esecuzione registro "+i);
+                    log("Inizio esecuzione registro "+i+"...");
                     //manda lista ordinata in base a priorità di schede istr ai giocatori secondo registro corrente
                     declarationSubPhase(i);
                     log("Tutti i robot sono stati programmati correttamente...");
                     getReadyPlayers();
                     //move subphase
                     moveSubPhase(i);
-                    log("Tutte le animazioni della sottofase Mossa sono state inviate.");
+                    log("Tutte le animazioni della sottofase Mossa sono state inviate...");
                     getReadyPlayers();
+                    log("Tutte le animazioni della sottofase Mossa sono terminate...");
                     //esecuzione con robodromo
                 }
 
@@ -421,8 +420,14 @@ public class Match extends Observable implements MessageObserver{
         this.status = State.Started;
         numPlayers = getPlayerCount();
         Message msg = new Message(Match.MatchStartMsg);
-        Object[]param = new Object[1];
+        Object[]param = new Object[2];
         param[0] = theRobodrome.getName();
+
+        ArrayList<MatchRobot> rOnBord = new ArrayList<>();
+        ownedRobots.forEach((k,v) ->rOnBord.addAll(v));
+
+        param[1] =rOnBord;
+
         msg.setParameters(param);
 
         players.values().stream().forEach((conn) -> {
