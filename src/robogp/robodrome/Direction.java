@@ -26,5 +26,32 @@ public enum Direction {
                 return null;
         }
     }
+
+    public static int getDirectionAxis(Direction direction) {
+        switch (direction) {
+            case N:
+                return -1;
+            case E:
+                return 1;
+            case W:
+                return -1;
+            case S:
+                return 1;
+            default:
+                return 0;
+        }
+    }
+
+    public static boolean isHorizontal(Direction direction) {
+        switch (direction) {
+            case N:
+            case S:
+                return false;
+            case W:
+            case E:
+                return true;
+        }
+        return false;
+    }
 };
 

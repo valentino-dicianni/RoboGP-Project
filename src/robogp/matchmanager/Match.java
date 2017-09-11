@@ -28,6 +28,7 @@ public class Match extends Observable implements MessageObserver{
     public static final String MancheDeclarationSubPhaseMsg = "declarationSubPhase";
     public static final String MancheRobotsAnimationsMsg = "robotsMoveAnimations";
     public static final String MancheRobodromeActivationMsg = "robodromeActivationAnimations";
+    public static final String MancheLasersAndWeaponsMsg = "lasersAndWeaponsAnimations";
 
     public enum EndGame {
         First, First3, AllButLast
@@ -375,7 +376,86 @@ public class Match extends Observable implements MessageObserver{
 
     }
 
+    private void lasersAndWeaponsSubPhase() {
+        // la vista deve fare rv.addLaserFire(robots[0], Direction.E, 3, 15, false, false);
+        // per ogni robot guardo se ci sono altri robot nella via del laser, se si colpisco, aggiungo anim e continue
+        // se no, trovo il primo muro del robodromo dove far fermare il laser
+        ArrayList<MatchRobot> allRobots = new ArrayList<>();
+        for(Map.Entry<String, List<MatchRobot>> robotlist : ownedRobots.entrySet()) {
+            allRobots.addAll(robotlist.getValue());
+        }
+        ArrayList<String> animations = new ArrayList<>();
+        // se trova un robt nella direzione di sparo
+        for (MatchRobot robot : allRobots) {
+            int hitRobotX = -1;
+            int hitRobotY = -1;
+            String enemyDestroyed = "";
+            Position robotPos = robot.getPosition();
+            for (MatchRobot subRobot : allRobots) {
+                boolean hit = false;
+                if (subRobot != robot) { // tutti gli altri robot
+                    int signX = robotPos.getPosX() - subRobot.getPosition().getPosX() > 0? -1:1;
+                    int signY = robotPos.getPosY() - subRobot.getPosition().getPosY() > 0? -1:1;
+                    if ((subRobot.getPosition().getPosX() == robotPos.getPosX() && Direction.getDirectionAxis(robotPos.getDirection()) == signY && Direction.isHorizontal(robotPos.getDirection())) || (
+                            subRobot.getPosition().getPosY() == robotPos.getPosY() && Direction.getDirectionAxis(robotPos.getDirection()) == signX && !Direction.isHorizontal(robotPos.getDirection()))) {
+                        // subot sulla linea di tiro
+                        hitRobotX = subRobot.getPosition().getPosX();
+                        hitRobotY = subRobot.getPosition().getPosY();
+                        // aggiorno statistiche robot
+                        if (!damageRobot(subRobot, 1, 0))
+                            enemyDestroyed = subRobot.getName()+":death";
+                        hit = true;
+                    }
+                }
+                if (hit) break;
+            }
+            if (hitRobotX >= 0 && hitRobotY >= 0) { // calcolo animazione robot colpito
+                //int startColumn = hitRobotX == robotPos.getPosX()? Math.abs(hitRobotY - robotPos.getPosY()) : Math.abs(hitRobotX - robotPos.getPosX());
+                int startpoint = 0;
+                int endpoint = 0;
+                if (Direction.isHorizontal(robotPos.getDirection())) {
+                    startpoint = robotPos.getPosX();
+                    endpoint = hitRobotX;
+                } else {
+                    startpoint = robotPos.getPosY();
+                    endpoint = hitRobotY;
+                }
+                animations.add(robot.getName()+":"+robotPos.getDirection()+":"+startpoint+":"+endpoint+":true:false");
+                if (enemyDestroyed.length() > 0) animations.add(enemyDestroyed);
+            } else {
+                // nessun robot colpito, controllo se laser colpisce qualche muro
+                boolean wallhit = false;
+                if (!Direction.isHorizontal(robotPos.getDirection())) {
+                    for (int i = robotPos.getPosX(); i < theRobodrome.getColumnCount() && i >= 0; i = i +(Direction.getDirectionAxis(robotPos.getDirection()))) {
+                        if (theRobodrome.pathHasWall(i, robotPos.getPosY(), robotPos.getDirection())) {
+                            animations.add(robot.getName()+":"+robotPos.getDirection()+":"+robotPos.getPosX()+":"+i+":false:true");
+                            wallhit = true;
+                            break;
+                        }
+                    }
+                    if (!wallhit) {
+                        animations.add(robot.getName()+":"+robotPos.getDirection()+":"+robotPos.getPosX()+":"+theRobodrome.getColumnCount()+":false:false");
+                    }
+                } else {
+                    for (int i = robotPos.getPosY(); i < theRobodrome.getRowCount() && i >= 0; i = i +(Direction.getDirectionAxis(robotPos.getDirection()))) {
+                        if (theRobodrome.pathHasWall(robotPos.getPosX(), i, robotPos.getDirection())) {
+                            animations.add(robot.getName()+":"+robotPos.getDirection()+":"+robotPos.getPosY()+":"+i+":false:true");
+                            wallhit = true;
+                            break;
+                        }
+                    }
+                    if (!wallhit) {
+                        animations.add(robot.getName()+":"+robotPos.getDirection()+":"+robotPos.getPosY()+":"+theRobodrome.getRowCount()+":false:false");
+                    }
+                }
+            }
+        }
+        log("Laser and weapons subphase end: "+animations.size()+" animations created.");
 
+        String message = animations.toString().replaceAll("[\\[\\]\\s]", "");
+
+        broadcastMessage(message, Match.MancheLasersAndWeaponsMsg);
+    }
 
     /**
      * modifica i dati di robot in base ai danni presi, se alla fine del calcolo dei danni il robot è distrutto allora ritorna false
@@ -433,7 +513,6 @@ public class Match extends Observable implements MessageObserver{
 
         log("Broadcast messages sent: "+i+" of type: "+messageType);
     }
-
 
 
     private void log(String message) {
