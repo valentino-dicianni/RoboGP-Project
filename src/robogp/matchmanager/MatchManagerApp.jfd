@@ -1,0 +1,409 @@
+JFDML JFormDesigner: "6.0.2.0.116" Java: "1.8.0_152-release" encoding: "UTF-8"
+
+new FormModel {
+	contentType: "form/swing"
+	root: new FormRoot {
+		add( new FormWindow( "javax.swing.JFrame", new FormLayoutManager( class java.awt.CardLayout ) ) {
+			name: "this"
+			"defaultCloseOperation": 3
+			"title": "RoboGP Match Manager"
+			"name": "main frame"
+			"$sizePolicy": 1
+			addEvent( new FormEvent( "java.awt.event.WindowListener", "windowClosing", "formWindowClosing", true ) )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "initPanel"
+				"border": new javax.swing.border.EmptyBorder( 20, 5, 5, 5 )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) ) {
+					name: "jPanel4"
+					"border": new javax.swing.border.EmptyBorder( 5, 5, 5, 5 )
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) {
+						"axis": 1
+					} ) {
+						name: "jPanel1"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+							name: "jPanel2"
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "jLabel1"
+								"font": new java.awt.Font( "Lucida Grande", 0, 14 )
+								"text": "Porta su cui girerà il server di gioco:"
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": true
+								}
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "West"
+							} )
+							add( new FormComponent( "javax.swing.JTextField" ) {
+								name: "portField"
+								"columns": 6
+								"text": "2222"
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "Center"
+							} )
+						} )
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+							name: "jPanel3"
+							"border": new javax.swing.border.EmptyBorder( 0, 0, 30, 0 )
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "jLabel2"
+								"font": new java.awt.Font( "Lucida Grande", 0, 14 )
+								"text": "Parola chiave per l'accesso al server:"
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": true
+								}
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "West"
+							} )
+							add( new FormComponent( "javax.swing.JTextField" ) {
+								name: "keyField"
+								"columns": 10
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "Center"
+							} )
+						} )
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) ) {
+					name: "jPanel5"
+					"border": new javax.swing.border.EmptyBorder( 5, 5, 5, 5 )
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "initButton"
+						"font": new java.awt.Font( "Lucida Grande", 0, 18 )
+						"text": "Continua"
+						"alignmentX": 0.5f
+						"maximumSize": new java.awt.Dimension( 122, 40 )
+						"minimumSize": new java.awt.Dimension( 122, 40 )
+						"preferredSize": new java.awt.Dimension( 122, 40 )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "initButtonActionPerformed", true ) )
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "South"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "init"
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "matchPanel"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) ) {
+					name: "jPanel6"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "createButton"
+						"font": new java.awt.Font( "Lucida Grande", 0, 18 )
+						"text": "Crea Partita"
+						"alignmentX": 0.5f
+						"maximumSize": new java.awt.Dimension( 172, 40 )
+						"minimumSize": new java.awt.Dimension( 122, 40 )
+						"preferredSize": new java.awt.Dimension( 172, 40 )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "createButtonActionPerformed", true ) )
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "South"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) ) {
+					name: "jPanel7"
+					"border": new javax.swing.border.EmptyBorder( 20, 5, 5, 5 )
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class javax.swing.BoxLayout ) {
+						"axis": 1
+					} ) {
+						name: "jPanel10"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+							name: "jPanel11"
+							"border": new javax.swing.border.EmptyBorder( 5, 5, 5, 5 )
+							"alignmentX": 0.0f
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "jLabel3"
+								"font": new java.awt.Font( "Lucida Grande", 0, 14 )
+								"text": "Robodromo:"
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": true
+								}
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "West"
+							} )
+							add( new FormComponent( "javax.swing.JComboBox" ) {
+								name: "robodromeCombo"
+								"font": new java.awt.Font( "Lucida Grande", 0, 14 )
+								"model": new javax.swing.DefaultComboBoxModel
+								"preferredSize": new java.awt.Dimension( 200, 33 )
+								auxiliary() {
+									"JavaCodeGenerator.typeParameters": "String"
+								}
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "Center"
+							} )
+						} )
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+							name: "jPanel12"
+							"border": new javax.swing.border.EmptyBorder( 5, 5, 10, 5 )
+							"alignmentX": 0.0f
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "jLabel4"
+								"font": new java.awt.Font( "Lucida Grande", 0, 14 )
+								"text": "Fine partita:"
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": true
+								}
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "West"
+							} )
+							add( new FormComponent( "javax.swing.JComboBox" ) {
+								name: "endGameCombo"
+								"font": new java.awt.Font( "Lucida Grande", 0, 14 )
+								"model": new javax.swing.DefaultComboBoxModel {
+									selectedItem: "primo arrivato"
+									addElement( "primo arrivato" )
+									addElement( "primi 3 arrivati" )
+									addElement( "tutti tranne l'ultimo" )
+								}
+								"minimumSize": new java.awt.Dimension( 152, 27 )
+								"preferredSize": new java.awt.Dimension( 152, 33 )
+								auxiliary() {
+									"JavaCodeGenerator.typeParameters": "String"
+								}
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "Center"
+							} )
+						} )
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+							name: "jPanel13"
+							"border": new javax.swing.border.EmptyBorder( 10, 5, 5, 5 )
+							"alignmentX": 0.0f
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "jLabel5"
+								"font": new java.awt.Font( "Lucida Grande", 0, 14 )
+								"text": "Numero massimo giocatori:"
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": true
+								}
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "West"
+							} )
+							add( new FormComponent( "javax.swing.JComboBox" ) {
+								name: "maxPlayersCombo"
+								"font": new java.awt.Font( "Lucida Grande", 0, 14 )
+								"model": new javax.swing.DefaultComboBoxModel {
+									selectedItem: "2"
+									addElement( "2" )
+									addElement( "3" )
+									addElement( "4" )
+									addElement( "5" )
+									addElement( "6" )
+									addElement( "7" )
+									addElement( "8" )
+								}
+								"preferredSize": new java.awt.Dimension( 100, 33 )
+								auxiliary() {
+									"JavaCodeGenerator.typeParameters": "String"
+								}
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "Center"
+							} )
+						} )
+						add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+							name: "jPanel14"
+							"border": new javax.swing.border.EmptyBorder( 5, 5, 20, 5 )
+							"alignmentX": 0.0f
+							auxiliary() {
+								"JavaCodeGenerator.variableLocal": true
+							}
+							add( new FormComponent( "javax.swing.JLabel" ) {
+								name: "jLabel6"
+								"font": new java.awt.Font( "Lucida Grande", 0, 14 )
+								"text": "Numero robot per giocatore:"
+								auxiliary() {
+									"JavaCodeGenerator.variableLocal": true
+								}
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "West"
+							} )
+							add( new FormComponent( "javax.swing.JComboBox" ) {
+								name: "nRobotsCombo"
+								"font": new java.awt.Font( "Lucida Grande", 0, 14 )
+								"model": new javax.swing.DefaultComboBoxModel {
+									selectedItem: "1"
+									addElement( "1" )
+									addElement( "2" )
+									addElement( "3" )
+									addElement( "4" )
+								}
+								"preferredSize": new java.awt.Dimension( 100, 33 )
+								auxiliary() {
+									"JavaCodeGenerator.typeParameters": "String"
+								}
+							}, new FormLayoutConstraints( class java.lang.String ) {
+								"value": "Center"
+							} )
+						} )
+						add( new FormComponent( "javax.swing.JCheckBox" ) {
+							name: "upgradeCheck"
+							"font": new java.awt.Font( "Lucida Grande", 0, 14 )
+							"text": "Dotazione iniziale upgrade"
+						} )
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "match"
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "playersPanel"
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+					name: "jPanel8"
+					"border": new javax.swing.border.CompoundBorder( new javax.swing.border.EmptyBorder( 2, 2, 2, 2 ), new javax.swing.border.CompoundBorder( new javax.swing.border.EtchedBorder( 1, null, null ), new javax.swing.border.EmptyBorder( 5, 5, 5, 5 ) ) )
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "jScrollPane1"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						add( new FormComponent( "javax.swing.JList" ) {
+							name: "requestList"
+							"model": new javax.swing.DefaultListModel
+							"selectionMode": 0
+							auxiliary() {
+								"JavaCodeGenerator.typeParameters": "String"
+							}
+							addEvent( new FormEvent( "javax.swing.event.ListSelectionListener", "valueChanged", "requestListValueChanged", true ) )
+						} )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "Center"
+					} )
+					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) ) {
+						name: "jPanel15"
+						auxiliary() {
+							"JavaCodeGenerator.variableLocal": true
+						}
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "acceptRequestButton"
+							"text": "Accetta..."
+							"enabled": false
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "acceptRequestButtonActionPerformed", true ) )
+						} )
+						add( new FormComponent( "javax.swing.JButton" ) {
+							name: "rejectRequestButton"
+							"text": "Rifiuta"
+							"enabled": false
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "rejectRequestButtonActionPerformed", true ) )
+						} )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "South"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "West"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.GridLayout ) {
+					"columns": 4
+					"rows": 2
+				} ) {
+					name: "robotRecapPanel"
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) ) {
+					name: "jPanel16"
+					auxiliary() {
+						"JavaCodeGenerator.variableLocal": true
+					}
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "startMatchButton"
+						"font": new java.awt.Font( "Lucida Grande", 0, 18 )
+						"text": "Avvia"
+						"alignmentX": 0.5f
+						"enabled": false
+						"maximumSize": new java.awt.Dimension( 122, 40 )
+						"minimumSize": new java.awt.Dimension( 122, 40 )
+						"preferredSize": new java.awt.Dimension( 122, 40 )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "startMatchButtonActionPerformed", true ) )
+					} )
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "cancelMatchButton"
+						"font": new java.awt.Font( "Lucida Grande", 0, 18 )
+						"text": "Annulla"
+						"alignmentX": 0.5f
+						"maximumSize": new java.awt.Dimension( 122, 40 )
+						"minimumSize": new java.awt.Dimension( 122, 40 )
+						"preferredSize": new java.awt.Dimension( 122, 40 )
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "cancelMatchButtonActionPerformed", true ) )
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "South"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "players"
+			} )
+			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
+				name: "ongoingMatchPanel"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "label1"
+					"text": "Match Manager Log "
+					"horizontalAlignment": 0
+					"font": new java.awt.Font( "Lucida Grande", 1, 16 )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "North"
+				} )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "scrollPane1"
+					add( new FormComponent( "javax.swing.JTextArea" ) {
+						name: "managerLog"
+						"background": sfield java.awt.Color black
+						"foreground": sfield java.awt.Color green
+						"text": "Inizializzazione Log..."
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "Center"
+				} )
+				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) ) {
+					name: "panel1"
+					add( new FormComponent( "javax.swing.JButton" ) {
+						name: "button1"
+						"text": "Interrompi Match"
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "South"
+				} )
+			}, new FormLayoutConstraints( class java.lang.String ) {
+				"value": "ongoing"
+			} )
+		}, new FormLayoutConstraints( null ) {
+			"size": new java.awt.Dimension( 737, 373 )
+			"location": new java.awt.Point( 0, 0 )
+		} )
+	}
+}

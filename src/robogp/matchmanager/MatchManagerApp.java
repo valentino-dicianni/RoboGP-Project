@@ -10,7 +10,9 @@ import java.awt.*;
 import java.awt.CardLayout;
 import java.awt.event.*;
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.*;
@@ -620,7 +622,9 @@ public class MatchManagerApp extends javax.swing.JFrame implements Observer{
         this.robodromeCombo.setModel(new DefaultComboBoxModel<>(opts));
     }
     public void appendToLog(String text){
-        managerLog.append("\n"+text);
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+        managerLog.append("\n["+sdf.format(cal.getTime())+"] "+text);
     }
 
     @Override

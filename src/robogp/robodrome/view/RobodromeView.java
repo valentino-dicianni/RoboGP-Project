@@ -339,7 +339,12 @@ public class RobodromeView extends JComponent {
             throw new RobodromeException("Cannot add robot during animation.");
         }
     }
-    
+
+    public void removeRobot(String name){
+         robotMarkers.remove(name);
+         repaint();
+    }
+
     /**
      * Posiziona sul robodromo un robot giù precedentemente inserito con
      * addRobot. Attenzione: non può essere invocato quando c'è

@@ -4,12 +4,9 @@ import connection.Connection;
 import connection.Message;
 import connection.MessageObserver;
 import connection.PartnerShutDownException;
-
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import robogp.common.RobotMarker;
 import robogp.robodrome.*;
 
 /**
@@ -97,8 +94,10 @@ public class Match extends Observable implements MessageObserver{
                     log("Tutte le animazioni della sottofase Mossa sono terminate...");
                     //esecuzione con robodromo
                     robodromeActivationSubPhase();
-                    log("Tutte le animazioni della sottofase Attivazione robodromo sono state inviate.");
+                    log("Tutte le animazioni della sottofase Attivazione robodromo sono state inviate...");
                     getReadyPlayers();
+                    log("Tutte le animazioni della sottofase Attivazione robodromo sono terminata...");
+
                 }
 
 

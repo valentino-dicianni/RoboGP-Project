@@ -461,11 +461,11 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 //======== scrollPane1 ========
                 {
                     scrollPane1.setVisible(false);
-                    scrollPane1.setPreferredSize(new Dimension(140, 140));
+                    scrollPane1.setPreferredSize(new Dimension(150, 140));
 
                     //---- playerMoves ----
-                    playerMoves.setMaximumSize(new Dimension(120, 51));
-                    playerMoves.setPreferredSize(new Dimension(120, 51));
+                    playerMoves.setMaximumSize(new Dimension(140, 51));
+                    playerMoves.setPreferredSize(new Dimension(140, 51));
                     playerMoves.setModel(modelList);
 
                     scrollPane1.setViewportView(playerMoves);
@@ -480,7 +480,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                     //======== panel3 ========
                     {
                         panel3.setBorder(new TitledBorder("LOG Area"));
-                        panel3.setPreferredSize(new Dimension(300, 100));
+                        panel3.setPreferredSize(new Dimension(300, 120));
                         panel3.setLayout(new FlowLayout());
 
                         //======== scrollPane3 ========
@@ -489,7 +489,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                             //---- logText ----
                             logText.setText("Area di testo:");
                             logText.setEditable(false);
-                            logText.setPreferredSize(new Dimension(280, 110));
+                            logText.setPreferredSize(new Dimension(280, 120));
                             scrollPane3.setViewportView(logText);
                         }
                         panel3.add(scrollPane3);
@@ -804,8 +804,17 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 notifications.setText("AVVISO: Sottofse di movimento . Ora i robot eseguiranno le loro mosse!");
                 logText.append("\nReceived Message: MancheRobotsAnimationsMsg");
                 String[]anim = ((String) msg.getParameter(0)).split(",");
+                rv.startFollowingAction();
                 for(String a: anim)
                     createAnimation(a);
+                rv.play();
+                break;
+
+            case(Match.MancheRobodromeActivationMsg):
+                System.out.println("Animazione: -->"+msg.getParameter(0));
+                String[]pars = ((String) msg.getParameter(0)).split(",");
+                for(String par: pars)
+                    createAnimation(par);
                 rv.play();
                 break;
 
@@ -817,14 +826,47 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
     private void createAnimation(String a) {
         if (a != null) {
             String[] animdata = a.split(":");
-            if (animdata.length == 4) { // animazione scheda/robodromo
+
+            if(animdata.length == 3){ //animazione laser
+                RobotMarker robot = getRobotByName(animdata[0]);
+                Direction dir = Direction.valueOf(animdata[2]);
+                rv.addRobotHit(robot,dir);
+            }
+
+            if (animdata.length == 4) { //animazione scheda/robodromo
                 RobotMarker robot = getRobotByName(animdata[0]);
                 int movement = Integer.parseInt(animdata[1]);
                 Direction dir = Direction.valueOf(animdata[2]);
                 Rotation rot = Rotation.valueOf(animdata[3]);
                 rv.addRobotMove(robot, movement, dir, rot);
             }
-            rv.addPause(600);
+
+            if (animdata.length == 5){ //animazione di caduto o di morte
+                RobotMarker robot = getRobotByName(animdata[0]);
+                int savedposX = Integer.parseInt(animdata[1]);
+                int savedposY = Integer.parseInt(animdata[2]);
+                Direction dir = Direction.valueOf(animdata[3]);
+                String cause = animdata[4];
+
+                switch (cause) {
+                    case "pitfall":
+                        rv.addRobotFall(getRobotByName(animdata[0]));
+                        rv.changeRobotPosition(robot, dir, savedposX, savedposY, false);
+                        break;
+
+                    case "outofrobodrome":
+                        rv.changeRobotPosition(robot, dir, savedposX, savedposY, true);
+                        break;
+
+                    case "death":
+                        rv.removeRobot(robot.getName());
+                        modelList.removeElement(robot);
+                        robotsOnRobodrome.remove(robot);
+                        break;
+                }
+
+            }
+            rv.addPause(1000);
         }
     }
 
@@ -856,6 +898,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
 
     @Override
     public void animationFinished() {
+        rv.stopFollowingAction();
         controller.sendMessage(new Message(Match.MatchReadyMsg));
         logText.append("\nRobotAnimations Finish");
 
@@ -911,10 +954,18 @@ class ListCellRenderer extends DefaultListCellRenderer{
             boolean expanded) {
 
         String[]args = ((String) value).split(":");
-        Instruction instruction = new Instruction(args[1]);
+        if (!args[1].equals("locked")) {
+            Instruction instruction = new Instruction(args[1]);
+            ImageIcon imageIcon = new ImageIcon(instruction.getImage(100));
+            label = new JLabel("<html><b>Nome:</b> " + args[0] + "<br><b>Scheda:</b> " + args[1] + "<br><b>Priorità:</b> " + args[2] + "</html>", imageIcon, JLabel.CENTER);
 
-        ImageIcon imageIcon = new ImageIcon(instruction.getImage(100));
-        label = new JLabel("<html><b>Nome:</b> "+args[0]+"<br><b>Scheda:</b> "+args[1]+"<br><b>Priorità:</b> " +args[2]+"</html>",imageIcon,JLabel.CENTER);
+        }
+        //registro bloccato
+        else{
+            Instruction instruction = new Instruction("lock");
+            ImageIcon imageIcon = new ImageIcon(instruction.getImage(100));
+            label = new JLabel("<html><b>Nome:</b> " + args[0]+"<br><b>Registro Bloccato</b>", imageIcon, JLabel.CENTER);
+        }
         label.setVerticalTextPosition(JLabel.BOTTOM);
         label.setHorizontalTextPosition(JLabel.CENTER);
         label.setOpaque(true);

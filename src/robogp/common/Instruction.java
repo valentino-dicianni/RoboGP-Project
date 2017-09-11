@@ -4,6 +4,8 @@ import robogp.robodrome.Rotation;
 import robogp.robodrome.image.ImageUtil;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +21,8 @@ public class Instruction {
         this.stepsToTake = stepsToTake;
         this.rotation = rotation;
     }
-    public Instruction(String name){
+
+    public Instruction(String name) {
         this.name = name;
     }
 
@@ -34,19 +37,19 @@ public class Instruction {
     public static Instruction getInstructionByName(String instructionName) {
         switch (instructionName) {
             case "move1":
-                return new Instruction(instructionName,1, Rotation.NO);
+                return new Instruction(instructionName, 1, Rotation.NO);
             case "move2":
-                return new Instruction(instructionName,2, Rotation.NO);
+                return new Instruction(instructionName, 2, Rotation.NO);
             case "move3":
-                return new Instruction(instructionName,3, Rotation.NO);
+                return new Instruction(instructionName, 3, Rotation.NO);
             case "turnL":
-                return new Instruction(instructionName,0, Rotation.CCW90);
+                return new Instruction(instructionName, 0, Rotation.CCW90);
             case "turnR":
-                return new Instruction(instructionName,0, Rotation.CW90);
+                return new Instruction(instructionName, 0, Rotation.CW90);
             case "uturn":
-                return new Instruction(instructionName,0, Rotation.CW180);
+                return new Instruction(instructionName, 0, Rotation.CW180);
             case "backup":
-                return new Instruction(instructionName,-1, Rotation.NO);
+                return new Instruction(instructionName, -1, Rotation.NO);
         }
         return null;
     }
@@ -69,6 +72,6 @@ public class Instruction {
 
     @Override
     public String toString() {
-        return "Name: "+name+", Steps: "+stepsToTake+", Angle: "+rotation.toString();
+        return "Name: " + name + ", Steps: " + stepsToTake + ", Angle: " + rotation.toString();
     }
 }
