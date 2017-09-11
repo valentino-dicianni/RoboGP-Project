@@ -178,11 +178,11 @@ new FormModel {
 				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 					name: "scrollPane1"
 					"visible": false
-					"preferredSize": new java.awt.Dimension( 120, 140 )
+					"preferredSize": new java.awt.Dimension( 140, 140 )
 					add( new FormComponent( "javax.swing.JList" ) {
 						name: "playerMoves"
-						"maximumSize": new java.awt.Dimension( 100, 51 )
-						"preferredSize": new java.awt.Dimension( 100, 51 )
+						"maximumSize": new java.awt.Dimension( 120, 51 )
+						"preferredSize": new java.awt.Dimension( 120, 51 )
 						auxiliary() {
 							"JavaCodeGenerator.postInitCode": "playerMoves.setModel(modelList);\n\n"
 						}
@@ -196,14 +196,14 @@ new FormModel {
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) ) {
 						name: "panel3"
 						"border": new javax.swing.border.TitledBorder( "LOG Area" )
-						"preferredSize": new java.awt.Dimension( 300, 100 )
+						"preferredSize": new java.awt.Dimension( 300, 120 )
 						add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 							name: "scrollPane3"
 							add( new FormComponent( "javax.swing.JTextArea" ) {
 								name: "logText"
 								"text": "Area di testo:"
 								"editable": false
-								"preferredSize": new java.awt.Dimension( 280, 110 )
+								"preferredSize": new java.awt.Dimension( 280, 120 )
 							} )
 						} )
 					}, new FormLayoutConstraints( class java.lang.String ) {
