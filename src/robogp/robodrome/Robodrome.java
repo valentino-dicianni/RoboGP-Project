@@ -178,6 +178,32 @@ public class Robodrome {
     }
 
     /**
+     * controlla se la cella data è una cella attiva, ovvero richiede che il robot che sta sopra faccia un animazione
+     * @param posX
+     * @param posY
+     * @return true se attiva, false attrimenti
+     */
+    public boolean isCellActive(int posX, int posY) {
+        BoardCell landingCell = getCell(posX, posY);
+
+        if (landingCell instanceof FloorCell) {
+            FloorCell fcell = (FloorCell) landingCell;
+            return fcell.hasVerticalLaser() ||
+                    fcell.isRightRotator() ||
+                    fcell.isLeftRotator() ||
+                    fcell.isRepair() ||
+                    fcell.isCheckpoint() ||
+                    fcell.isUpgrade() ||
+                    fcell.hasEvenPusher() ||
+                    fcell.hasOddPusher();
+        } else if (landingCell instanceof BeltCell || landingCell instanceof PitCell) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * data una posizione e una direzione guarda se il le prime due caselle sul percorso hanno un muro
      * che impedirebbe il movimento nella casella successiva
      * TODO: scrivere il metodo i maniera più corta, ciclo while?

@@ -157,7 +157,6 @@ public class Training extends Observable implements  RobodromeAnimationObserver 
         Direction dir = robotPos.getDirection();
         int movement = 0;
         BoardCell currentcell = this.theRobodrome.getCell(robotPos.getPosX(), robotPos.getPosY());
-        // TODO: while robot is on active cell?
 
         if (currentcell instanceof BeltCell) {
             BeltCell bcell = (BeltCell) currentcell;

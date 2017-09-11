@@ -10,10 +10,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import robogp.common.RobotMarker;
-import robogp.robodrome.Direction;
-import robogp.robodrome.Position;
-import robogp.robodrome.Robodrome;
-import robogp.robodrome.Rotation;
+import robogp.robodrome.*;
 
 /**
  *
@@ -33,6 +30,7 @@ public class Match extends Observable implements MessageObserver{
     public static final String MancheProgrammedRegistriesMsg = "programmedRegistries";
     public static final String MancheDeclarationSubPhaseMsg = "declarationSubPhase";
     public static final String MancheRobotsAnimationsMsg = "robotsMoveAnimations";
+    public static final String MancheRobodromeActivationMsg = "robodromeActivationAnimations";
 
     public enum EndGame {
         First, First3, AllButLast
@@ -99,6 +97,9 @@ public class Match extends Observable implements MessageObserver{
                     log("Tutte le animazioni della sottofase Mossa sono state inviate.");
                     getReadyPlayers();
                     //esecuzione con robodromo
+                    robodromeActivationSubPhase();
+                    log("Tutte le animazioni della sottofase Attivazione robodromo sono state inviate.");
+                    getReadyPlayers();
                 }
 
 
@@ -184,17 +185,6 @@ public class Match extends Observable implements MessageObserver{
         }
 
         orderedRobotList.sort((mr1, mr2) -> -Integer.compare(mr1.getRegistry(regNum).getInstruction().getPriority(), mr2.getRegistry(regNum).getInstruction().getPriority()));
-        /*orderedRobotList.sort((r1, r2) -> {
-            MatchInstruction r1i = r1.getRegistry(regNum).getInstruction();
-            MatchInstruction r2i = r2.getRegistry(regNum).getInstruction();
-            if (r1i != null && r2i != null)
-                return -Integer.compare(r1i.getPriority(), r2i.getPriority());
-            else if (r1i == null && r2i != null)
-                return -1;
-            else if (r1i != null && r2i == null)
-                return 1;
-            return 0;
-        });*/
 
         // dalla lista ordinata di robot in base alla priorità dell'istruzione del registro regNum si fanno le animazioni di quel registro
         log("Verranno calcolate "+orderedRobotList.size()+" animazioni");
@@ -217,6 +207,13 @@ public class Match extends Observable implements MessageObserver{
                 }
                 // il percorso per la prossima cella è libero, continuo a muovermi
                 robotPos.changePosition(1, instrRot);
+                // se la nuova prosizione è save point -> salvo posizione
+                BoardCell tempbcell = theRobodrome.getCell(robotPos.getPosX(), robotPos.getPosY());
+                if (tempbcell instanceof FloorCell) {
+                    FloorCell tempfcell = (FloorCell)tempbcell;
+                    if (tempfcell.isRepair())
+                        robot.setLastCheckpointPosition(robotPos.clone());
+                }
                 stepstaken++;
             }
             // se instruzione backup
@@ -230,16 +227,178 @@ public class Match extends Observable implements MessageObserver{
             }
 
             // animazione codificata del movimento fatto con scheda istruzione
-            animationInstr[i] = robot.getName()+":"+stepstaken + ":" + chosendir + ":" + instrRot;
+            animationInstr[i] = robot.getName()+":"+stepstaken+":"+chosendir+":"+instrRot;
             i++;
         }
 
-        String message = Arrays.toString(animationInstr).replaceAll("[\\[\\]\\s]", "");;
+        String message = Arrays.toString(animationInstr).replaceAll("[\\[\\]\\s]", "");
 
         broadcastMessage(message, MancheRobotsAnimationsMsg);
     }
 
+    public void robodromeActivationSubPhase() {
+        // fase attivazione robodromo, controlla la posizione di ogni robot
+        // se un robot è finito su una cella attiva allora si aggiungono le animazioni per quel robot
+        ArrayList<MatchRobot> robotsToAnimate = new ArrayList<>();
+        for(Map.Entry<String, List<MatchRobot>> robotlist : ownedRobots.entrySet()) {
+            for (MatchRobot robot : robotlist.getValue()) {
+                if (this.theRobodrome.isCellActive(robot.getPosition().getPosX(), robot.getPosition().getPosY()))
+                    robotsToAnimate.add(robot);
+            }
+        }
+
+        log("Robodrome activation: "+robotsToAnimate.size()+" robots to animate.");
+
+        ArrayList<String> animations = new ArrayList<>();
+
+        for (MatchRobot robot : robotsToAnimate) {
+            Position robotPos = robot.getPosition();
+            Rotation rotation = Rotation.NO;
+            String robotName = robot.getName();
+
+            int movement = 0;
+            BoardCell currentcell = this.theRobodrome.getCell(robotPos.getPosX(), robotPos.getPosY());
+
+            if (currentcell instanceof BeltCell) {
+                BeltCell bcell = (BeltCell) currentcell;
+                Direction output = bcell.getOutputDirection();
+                try {
+                    if (this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), output)) {
+                        continue;
+                    }
+
+                    // quando il nastro trasportatore ha input direction != output direction allora è un nastro curva
+                    // se nastro è curva il robot oltre a spostarsi ruota
+                    boolean turn = false;
+                    //System.out.println("-> cell output dir: "+bcell.getOutputDirection());
+                    if (bcell.hasInputDirection(Direction.getOppositeDirection(bcell.getOutputDirection()))) { // primo nastro è pezzo dritto
+                        // guarda se il nastro trasportatore ha un input nella data direzione, se si = nastro dritto, se no = curva
+                        //System.out.println("-> 1:straight belt odir= "+bcell.getOutputDirection());
+                        robotPos.changePosition(1, bcell.getOutputDirection(), rotation);
+                        movement = 1;
+                        animations.add(robotName+":"+movement + ":" + bcell.getOutputDirection() + ":" + rotation);
+                        //System.out.println("-> 1:robot posx="+robotPos.getPosX()+", posy="+robotPos.getPosY());
+                    } else {
+                        //nastro è curva
+                        turn = true;
+                        Rotation trot = BeltCell.getTurnRotation(bcell);
+                        //System.out.println("-> 1:turn belt rot= "+trot);
+                        robotPos.changePosition(0, trot);
+                        animations.add(robotName+":0:" + robotPos.getDirection() + ":" + trot);
+                    }
+
+                    BoardCell nextcell = theRobodrome.getCell(robotPos.getPosX(), robotPos.getPosY());
+
+                    if ((nextcell instanceof BeltCell && bcell.getType() == 'E') || turn) { //continua il viaggio
+                        bcell = (BeltCell) nextcell;
+                        turn = false;
+                        if (this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), bcell.getOutputDirection())) {
+                            continue;
+                        }
+                        if (movement == 1 && !bcell.hasInputDirection(Direction.getOppositeDirection(bcell.getOutputDirection()))) { // nastro trasportatore è curva
+                            turn = true;
+                            Rotation trot = BeltCell.getTurnRotation(bcell);
+                            robotPos.changePosition(0, trot);
+                            animations.add(robotName+":0:" + robotPos.getDirection() + ":" + trot);
+                        }
+
+                        if (!turn && movement == 0 && bcell.getType() == 'E') {
+                            //movimento nastro doppio senza curve partendo da curva
+                            movement = 2;
+                            robotPos.changePosition(movement, bcell.getOutputDirection(), rotation);
+                            animations.add(robotName+":"+movement + ":" + bcell.getOutputDirection() + ":" + rotation);
+                        } else {
+                            robotPos.changePosition(movement, bcell.getOutputDirection(), rotation);
+                            animations.add(robotName+":"+movement + ":" + bcell.getOutputDirection() + ":" + rotation);
+                        }
+                    }
+                    currentcell = bcell;
+                } catch (ArrayIndexOutOfBoundsException e) { // quando belt cell porta fuori da robodromo
+                    Position checkpointPos = robot.getLastCheckpointPosition();
+                    animations.add(robotName+":1:"+output+":"+Rotation.NO);
+                    animations.add(robotName+":"+checkpointPos.getPosX()+":"+checkpointPos.getPosY()+":"+checkpointPos.getDirection()+":outofrobodrome");
+                    robot.setPosition(checkpointPos.clone());
+                    continue;
+                }
+            } else if (currentcell instanceof PitCell) { // quando cela è buco nero
+                // ripristina pos robot a ultima salvata e fa animazione muovi robot a quella
+                // robot perde una vita, e se ha ancora vite allora resetto posizione, altrimenti viene tolto da lista owned robots
+
+                if (damageRobot(robot, 0, 1)) {
+                    Position checkpointPos = robot.getLastCheckpointPosition();
+                    animations.add(robotName+":"+checkpointPos.getPosX()+":"+checkpointPos.getPosY()+":"+checkpointPos.getDirection()+":pitfall");
+                    robot.setPosition(checkpointPos.clone());
+                } else {
+                    animations.add(robotName+":-1:-1:NO:death");
+                }
+
+            } else if (currentcell instanceof FloorCell) {
+                FloorCell fcell = (FloorCell) currentcell;
+                if (fcell.isCheckpoint()) {
+                    // robot.checkPointTouched();
+                } else if (fcell.isRepair()) {
+                    robot.setLastCheckpointPosition(robotPos.clone());
+                } else if (fcell.isLeftRotator()) {
+                    animations.add(robotName+":0:"+robotPos.getDirection()+":"+Rotation.CCW90);
+                    robotPos.changePosition(0, Rotation.CCW90);
+                } else if (fcell.isRightRotator()) {
+                    animations.add(robotName+":0:"+robotPos.getDirection()+":"+Rotation.CW90);
+                    robotPos.changePosition(0, Rotation.CW90);
+                }
+            }
+
+            if (currentcell.hasHorizontalLaser() || currentcell.hasVerticalLaser()) {
+                System.out.println("H or V laser cell");
+                if (!damageRobot(robot, 1, 0)) {
+                    animations.add(robotName+":-1:-1:NO:death");
+                }
+            }
+        }
+
+        log("Robodrome activation end: "+animations.size()+" animations created.");
+
+        String message = animations.toString().replaceAll("[\\[\\]\\s]", "");
+
+        broadcastMessage(message, Match.MancheRobodromeActivationMsg);
+
+    }
+
+    /**
+     * modifica i dati di robot in base ai danni presi, se alla fine del calcolo dei danni il robot è distrutto allora ritorna false
+     * @param HPDamage danni subiti agli hit points
+     * @param LPDamage danni subiti alle vite
+     * @return true se dopo il calcolo dei danni il robot è ancora vivo, false altrimenti
+     */
+    private boolean damageRobot(MatchRobot robot, int HPDamage, int LPDamage) {
+        int currentHP = robot.getHitPoints();
+        int currentLP = robot.getLifePoints();
+
+        currentHP -= HPDamage;
+
+        if (HPDamage <= 0) { currentLP--; currentHP = 0; }
+
+        currentLP -= LPDamage;
+
+        if (currentLP > 0) {
+            robot.setHitPoints(currentHP);
+            robot.setLifePoints(currentLP);
+            return true;
+        } else {
+            // rimuove riferimento di robot da owned robots
+            for(Map.Entry<String, List<MatchRobot>> robotlist : ownedRobots.entrySet()) {
+                robotlist.getValue().remove(robot);
+            }
+            return false;
+        }
+    }
+
+    /**
+     * manda in messaggio dato a tutti i giocatori
+     * @param message messaggio da inviare
+     * @param messageType tipo di messaggio da inviare
+     */
     private void broadcastMessage(String message, String messageType) {
+        int i = 0;
         for(Map.Entry<String, Connection> player : players.entrySet()) {
             String nickname = player.getKey();
             Connection conn = player.getValue();
@@ -255,7 +414,10 @@ public class Match extends Observable implements MessageObserver{
             } catch (PartnerShutDownException ex) {
                 Logger.getLogger(Match.class.getName()).log(Level.SEVERE, "Unable to send broadcast message "+messageType+" to player: "+nickname, ex);
             }
+            i++;
         }
+
+        log("Broadcast messages sent: "+i+" of type: "+messageType);
     }
 
 
