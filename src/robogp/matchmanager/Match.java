@@ -240,6 +240,8 @@ public class Match extends Observable implements MessageObserver{
             i++;
         }
 
+        log("Sono state calcolate "+i+" animazioni.");
+
         //String message = Arrays.toString(animationInstr).replaceAll("[\\[\\]\\s]", "");
         String message = animations.toString().replaceAll("[\\[\\]\\s]", "");
 
@@ -359,6 +361,7 @@ public class Match extends Observable implements MessageObserver{
 
             if (currentcell.hasHorizontalLaser() || currentcell.hasVerticalLaser()) {
                 System.out.println("H or V laser cell");
+                animations.add(robotName+":"+Direction.N+":"+"laserhit");
                 if (!damageRobot(robot, 1, 0)) {
                     animations.add(robotName+":-1:-1:NO:death");
                 }
@@ -372,6 +375,8 @@ public class Match extends Observable implements MessageObserver{
         broadcastMessage(message, Match.MancheRobodromeActivationMsg);
 
     }
+
+
 
     /**
      * modifica i dati di robot in base ai danni presi, se alla fine del calcolo dei danni il robot è distrutto allora ritorna false
@@ -432,7 +437,7 @@ public class Match extends Observable implements MessageObserver{
 
 
 
-    public void log(String message) {
+    private void log(String message) {
         setChanged();
         notifyObservers(message);
     }
