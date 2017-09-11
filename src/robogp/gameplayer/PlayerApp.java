@@ -109,52 +109,70 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         playFrame.setVisible(true);
     }
 
-
-    private void setRegister(JComboBox reg){
-        reg.removeAllItems();
-        String pool = poolInstr.get(((MatchRobot)robotList.getSelectedValue()).getName());
-        String[] schede = pool.split(",");
-        reg.addItem("--");
-        for(String item : schede)
-            reg.addItem(item);
-    }
-
     private void progRobotActionPerformed(ActionEvent e) {
+        initAllReg();
         programDialog.setVisible(true);
         setRegister(regI);
     }
 
+    private  void initAllReg(){
+        regI.removeAllItems();regI.addItem("--");
+        regII.removeAllItems();regII.addItem("--");
+        regIII.removeAllItems();regIII.addItem("--");
+        regIV.removeAllItems();regIV.addItem("--");
+        regV.removeAllItems();regV.addItem("--");
+
+    }
+    private void setRegister(JComboBox reg){
+        reg.removeAllItems();
+        String pool = poolInstr.get(((MatchRobot)robotList.getSelectedValue()).getName());
+        String[] schede = pool.split(",");
+        for(String item : schede)
+            reg.addItem(item);
+        reg.addItem("--");
+
+    }
 
     private void ok1ActionPerformed(ActionEvent e) {
         setRegister(regII);
-        regII.removeItemAt(regI.getSelectedIndex());
+        if(!(regI.getSelectedItem()).equals("--"))
+            regII.removeItemAt(regI.getSelectedIndex());
         ok2.setEnabled(true);
         regII.setEnabled(true);
     }
 
     private void button2ActionPerformed(ActionEvent e) {
         setRegister(regIII);
-        regIII.removeItemAt(regI.getSelectedIndex());
-        regIII.removeItemAt(regII.getSelectedIndex());
+        if(!(regI.getSelectedItem()).equals("--"))
+            regIII.removeItemAt(regI.getSelectedIndex());
+        if(!(regII.getSelectedItem()).equals("--"))
+            regIII.removeItemAt(regII.getSelectedIndex());
         ok3.setEnabled(true);
         regIII.setEnabled(true);
     }
 
     private void button3ActionPerformed(ActionEvent e) {
         setRegister(regIV);
-        regIV.removeItemAt(regI.getSelectedIndex());
-        regIV.removeItemAt(regII.getSelectedIndex());
-        regIV.removeItemAt(regIII.getSelectedIndex());
+        if(!(regI.getSelectedItem()).equals("--"))
+            regIV.removeItemAt(regI.getSelectedIndex());
+        if(!(regII.getSelectedItem()).equals("--"))
+            regIV.removeItemAt(regII.getSelectedIndex());
+        if(!(regIII.getSelectedItem()).equals("--"))
+            regIV.removeItemAt(regIII.getSelectedIndex());
         ok4.setEnabled(true);
         regIV.setEnabled(true);
     }
 
     private void button4ActionPerformed(ActionEvent e) {
         setRegister(regV);
-        regV.removeItemAt(regI.getSelectedIndex());
-        regV.removeItemAt(regII.getSelectedIndex());
-        regV.removeItemAt(regIII.getSelectedIndex());
-        regV.removeItemAt(regIV.getSelectedIndex());
+        if(!(regI.getSelectedItem()).equals("--"))
+            regV.removeItemAt(regI.getSelectedIndex());
+        if(!(regII.getSelectedItem()).equals("--"))
+            regV.removeItemAt(regII.getSelectedIndex());
+        if(!(regIII.getSelectedItem()).equals("--"))
+            regV.removeItemAt(regIII.getSelectedIndex());
+        if(!(regIV.getSelectedItem()).equals("--"))
+            regV.removeItemAt(regIV.getSelectedIndex());
         ok5.setEnabled(true);
         regV.setEnabled(true);
     }
@@ -200,9 +218,14 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         pars[1] = regResponseMsg;
         msg.setParameters(pars);
         controller.sendMessage(msg);
-        logText.append("\nSchede istruzione inviate al server");
+        logText.setText(logText.getText()+"\nSchede istruzione inviate al server");
         iniziaButton.setEnabled(false);
         notifications.setText("Attendi che tutti i giocatori abbiano programmato i propri robot");
+    }
+
+    private void nextMancheActionPerformed(ActionEvent e) {
+        for(int i =0;i< modelRobot.size();i++)
+            controller.sendMessage(new Message(Match.MatchReadyMsg));
     }
 
 
@@ -239,14 +262,13 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         panel2 = new JPanel();
         panel3 = new JPanel();
         scrollPane3 = new JScrollPane();
-        logText = new JTextArea();
+        logText = new JTextPane();
         scrollPane2 = new JScrollPane();
         robotList = new JList();
         panel4 = new JPanel();
         progRobot = new JButton();
         iniziaButton = new JButton();
-        button10 = new JButton();
-        button11 = new JButton();
+        nextManche = new JButton();
         programDialog = new JDialog();
         label5 = new JLabel();
         label9 = new JLabel();
@@ -462,6 +484,8 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 {
                     scrollPane1.setVisible(false);
                     scrollPane1.setPreferredSize(new Dimension(150, 140));
+                    scrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+                    scrollPane1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 
                     //---- playerMoves ----
                     playerMoves.setMaximumSize(new Dimension(140, 51));
@@ -485,11 +509,13 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
 
                         //======== scrollPane3 ========
                         {
+                            scrollPane3.setPreferredSize(new Dimension(280, 115));
 
                             //---- logText ----
-                            logText.setText("Area di testo:");
+                            logText.setPreferredSize(new Dimension(270, 110));
+                            logText.setText("Log Text initialization...");
+                            logText.setBackground(Color.white);
                             logText.setEditable(false);
-                            logText.setPreferredSize(new Dimension(280, 120));
                             scrollPane3.setViewportView(logText);
                         }
                         panel3.add(scrollPane3);
@@ -534,13 +560,10 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                         iniziaButton.addActionListener(e -> iniziaButtonActionPerformed(e));
                         panel4.add(iniziaButton, "cell 0 1");
 
-                        //---- button10 ----
-                        button10.setText("dummy");
-                        panel4.add(button10, "cell 0 2");
-
-                        //---- button11 ----
-                        button11.setText("text");
-                        panel4.add(button11, "cell 0 3");
+                        //---- nextManche ----
+                        nextManche.setText("Prossima Manche");
+                        nextManche.addActionListener(e -> nextMancheActionPerformed(e));
+                        panel4.add(nextManche, "cell 0 2");
                     }
                     panel2.add(panel4, BorderLayout.WEST);
                 }
@@ -702,14 +725,13 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
     private JPanel panel2;
     private JPanel panel3;
     private JScrollPane scrollPane3;
-    private JTextArea logText;
+    private JTextPane logText;
     private JScrollPane scrollPane2;
     private JList robotList;
     private JPanel panel4;
     private JButton progRobot;
     private JButton iniziaButton;
-    private JButton button10;
-    private JButton button11;
+    private JButton nextManche;
     private JDialog programDialog;
     private JLabel label5;
     private JLabel label9;
@@ -760,7 +782,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                     refuseLabel.setText("La tua richiesta di partecipazione è stata rifiutata dal managaer di partita");
 
                 }
-                logText.append("\nReceived Message: joinMatchReply");
+                logText.setText(logText.getText()+"\nReceived Message: joinMatchReply");
                 break;
 
             case (Match.MatchErrorMsg):
@@ -777,13 +799,13 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 robodromePanel.add(rv, BorderLayout.CENTER);
                 setupRobotsOnRobodrome((ArrayList<MatchRobot>)msg.getParameter(1));
                 playButton.setVisible(true);
-                logText.append("\nReceived Message: startMatch");
+                logText.setText(logText.getText()+"\nReceived Message: startMatch");
                 break;
 
             case (Match.MancheInstructionPoolMsg):
                 poolInstr = ( HashMap<String,String>) msg.getParameter(0);
                 notifications.setText("AVVISO: Nuovo pool di schede istruzione ricevute. Ora puoi programmare i tuoi robot!");
-                logText.append("\nReceived Message: instructionPool");
+                logText.setText(logText.getText()+"\nReceived Message: instructionPool");
                 progRobot.setEnabled(true);
                 break;
 
@@ -796,13 +818,13 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 playerMoves.setCellRenderer(new ListCellRenderer());
                 scrollPane1.setVisible(true);
                 notifications.setText("AVVISO: Sottofase di Dichiarazione. Guarda cosa hanno scelto i tuoi avversari!");
-                logText.append("\nReceived Message: MancheDeclarationSubPhaseMsg");
+                logText.setText(logText.getText()+"\nReceived Message: MancheDeclarationSubPhaseMsg");
                 controller.sendMessage(new Message(Match.MatchReadyMsg));
                 break;
 
             case (Match.MancheRobotsAnimationsMsg):
                 notifications.setText("AVVISO: Sottofse di movimento . Ora i robot eseguiranno le loro mosse!");
-                logText.append("\nReceived Message: MancheRobotsAnimationsMsg");
+                logText.setText(logText.getText()+"\nReceived Message: MancheRobotsAnimationsMsg");
                 String[]anim = ((String) msg.getParameter(0)).split(",");
                 rv.startFollowingAction();
                 for(String a: anim)
@@ -811,7 +833,8 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 break;
 
             case(Match.MancheRobodromeActivationMsg):
-                System.out.println("Animazione: -->"+msg.getParameter(0));
+                notifications.setText("AVVISO: Sottofse di attivazione Robodromo . Verranno eseguite le mosse del robodromo");
+                logText.setText(logText.getText()+"\nReceived Message: MancheRobodromeActivationMsg");
                 String[]pars = ((String) msg.getParameter(0)).split(",");
                 for(String par: pars)
                     createAnimation(par);
@@ -892,7 +915,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
 
     @Override
     public void animationStarted() {
-        logText.append("\nStart RobotAnimations");
+        logText.setText(logText.getText()+"\nStart RobotAnimations");
 
     }
 
@@ -900,7 +923,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
     public void animationFinished() {
         rv.stopFollowingAction();
         controller.sendMessage(new Message(Match.MatchReadyMsg));
-        logText.append("\nRobotAnimations Finish");
+        logText.setText(logText.getText()+"\nRobotAnimations Finish");
 
     }
 }

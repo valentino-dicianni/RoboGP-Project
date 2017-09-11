@@ -100,7 +100,6 @@ public class Match extends Observable implements MessageObserver{
 
                 }
 
-
             }
 
         }

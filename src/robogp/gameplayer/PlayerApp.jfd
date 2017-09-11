@@ -179,6 +179,8 @@ new FormModel {
 					name: "scrollPane1"
 					"visible": false
 					"preferredSize": new java.awt.Dimension( 150, 140 )
+					"verticalScrollBarPolicy": 22
+					"horizontalScrollBarPolicy": 32
 					add( new FormComponent( "javax.swing.JList" ) {
 						name: "playerMoves"
 						"maximumSize": new java.awt.Dimension( 140, 51 )
@@ -199,11 +201,13 @@ new FormModel {
 						"preferredSize": new java.awt.Dimension( 300, 120 )
 						add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 							name: "scrollPane3"
-							add( new FormComponent( "javax.swing.JTextArea" ) {
+							"preferredSize": new java.awt.Dimension( 280, 115 )
+							add( new FormComponent( "javax.swing.JTextPane" ) {
 								name: "logText"
-								"text": "Area di testo:"
+								"preferredSize": new java.awt.Dimension( 270, 110 )
+								"text": "Log Text initialization..."
+								"background": sfield java.awt.Color white
 								"editable": false
-								"preferredSize": new java.awt.Dimension( 280, 120 )
 							} )
 						} )
 					}, new FormLayoutConstraints( class java.lang.String ) {
@@ -246,16 +250,11 @@ new FormModel {
 							"value": "cell 0 1"
 						} )
 						add( new FormComponent( "javax.swing.JButton" ) {
-							name: "button10"
-							"text": "dummy"
+							name: "nextManche"
+							"text": "Prossima Manche"
+							addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "nextMancheActionPerformed", true ) )
 						}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 							"value": "cell 0 2"
-						} )
-						add( new FormComponent( "javax.swing.JButton" ) {
-							name: "button11"
-							"text": "text"
-						}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-							"value": "cell 0 3"
 						} )
 					}, new FormLayoutConstraints( class java.lang.String ) {
 						"value": "West"
