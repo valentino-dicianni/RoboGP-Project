@@ -159,6 +159,8 @@ public class Match extends Observable implements MessageObserver{
                 Registry rReg = robot.getRegistry(regNum);
                 if (!rReg.isLocked() && rReg.getInstruction() != null) {
                     orderedInstr.add(robot.getName()+":"+rReg.getInstruction().getName()+":"+rReg.getInstruction().getPriority());
+                } else {
+                    orderedInstr.add(robot.getName()+":locked:0");
                 }
             }
         }
