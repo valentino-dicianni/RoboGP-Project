@@ -533,7 +533,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                         panel4.add(iniziaButton, "cell 0 1");
 
                         //---- button10 ----
-                        button10.setText("text");
+                        button10.setText("dummy");
                         panel4.add(button10, "cell 0 2");
 
                         //---- button11 ----
@@ -792,11 +792,13 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 playerMoves.setCellRenderer(new ListCellRenderer());
                 scrollPane1.setVisible(true);
                 notifications.setText("AVVISO: Sottofase di Dichiarazione. Guarda cosa hanno scelto i tuoi avversari!");
+                logText.append("\nReceived Message: MancheDeclarationSubPhaseMsg");
                 controller.sendMessage(new Message(Match.MatchReadyMsg));
                 break;
 
             case (Match.MancheRobotsAnimationsMsg):
                 notifications.setText("AVVISO: Sottofse di movimento . Ora i robot eseguiranno le loro mosse!");
+                logText.append("\nReceived Message: MancheRobotsAnimationsMsg");
                 String[]anim = ((String) msg.getParameter(0)).split(",");
                 for(String a: anim)
                     createAnimation(a);
@@ -827,6 +829,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         HashMap<Integer,Position> dockTable = theDrome.getDockTable();
         for(int i=0;i<upRobots.size();i++){
            MatchRobot rob =  upRobots.getElementAt(i);
+           //rob.setPosition(dockTable.get(rob.getDock()));
            rv.placeRobot(rob,dockTable.get(rob.getDock()).getDirection(),dockTable.get(rob.getDock()).getPosX(),
                    dockTable.get(rob.getDock()).getPosY(),true);
         }
@@ -844,12 +847,14 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
 
     @Override
     public void animationStarted() {
+        logText.append("\nStart RobotAnimations");
 
     }
 
     @Override
     public void animationFinished() {
         controller.sendMessage(new Message(Match.MatchReadyMsg));
+        logText.append("\nRobotAnimations Finish");
 
     }
 }

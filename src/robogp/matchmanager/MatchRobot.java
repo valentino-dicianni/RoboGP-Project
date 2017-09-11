@@ -28,8 +28,16 @@ public class MatchRobot extends RobotMarker {
         return hitPoints;
     }
 
+    public void setHitPoints(int hitPoints) {
+        this.hitPoints = hitPoints;
+    }
+
     public int getLifePoints() {
         return lifePoints;
+    }
+
+    public void setLifePoints(int lifePoints) {
+        this.lifePoints = lifePoints;
     }
 
     public boolean isShutDown() {
