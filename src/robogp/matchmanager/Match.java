@@ -379,7 +379,7 @@ public class Match extends Observable implements MessageObserver{
 
     }
 
-    private void lasersAndWeaponsSubPhase() {
+    public void lasersAndWeaponsSubPhase() {
         // la vista deve fare rv.addLaserFire(robots[0], Direction.E, 3, 15, false, false);
         // per ogni robot guardo se ci sono altri robot nella via del laser, se si colpisco, aggiungo anim e continue
         // se no, trovo il primo muro del robodromo dove far fermare il laser
@@ -390,68 +390,73 @@ public class Match extends Observable implements MessageObserver{
         ArrayList<String> animations = new ArrayList<>();
         // se trova un robt nella direzione di sparo
         for (MatchRobot robot : allRobots) {
-            int hitRobotX = -1;
-            int hitRobotY = -1;
-            String enemyDestroyed = "";
+            // controllo il primo oggetto che il laser colpirebbe se non ci fossero robot, salvo la x/y della cella
+            // poi guardo tutti i robot sul robodromo, ogni volta che ne trovo uno che verrebbe colpito prima del bersaglio attuale, aggiorno la pos
             Position robotPos = robot.getPosition();
-            for (MatchRobot subRobot : allRobots) {
-                boolean hit = false;
-                if (subRobot != robot) { // tutti gli altri robot
-                    int signX = robotPos.getPosX() - subRobot.getPosition().getPosX() > 0? -1:1;
-                    int signY = robotPos.getPosY() - subRobot.getPosition().getPosY() > 0? -1:1;
-                    if ((subRobot.getPosition().getPosX() == robotPos.getPosX() && Direction.getDirectionAxis(robotPos.getDirection()) == signY && Direction.isHorizontal(robotPos.getDirection())) || (
-                            subRobot.getPosition().getPosY() == robotPos.getPosY() && Direction.getDirectionAxis(robotPos.getDirection()) == signX && !Direction.isHorizontal(robotPos.getDirection()))) {
-                        // subot sulla linea di tiro
-                        hitRobotX = subRobot.getPosition().getPosX();
-                        hitRobotY = subRobot.getPosition().getPosY();
-                        // aggiorno statistiche robot
-                        if (!damageRobot(subRobot, 1, 0))
-                            enemyDestroyed = subRobot.getName()+":death";
-                        hit = true;
+            int directionAxis = Direction.getDirectionAxis(robotPos.getDirection());
+            int offset = -1;
+            boolean wallhit = false;
+            boolean robothit = false;
+            if (!Direction.isHorizontal(robotPos.getDirection())) {
+                try {
+                    for (int i = robotPos.getPosX(); i < theRobodrome.getColumnCount() && i >= 0; i = i + (directionAxis)) {
+                        if (theRobodrome.pathHasWall(i, robotPos.getPosY(), robotPos.getDirection())) {
+                            offset = i;
+                            wallhit = true;
+                            break;
+                        }
                     }
+                } catch (NullPointerException e) {
+                    // no wall hit, out of robodrome
+                    offset = Direction.getDirectionAxis(robotPos.getDirection()) > 0? theRobodrome.getColumnCount(): 0;
                 }
-                if (hit) break;
-            }
-            if (hitRobotX >= 0 && hitRobotY >= 0) { // calcolo animazione robot colpito
-                //int startColumn = hitRobotX == robotPos.getPosX()? Math.abs(hitRobotY - robotPos.getPosY()) : Math.abs(hitRobotX - robotPos.getPosX());
-                int startpoint = 0;
-                int endpoint = 0;
-                if (Direction.isHorizontal(robotPos.getDirection())) {
-                    startpoint = robotPos.getPosX();
-                    endpoint = hitRobotX;
-                } else {
-                    startpoint = robotPos.getPosY();
-                    endpoint = hitRobotY;
-                }
-                animations.add(robot.getName()+":"+robotPos.getDirection()+":"+startpoint+":"+endpoint+":true:false");
-                if (enemyDestroyed.length() > 0) animations.add(enemyDestroyed);
             } else {
-                // nessun robot colpito, controllo se laser colpisce qualche muro
-                if (!Direction.isHorizontal(robotPos.getDirection())) {
-                    try {
-                        for (int i = robotPos.getPosX(); i < theRobodrome.getColumnCount() && i >= 0; i = i + (Direction.getDirectionAxis(robotPos.getDirection()))) {
-                            if (theRobodrome.pathHasWall(i, robotPos.getPosY(), robotPos.getDirection())) {
-                                animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + robotPos.getPosX() + ":" + i + ":false:true");
-                                break;
-                            }
+                try {
+                    for (int i = robotPos.getPosY(); i < theRobodrome.getRowCount() && i >= 0; i = i + (directionAxis)) {
+                        if (theRobodrome.pathHasWall(robotPos.getPosX(), i, robotPos.getDirection())) {
+                            offset = i;
+                            wallhit = true;
+                            break;
                         }
-                    } catch (NullPointerException e) {
-                        // no wall hit, out of robodrome
-                        animations.add(robot.getName()+":"+robotPos.getDirection()+":"+robotPos.getPosX()+":"+theRobodrome.getColumnCount()+":false:false");
                     }
-                } else {
-                    try {
-                        for (int i = robotPos.getPosY(); i < theRobodrome.getRowCount() && i >= 0; i = i + (Direction.getDirectionAxis(robotPos.getDirection()))) {
-                            if (theRobodrome.pathHasWall(robotPos.getPosX(), i, robotPos.getDirection())) {
-                                animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + robotPos.getPosY() + ":" + i + ":false:true");
-                                break;
-                            }
-                        }
-                    } catch (NullPointerException e) {
-                        // no wall hit, out of robodrome
-                        animations.add(robot.getName()+":"+robotPos.getDirection()+":"+robotPos.getPosY()+":"+theRobodrome.getRowCount()+":false:false");
+                } catch (NullPointerException e) {
+                    // no wall hit, out of robodrome
+                    offset = Direction.getDirectionAxis(robotPos.getDirection()) > 0? theRobodrome.getRowCount(): 0;
+                }
+            }
+
+            MatchRobot hitEnemy = null;
+
+            for (MatchRobot enemyRobot : allRobots) {
+                Position enemyPos = enemyRobot.getPosition();
+                int signX = robotPos.getPosX() - enemyPos.getPosX() > 0? -1:1;
+                int signY = robotPos.getPosY() - enemyPos.getPosY() > 0? -1:1;
+                if ((enemyPos.getPosX() == robotPos.getPosX() && directionAxis == signY && Direction.isHorizontal(robotPos.getDirection()))) {
+                    // robot colpito orizzontalmente
+                    if (offset - (enemyPos.getPosX() * directionAxis) > 0) {
+                        // robot nemico è davanti al muro/ostacolo finora più vicino -> aggiorno offset
+                        offset = enemyPos.getPosX();
+                        hitEnemy = enemyRobot;
+                        robothit = true;
+                    }
+                } else if (enemyPos.getPosY() == robotPos.getPosY() && directionAxis == signX && !Direction.isHorizontal(robotPos.getDirection())) {
+                    // robot colpito verticalmente
+                    if (offset - (enemyPos.getPosY() * directionAxis) > 0) {
+                        // robot nemico è davanti al muro/ostacolo finora più vicino -> aggiorno offset
+                        offset = enemyPos.getPosY();
+                        hitEnemy = enemyRobot;
+                        robothit = true;
                     }
                 }
+            }
+
+            if (Direction.isHorizontal(robotPos.getDirection())) // si spara in orizzontale
+                animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + robotPos.getPosX() + ":" + offset + ":"+robothit+":"+wallhit);
+            else // si spara in verticale
+                animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + offset + ":" + robotPos.getPosX() + ":"+robothit+":"+wallhit);
+            if (robothit && hitEnemy != null) {
+                if (!damageRobot(hitEnemy, 1, 0))
+                    animations.add(hitEnemy.getName()+":death");
             }
         }
         log("Laser and weapons subphase end: "+animations.size()+" animations created.");
