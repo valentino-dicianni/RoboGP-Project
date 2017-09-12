@@ -855,12 +855,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         if (a != null) {
             String[] animdata = a.split(":");
 
-            if(animdata.length == 3){ //animazione laser
-                MatchRobot robot = getRobotByName(animdata[0]);
-                Direction dir = Direction.valueOf(animdata[2]);
-                rv.addRobotHit(robot,dir);
-            }
-
+            //nomerobot:passi:direzione:rotazione
             if (animdata.length == 4) { //animazione scheda/robodromo
                 MatchRobot robot = getRobotByName(animdata[0]);
                 int movement = Integer.parseInt(animdata[1]);
@@ -879,18 +874,21 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 switch (cause) {
                     case "pitfall":
                         rv.addRobotFall(robot);
+                        assert robot != null;
                         robot.setLastCheckpointPosition(new Position(savedposX,savedposY,dir));
                         //tolto punto vita
-                        updateRobotList(robot);
+                        updateLifePointsRobotList(robot);
                         break;
 
                     case "outofrobodrome":
                         //tolto punto vita
                         rv.changeRobotPosition(robot, dir, savedposX, savedposY, true);
-                        updateRobotList(robot);
+                        updateHitPointsRobotList(robot);
                         break;
 
+                        //TODO animazione di morte separata?? non basta che faccio update delle caratteristiche??
                     case "death":
+                        assert robot != null;
                         rv.removeRobot(robot.getName());
                         modelList.removeElement(robot);
                         robotsOnRobodrome.remove(robot);
@@ -898,18 +896,63 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 }
 
             }
+
+            //nomerobot:direzionerobot:casellainiziosparo:casellafinesparo:robotcolpito:murocolpito
+            if(animdata.length == 6){ //animazione laser
+                MatchRobot robot = getRobotByName(animdata[0]);
+                Direction dir = Direction.valueOf(animdata[1]);
+                int inizioSparo = Integer.parseInt(animdata[2]);
+                int fineSparo = Integer.parseInt(animdata[3]);
+                Boolean isHit = new Boolean(animdata[4]);
+                Boolean wallHit = new Boolean(animdata[5]);
+
+                rv.addLaserFire(robot, dir, inizioSparo, fineSparo, isHit, wallHit);
+                if(isHit) {
+                    rv.addRobotHit(robot, dir);
+                    //tolgo punto vita se colpisco robot
+                }
+            }
+
             rv.addPause(1000);
         }
     }
 
-    private void updateRobotList(MatchRobot robot) {
+    private void updateHitPointsRobotList(MatchRobot robot) {
         MatchRobot selected = null;
         for(int i=0;i<modelRobot.size();i++){
-            if( robot.getName().equals(modelRobot.elementAt(i))){
-                 selected =  modelRobot.getElementAt(i);
+            if( robot.getName().equals(modelRobot.elementAt(i).getName())){
+                selected =  modelRobot.getElementAt(i);
+                selected.setHitPoints(selected.getHitPoints()-1);
+                if(selected.getHitPoints() == 0){
+                    selected.setLifePoints(selected.getLifePoints()-1);
+                    selected.setHitPoints(10);
+                }
+            }
+        }
+        modelRobot.addElement(selected);
+        modelRobot.removeElement(selected);
+
+    }
+
+    private void updateLifePointsRobotList(MatchRobot robot) {
+        MatchRobot selected = null;
+        for(int i=0;i<modelRobot.size();i++){
+            if( robot.getName().equals(modelRobot.elementAt(i).getName())){
+                selected =  modelRobot.getElementAt(i);
                 selected.setLifePoints(selected.getLifePoints()-1);
                 selected.setHitPoints(10);
             }
+
+        }
+        //inserisco e tolgo un doppione per far renderizzare
+        //la llista di nuovoq
+        modelRobot.addElement(selected);
+        modelRobot.removeElement(selected);
+
+        assert selected != null;
+        if(selected.getLifePoints() == 0){
+            rv.removeRobot(selected.getName());
+            modelList.removeElement(selected);
         }
 
 

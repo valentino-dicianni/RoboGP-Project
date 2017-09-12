@@ -450,7 +450,7 @@ public class Match extends Observable implements MessageObserver{
                 }
             }
         }
-        log("Laser and weapons subphase end: "+animations.size()+" animations created.");
+            log("Laser and weapons subphase end: "+animations.size()+" animations created.");
 
         String message = animations.toString().replaceAll("[\\[\\]\\s]", "");
 
