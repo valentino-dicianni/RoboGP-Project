@@ -45,6 +45,15 @@ public class MatchManagerApp extends javax.swing.JFrame implements Observer{
         return MatchManagerApp.singleInstance;
     }
 
+    private void endMatchButtonActionPerformed(ActionEvent e) {
+        inizPartController.chiudi();
+        appendToLog("MATCH SHOUT DOWN...BYE...");
+        JOptionPane.showMessageDialog(this, "Match Terminato. Torna alla pagina iniziale");
+        ((CardLayout) this.getContentPane().getLayout()).show(this.getContentPane(), "init");
+
+
+    }
+
 
 
     public IniziarePartitaController getIniziarePartitaController() {
@@ -105,7 +114,7 @@ public class MatchManagerApp extends javax.swing.JFrame implements Observer{
         scrollPane1 = new JScrollPane();
         managerLog = new JTextArea();
         panel1 = new JPanel();
-        button1 = new JButton();
+        endMatchButton = new JButton();
 
         //======== this ========
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -445,9 +454,10 @@ public class MatchManagerApp extends javax.swing.JFrame implements Observer{
             {
                 panel1.setLayout(new FlowLayout());
 
-                //---- button1 ----
-                button1.setText("Interrompi Match");
-                panel1.add(button1);
+                //---- endMatchButton ----
+                endMatchButton.setText("Interrompi Match");
+                endMatchButton.addActionListener(e -> endMatchButtonActionPerformed(e));
+                panel1.add(endMatchButton);
             }
             ongoingMatchPanel.add(panel1, BorderLayout.SOUTH);
         }
@@ -609,7 +619,7 @@ public class MatchManagerApp extends javax.swing.JFrame implements Observer{
     private JScrollPane scrollPane1;
     private JTextArea managerLog;
     private JPanel panel1;
-    private JButton button1;
+    private JButton endMatchButton;
     // End of variables declaration//GEN-END:variables
 
     private void setupMatchPanel() {

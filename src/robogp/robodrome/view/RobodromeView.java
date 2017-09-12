@@ -377,6 +377,16 @@ public class RobodromeView extends JComponent {
 
     }
 
+    public void setRobotVisible(RobotMarker robot){
+        if (!this.isPlayingAnimation()) {
+            MovableElement me = getMarker(robot);
+            me.setVisible(true);
+            repaint();
+        } else {
+            throw new RobodromeException("Cannot place robot during animation.");
+        }
+    }
+
     /**
      * Crea una vista per un robodromo
      *

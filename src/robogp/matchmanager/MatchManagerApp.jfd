@@ -392,8 +392,9 @@ new FormModel {
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.FlowLayout ) ) {
 					name: "panel1"
 					add( new FormComponent( "javax.swing.JButton" ) {
-						name: "button1"
+						name: "endMatchButton"
 						"text": "Interrompi Match"
+						addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "endMatchButtonActionPerformed", true ) )
 					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "South"
