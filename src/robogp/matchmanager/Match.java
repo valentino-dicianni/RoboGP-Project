@@ -386,9 +386,9 @@ public class Match extends Observable implements MessageObserver{
             int directionAxis = Direction.getDirectionAxis(robotPos.getDirection());
             int offset = -1;
             boolean wallhit = false;
-            if (!Direction.isHorizontal(robotPos.getDirection())) { // VERTICAL
+            if (!Direction.isHorizontal(robotPos.getDirection())) { // VERTICAL muovo sulle X
                 try {
-                    for (int i = robotPos.getPosX(); i < theRobodrome.getColumnCount() && i >= 0; i = i + (directionAxis)) {
+                    for (int i = robotPos.getPosX(); i < theRobodrome.getRowCount() && i >= 0; i = i + (directionAxis)) {
                         if (theRobodrome.pathHasWall(i, robotPos.getPosY(), robotPos.getDirection())) {
                             offset = i;
                             wallhit = true;
@@ -397,11 +397,11 @@ public class Match extends Observable implements MessageObserver{
                     }
                 } catch (ArrayIndexOutOfBoundsException e) {
                     // no wall hit, out of robodrome
-                    offset = Direction.getDirectionAxis(robotPos.getDirection()) > 0? theRobodrome.getColumnCount(): 0;
+                    offset = Direction.getDirectionAxis(robotPos.getDirection()) > 0? theRobodrome.getRowCount(): 0;
                 }
-            } else {    // HORIZONTAL
+            } else {    // HORIZONTAL muovo sulle Y
                 try {
-                    for (int i = robotPos.getPosY(); i < theRobodrome.getRowCount() && i >= 0; i = i + (directionAxis)) {
+                    for (int i = robotPos.getPosY(); i < theRobodrome.getColumnCount() && i >= 0; i = i + (directionAxis)) {
                         if (theRobodrome.pathHasWall(robotPos.getPosX(), i, robotPos.getDirection())) {
                             offset = i;
                             wallhit = true;
@@ -410,7 +410,7 @@ public class Match extends Observable implements MessageObserver{
                     }
                 } catch (ArrayIndexOutOfBoundsException e) {
                     // no wall hit, out of robodrome
-                    offset = Direction.getDirectionAxis(robotPos.getDirection()) > 0? theRobodrome.getRowCount(): 0;
+                    offset = Direction.getDirectionAxis(robotPos.getDirection()) > 0? theRobodrome.getColumnCount(): 0;
                 }
             }
 
@@ -451,9 +451,9 @@ public class Match extends Observable implements MessageObserver{
             }
 
             if (Direction.isHorizontal(robotPos.getDirection())) // si spara in orizzontale
-                animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + robotPos.getPosY() + ":" + offset + ":"+(hitEnemy != null? ":"+ hitEnemy.getName(): "false")+":"+wallhit);
+                animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + robotPos.getPosY() + ":" + offset + ":"+(hitEnemy != null? hitEnemy.getName(): "false")+":"+wallhit);
             else // si spara in verticale
-                animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + robotPos.getPosX() + ":" + offset + ":"+(hitEnemy != null? ":"+ hitEnemy.getName(): "false")+":"+wallhit);
+                animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + robotPos.getPosX() + ":" + offset + ":"+(hitEnemy != null? hitEnemy.getName(): "false")+":"+wallhit);
             if (hitEnemy != null) {
                 if (!damageRobot(hitEnemy, 1, 0))
                     animations.add(hitEnemy.getName()+":death");
