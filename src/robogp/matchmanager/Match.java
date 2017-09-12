@@ -31,14 +31,8 @@ public class Match extends Observable implements MessageObserver{
     public static final String MancheRobodromeActivationMsg = "robodromeActivationAnimations";
     public static final String MancheLasersAndWeaponsMsg = "lasersAndWeaponsAnimations";
 
-    public enum EndGame {
-        First, First3, AllButLast
-    };
-
-
-    public enum State {
-        Created, Started, Canceled
-    };
+    public enum EndGame {First, First3, AllButLast}
+    public enum State {Created, Started, Canceled}
 
     private static final String[] ROBOT_COLORS = {"blue", "red", "yellow", "emerald", "violet", "orange", "turquoise", "green"};
     private static final String[] ROBOT_NAMES = {"robot-blue", "robot-red", "robot-yellow", "robot-emerald", "robot-violet", "robot-orange", "robot-turquoise", "robot-green"};
@@ -54,7 +48,6 @@ public class Match extends Observable implements MessageObserver{
 
     private final HashMap<String, Connection> waiting;
     private final HashMap<String, Connection> players;
-
     private HashMap<String, List<MatchRobot>> ownedRobots;
 
     /* Gestione pattern singleton */
@@ -83,7 +76,7 @@ public class Match extends Observable implements MessageObserver{
                 // a questo punto tutti i giocatori hanno programmato i propri robot
                 // inizio ciclo principale della manche
                 //printRobots();
-                log("Inizio ciclo principale esecuzione Manche");
+                log("Inizio ciclo principale esecuzione Manche...");
                 for(int i = 1; i <= 5; i++) {
                     log("Inizio esecuzione registro "+i+"...");
                     //manda lista ordinata in base a priorità di schede istr ai giocatori secondo registro corrente
@@ -109,9 +102,6 @@ public class Match extends Observable implements MessageObserver{
         }
     }
 
-    /*
-    * metodi del ciclo principale di giocare
-    * */
 
     /**
      * manda i pool di schede instruzione ai giocatori, calcolati in base ai punti vita dei robot
@@ -190,7 +180,7 @@ public class Match extends Observable implements MessageObserver{
         orderedRobotList.sort((mr1, mr2) -> -Integer.compare(mr1.getRegistry(regNum).getInstruction().getPriority(), mr2.getRegistry(regNum).getInstruction().getPriority()));
 
         // dalla lista ordinata di robot in base alla priorità dell'istruzione del registro regNum si fanno le animazioni di quel registro
-        log("Verranno calcolate animazioni per "+orderedRobotList.size()+" robot.");
+        log("Verranno calcolate animazioni per "+orderedRobotList.size()+" robot...");
         //String[] animationInstr = new String[orderedRobotList.size()];
         ArrayList<String> animations = new ArrayList<>();
         int i = 0;
@@ -243,7 +233,7 @@ public class Match extends Observable implements MessageObserver{
             i++;
         }
 
-        log("Sono state calcolate "+i+" animazioni.");
+        log("Sono state calcolate "+i+" animazioni...");
 
         //String message = Arrays.toString(animationInstr).replaceAll("[\\[\\]\\s]", "");
         String message = animations.toString().replaceAll("[\\[\\]\\s]", "");
@@ -262,7 +252,7 @@ public class Match extends Observable implements MessageObserver{
             }
         }
 
-        log("Robodrome activation: "+robotsToAnimate.size()+" robots to animate.");
+        log("Robodrome activation: "+robotsToAnimate.size()+" robots to animate...");
 
         ArrayList<String> animations = new ArrayList<>();
 
@@ -469,7 +459,7 @@ public class Match extends Observable implements MessageObserver{
                     animations.add(hitEnemy.getName()+":death");
             }
         }
-        log("Laser and weapons subphase end: "+animations.size()+" animations created.");
+        log("Laser and weapons subphase end: "+animations.size()+" animations created...");
 
         String message = animations.toString().replaceAll("[\\[\\]\\s]", "");
 
@@ -550,7 +540,7 @@ public class Match extends Observable implements MessageObserver{
             i++;
         }
 
-        log("Broadcast messages sent: "+i+" of type: "+messageType);
+        log("Broadcast messages sent: "+i+" of type: "+messageType+"...");
     }
 
 

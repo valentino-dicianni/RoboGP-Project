@@ -1,7 +1,4 @@
 package robogp.matchmanager;
-
-import robogp.robodrome.Robodrome;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -15,16 +12,17 @@ public class MatchInstructionManager {
     private ArrayList<MatchInstruction> pool;
     private ArrayList<MatchInstruction> usedInstructionsPool;
 
-    //trimToSize()
-    //Trims the capacity of this ArrayList instance to be the list's current size.
+    /**
+     * legge da file csv la lista di istruzioni possibili, ogni riga è divisa da virgole,
+     * i campi sono: instruction-name,startpriority,endpriority,step
+     * crea match instruction con il metodo getInstructionByName di matchinstr e aggiunge alla pool
+     * quando si prendono oggetti dalla pool, si fa una copia di quesi nella pool di riserva
+     * quando si vuole resettare la pool, si prendono quelli della pool di riserva e si mettono
+     * nella pool principale (svutando la pool di riserva) così da non leggere dal file ogni volta
+     */
 
     private MatchInstructionManager(String path) {
-        // legge da file csv la lista di istruzioni possibili, ogni riga è divisa da virgole, i campi sono: instruction-name,startpriority,endpriority,step
-        // crea match instruction con il metodo getInstructionByName di matchinstr e aggiunge alla pool
-        // quando si prendono oggetti dalla pool, si fa una copia di quesi nella pool di riserva
-        // quando si vuole resettare la pool, si prendono quelli della pool di riserva e si mettono
-        // nella pool principale (svutando la pool di riserva) così da non leggere dal file ogni volta
-        ArrayList<String> lines = new ArrayList<String>();
+        ArrayList<String> lines = new ArrayList<>();
         try {
             BufferedReader reader;
             reader = new BufferedReader(new FileReader(path));
@@ -37,8 +35,8 @@ public class MatchInstructionManager {
             return;
         }
 
-        usedInstructionsPool = new ArrayList<MatchInstruction>();
-        pool = new ArrayList<MatchInstruction>();
+        usedInstructionsPool = new ArrayList<>();
+        pool = new ArrayList<>();
 
         for (String line : lines) {
             // data[0] è il nome della scheda istruzione
@@ -63,7 +61,7 @@ public class MatchInstructionManager {
         if (poolSize > this.pool.size())
             throw new ArrayIndexOutOfBoundsException("not enough instructions available");
         Collections.shuffle(this.pool);
-        ArrayList<MatchInstruction> randomPool = new ArrayList<MatchInstruction>(this.pool.subList(0, poolSize));
+        ArrayList<MatchInstruction> randomPool = new ArrayList<>(this.pool.subList(0, poolSize));
         usedInstructionsPool.addAll(randomPool);
         //this.pool.removeRange(0, poolSize);
         this.pool.removeAll(randomPool);

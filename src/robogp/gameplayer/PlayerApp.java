@@ -555,10 +555,10 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 //======== scrollPane1 ========
                 {
                     scrollPane1.setVisible(false);
-                    scrollPane1.setPreferredSize(new Dimension(140, 140));
+                    scrollPane1.setPreferredSize(new Dimension(160, 140));
 
                     //---- playerMoves ----
-                    playerMoves.setMaximumSize(new Dimension(140, 24224));
+                    playerMoves.setMaximumSize(new Dimension(160, 24224));
                     playerMoves.setMinimumSize(new Dimension(140, 140));
                     playerMoves.setModel(modelList);
                     scrollPane1.setViewportView(playerMoves);
@@ -838,9 +838,9 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 break;
 
             case (Match.MancheLasersAndWeaponsMsg):
-                notifications.setText("AVVISO: Sottofse Armi & Laser. Ora i robot spareranno");
+                notifications.setText("AVVISO: Sottofase Armi & Laser. Ora i robot spareranno");
                 logText.setText(logText.getText()+"\nRicevuta Laser: " + msg.getParameter(0));
-                System.out.println("\t\tLASER" + msg.getParameter(0));
+                System.out.println("\t\tLASER: " + msg.getParameter(0));
                 String[]weps = ((String) msg.getParameter(0)).split(",");
                 for(String wep: weps)
                     createAnimation(wep);
@@ -913,14 +913,16 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 Direction dir = Direction.valueOf(animdata[1]);
                 int inizioSparo = Integer.parseInt(animdata[2]);
                 int fineSparo = Integer.parseInt(animdata[3]);
-                Boolean isHit = new Boolean(animdata[4]);
+                String hit = animdata[4];
                 Boolean wallHit = new Boolean(animdata[5]);
 
-                rv.addLaserFire(robot, dir, inizioSparo, fineSparo, isHit, wallHit);
-                if(isHit) {
-                    rv.addRobotHit(robot, dir);
-                    updateHitPointsRobotList(robot);
+                if(!hit.equals("false")) {
+                    rv.addLaserFire(robot, dir, inizioSparo, fineSparo, true, wallHit);
+                    rv.addRobotHit(getRobotByName(hit), dir);
+                    updateHitPointsRobotList(getRobotByName(hit));
                 }
+                else{rv.addLaserFire(robot, dir, inizioSparo, fineSparo, false, wallHit);}
+
 
             }
 

@@ -247,10 +247,10 @@ new FormModel {
 				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
 					name: "scrollPane1"
 					"visible": false
-					"preferredSize": new java.awt.Dimension( 140, 140 )
+					"preferredSize": new java.awt.Dimension( 160, 140 )
 					add( new FormComponent( "javax.swing.JList" ) {
 						name: "playerMoves"
-						"maximumSize": new java.awt.Dimension( 140, 24224 )
+						"maximumSize": new java.awt.Dimension( 160, 24224 )
 						"minimumSize": new java.awt.Dimension( 140, 140 )
 						auxiliary() {
 							"JavaCodeGenerator.postInitCode": "playerMoves.setModel(modelList);"
