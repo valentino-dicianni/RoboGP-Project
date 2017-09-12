@@ -3,6 +3,8 @@ package robogp.training;
 import robogp.common.Instruction;
 import robogp.robodrome.Position;
 import java.util.ArrayList;
+import java.util.HashMap;
+
 import robogp.robodrome.Robodrome;
 
 public class IniziareTrainingControl {
@@ -22,9 +24,9 @@ public class IniziareTrainingControl {
      * @param robodromename: file name of the chosen robodrome
      * @return dock positions in the chosen robodrome
      */
-    public ArrayList<Position> setRobodrome(String robodromename) {
+    public HashMap<Integer, Position> setRobodrome(String robodromename) {
         training.setRobodrome(new Robodrome("robodromes/"+robodromename+".txt"));
-        return training.getRobodrome().getDockPos();
+        return training.getRobodrome().getDockTable();
     }
 
     public Robodrome getRobodrome(){

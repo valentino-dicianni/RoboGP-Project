@@ -27,8 +27,6 @@ public class Robodrome {
     private int docksCount;
     private HashMap<Integer, Position> dockTable= new HashMap<>();
 
-    //TODO modificare training
-    private ArrayList<Position> dockPos = new ArrayList();
 
     /**
      * Costruisce un robodromo a partire da un file che lo descrive.
@@ -76,10 +74,8 @@ public class Robodrome {
                 }
                 if (board[r][c] instanceof FloorCell && ((FloorCell)board[r][c]).isDock()) {
                     this.docksCount++;
-                    //TODO modificare training
                     Position doc = new Position(r,c ,((FloorCell)board[r][c]).getDockDirection());
                     dockTable.put(((FloorCell)board[r][c]).getDock(), doc);
-                    dockPos.add(doc);
                 }
             }
         }
@@ -269,9 +265,6 @@ public class Robodrome {
         return this.docksCount;
     }
 
-    public ArrayList<Position> getDockPos() {
-        return dockPos;
-    }
 
     public HashMap<Integer, Position> getDockTable() {
         return dockTable;

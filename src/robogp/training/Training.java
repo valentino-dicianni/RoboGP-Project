@@ -125,7 +125,6 @@ public class Training extends Observable implements  RobodromeAnimationObserver 
 
         //System.out.println("updtrobotpos: "+robot.getPosition().toString());
 
-        //TODO String[] robodromeAnimation = robodromeActivation() -->attacca alla stringa di animazioni anche quelle di attivazione del robodromo
         String[] robodromeanim = robodromeActivation();
         int aLen = animationInstr.length;
         int bLen = robodromeanim.length;

@@ -3,6 +3,7 @@ package robogp.training;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Observable;
 import java.util.Observer;
 import javax.swing.*;
@@ -22,7 +23,9 @@ public class TrainingApp implements Observer {
     private static TrainingApp singleInstance;
     private final IniziareTrainingControl trainingController;
     private RobodromeView rv;
-    private ArrayList<Position> dockPos;
+    //private ArrayList<Position> dockPos;
+    private HashMap<Integer, Position> dockPos= new HashMap<>();
+
 
 
 
@@ -41,10 +44,7 @@ public class TrainingApp implements Observer {
         dockPos = trainingController.setRobodrome((String)robodromeChoose.getSelectedItem());
         DefaultComboBoxModel model = (DefaultComboBoxModel)dockChooser.getModel();
         model.removeAllElements();
-        for(int i = 0; i<dockPos.size();i++){
-            String pos = i +"." + " " +dockPos.get(i).toString();
-            model.addElement(pos);
-        }
+        dockPos.forEach((k,v) ->model.addElement(k+". "+ v));
         label4.setEnabled(true);
         dockChooser.setEnabled(true);
         continueButton.setEnabled(true);
