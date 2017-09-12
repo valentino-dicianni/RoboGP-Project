@@ -249,24 +249,24 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         backButton = new JButton();
         waitPanel = new JPanel();
         waitLabel = new JLabel();
-        playButton = new JButton();
-        label6 = new JLabel();
         robotLabel = new JLabel();
+        label6 = new JLabel();
+        playButton = new JButton();
         playFrame = new JFrame();
         robodromePanel = new JPanel();
         notifications = new JLabel();
-        scrollPane1 = new JScrollPane();
-        playerMoves = new JList();
         panel2 = new JPanel();
         panel3 = new JPanel();
         scrollPane3 = new JScrollPane();
         logText = new JTextPane();
-        scrollPane2 = new JScrollPane();
-        robotList = new JList();
         panel4 = new JPanel();
         progRobot = new JButton();
         iniziaButton = new JButton();
         nextManche = new JButton();
+        scrollPane2 = new JScrollPane();
+        robotList = new JList();
+        scrollPane1 = new JScrollPane();
+        playerMoves = new JList();
         programDialog = new JDialog();
         label5 = new JLabel();
         label9 = new JLabel();
@@ -402,12 +402,15 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
 
             //======== waitPanel ========
             {
+                waitPanel.setMinimumSize(new Dimension(306, 160));
                 waitPanel.setLayout(new MigLayout(
                     "hidemode 3,alignx center",
                     // columns
                     "[fill]" +
                     "[fill]",
                     // rows
+                    "[]" +
+                    "[]" +
                     "[]" +
                     "[]" +
                     "[]" +
@@ -428,23 +431,23 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 waitLabel.setHorizontalAlignment(SwingConstants.LEFT);
                 waitPanel.add(waitLabel, "cell 0 1");
 
-                //---- playButton ----
-                playButton.setText("Gioca");
-                playButton.setVisible(false);
-                playButton.addActionListener(e -> playButtonActionPerformed(e));
-                waitPanel.add(playButton, "cell 0 7");
+                //---- robotLabel ----
+                robotLabel.setText("<html><b>Robot assegnati:</b><br> ");
+                robotLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                robotLabel.setVisible(false);
+                waitPanel.add(robotLabel, "cell 0 2");
 
                 //---- label6 ----
                 label6.setText("In attesa di altri giocatori...");
                 label6.setHorizontalAlignment(SwingConstants.CENTER);
                 label6.setVisible(false);
-                waitPanel.add(label6, "cell 0 6");
+                waitPanel.add(label6, "cell 0 3");
 
-                //---- robotLabel ----
-                robotLabel.setVisible(false);
-                robotLabel.setText("<html>Robot assegnato:<br> ");
-                robotLabel.setHorizontalAlignment(SwingConstants.CENTER);
-                waitPanel.add(robotLabel, "cell 0 2");
+                //---- playButton ----
+                playButton.setText("Gioca");
+                playButton.setVisible(false);
+                playButton.addActionListener(e -> playButtonActionPerformed(e));
+                waitPanel.add(playButton, "cell 0 4");
             }
             setupFrameContentPane.add(waitPanel, "wait");
             setupFrame.pack();
@@ -478,22 +481,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 notifications.setFont(new Font("Lucida Grande", Font.BOLD, 16));
                 robodromePanel.add(notifications, BorderLayout.NORTH);
 
-                //======== scrollPane1 ========
-                {
-                    scrollPane1.setVisible(false);
-                    scrollPane1.setPreferredSize(new Dimension(150, 140));
-                    scrollPane1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-                    scrollPane1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-
-                    //---- playerMoves ----
-                    playerMoves.setMaximumSize(new Dimension(140, 51));
-                    playerMoves.setPreferredSize(new Dimension(140, 51));
-                    playerMoves.setModel(modelList);
-
-                    scrollPane1.setViewportView(playerMoves);
-                }
-                robodromePanel.add(scrollPane1, BorderLayout.EAST);
-
                 //======== panel2 ========
                 {
                     panel2.setPreferredSize(new Dimension(437, 150));
@@ -519,19 +506,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                         panel3.add(scrollPane3);
                     }
                     panel2.add(panel3, BorderLayout.EAST);
-
-                    //======== scrollPane2 ========
-                    {
-
-                        //---- robotList ----
-                        robotList.setPreferredSize(new Dimension(39, 120));
-                        robotList.setMaximumSize(new Dimension(39, 25));
-                        robotList.setSelectedIndex(0);
-                        robotList.setModel(modelRobot);
-                        robotList.setCellRenderer(new RobotCellRenderer());
-                        scrollPane2.setViewportView(robotList);
-                    }
-                    panel2.add(scrollPane2, BorderLayout.CENTER);
 
                     //======== panel4 ========
                     {
@@ -564,8 +538,32 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                         panel4.add(nextManche, "cell 0 2");
                     }
                     panel2.add(panel4, BorderLayout.WEST);
+
+                    //======== scrollPane2 ========
+                    {
+
+                        //---- robotList ----
+                        robotList.setSelectedIndex(0);
+                        robotList.setModel(modelRobot);
+                        robotList.setCellRenderer(new RobotCellRenderer());
+                        scrollPane2.setViewportView(robotList);
+                    }
+                    panel2.add(scrollPane2, BorderLayout.CENTER);
                 }
                 robodromePanel.add(panel2, BorderLayout.SOUTH);
+
+                //======== scrollPane1 ========
+                {
+                    scrollPane1.setVisible(false);
+                    scrollPane1.setPreferredSize(new Dimension(140, 140));
+
+                    //---- playerMoves ----
+                    playerMoves.setMaximumSize(new Dimension(140, 24224));
+                    playerMoves.setMinimumSize(new Dimension(140, 140));
+                    playerMoves.setModel(modelList);
+                    scrollPane1.setViewportView(playerMoves);
+                }
+                robodromePanel.add(scrollPane1, BorderLayout.EAST);
             }
             playFrameContentPane.add(robodromePanel, "play");
             playFrame.pack();
@@ -712,24 +710,24 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
     private JButton backButton;
     private JPanel waitPanel;
     private JLabel waitLabel;
-    private JButton playButton;
-    private JLabel label6;
     private JLabel robotLabel;
+    private JLabel label6;
+    private JButton playButton;
     private JFrame playFrame;
     private JPanel robodromePanel;
     private JLabel notifications;
-    private JScrollPane scrollPane1;
-    private JList playerMoves;
     private JPanel panel2;
     private JPanel panel3;
     private JScrollPane scrollPane3;
     private JTextPane logText;
-    private JScrollPane scrollPane2;
-    private JList robotList;
     private JPanel panel4;
     private JButton progRobot;
     private JButton iniziaButton;
     private JButton nextManche;
+    private JScrollPane scrollPane2;
+    private JList robotList;
+    private JScrollPane scrollPane1;
+    private JList playerMoves;
     private JDialog programDialog;
     private JLabel label5;
     private JLabel label9;

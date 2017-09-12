@@ -117,9 +117,10 @@ new FormModel {
 			add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 				"$layoutConstraints": "hidemode 3,alignx center"
 				"$columnConstraints": "[fill][fill]"
-				"$rowConstraints": "[][][][][][][][][][][][][]"
+				"$rowConstraints": "[][][][][][][][][][][][][][][]"
 			} ) {
 				name: "waitPanel"
+				"minimumSize": new java.awt.Dimension( 306, 160 )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "waitLabel"
 					"text": "Elaborazione Richiesta in corso..."
@@ -128,13 +129,13 @@ new FormModel {
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
 					"value": "cell 0 1"
 				} )
-				add( new FormComponent( "javax.swing.JButton" ) {
-					name: "playButton"
-					"text": "Gioca"
+				add( new FormComponent( "javax.swing.JLabel" ) {
+					name: "robotLabel"
+					"text": "<html><b>Robot assegnati:</b><br> "
+					"horizontalAlignment": 0
 					"visible": false
-					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "playButtonActionPerformed", true ) )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 0 7"
+					"value": "cell 0 2"
 				} )
 				add( new FormComponent( "javax.swing.JLabel" ) {
 					name: "label6"
@@ -142,15 +143,15 @@ new FormModel {
 					"horizontalAlignment": 0
 					"visible": false
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 0 6"
+					"value": "cell 0 3"
 				} )
-				add( new FormComponent( "javax.swing.JLabel" ) {
-					name: "robotLabel"
+				add( new FormComponent( "javax.swing.JButton" ) {
+					name: "playButton"
+					"text": "Gioca"
 					"visible": false
-					"text": "<html>Robot assegnato:<br> "
-					"horizontalAlignment": 0
+					addEvent( new FormEvent( "java.awt.event.ActionListener", "actionPerformed", "playButtonActionPerformed", true ) )
 				}, new FormLayoutConstraints( class net.miginfocom.layout.CC ) {
-					"value": "cell 0 2"
+					"value": "cell 0 4"
 				} )
 			}, new FormLayoutConstraints( class java.lang.String ) {
 				"value": "wait"
@@ -175,23 +176,6 @@ new FormModel {
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "North"
 				} )
-				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-					name: "scrollPane1"
-					"visible": false
-					"preferredSize": new java.awt.Dimension( 150, 140 )
-					"verticalScrollBarPolicy": 22
-					"horizontalScrollBarPolicy": 32
-					add( new FormComponent( "javax.swing.JList" ) {
-						name: "playerMoves"
-						"maximumSize": new java.awt.Dimension( 140, 51 )
-						"preferredSize": new java.awt.Dimension( 140, 51 )
-						auxiliary() {
-							"JavaCodeGenerator.postInitCode": "playerMoves.setModel(modelList);\n\n"
-						}
-					} )
-				}, new FormLayoutConstraints( class java.lang.String ) {
-					"value": "East"
-				} )
 				add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class java.awt.BorderLayout ) ) {
 					name: "panel2"
 					"preferredSize": new java.awt.Dimension( 437, 150 )
@@ -212,20 +196,6 @@ new FormModel {
 						} )
 					}, new FormLayoutConstraints( class java.lang.String ) {
 						"value": "East"
-					} )
-					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
-						name: "scrollPane2"
-						add( new FormComponent( "javax.swing.JList" ) {
-							name: "robotList"
-							"preferredSize": new java.awt.Dimension( 39, 120 )
-							"maximumSize": new java.awt.Dimension( 39, 25 )
-							"selectedIndex": 0
-							auxiliary() {
-								"JavaCodeGenerator.postInitCode": "robotList.setModel(modelRobot);\nrobotList.setCellRenderer(new RobotCellRenderer());\n"
-							}
-						} )
-					}, new FormLayoutConstraints( class java.lang.String ) {
-						"value": "Center"
 					} )
 					add( new FormContainer( "javax.swing.JPanel", new FormLayoutManager( class net.miginfocom.swing.MigLayout ) {
 						"$layoutConstraints": "hidemode 3"
@@ -259,8 +229,35 @@ new FormModel {
 					}, new FormLayoutConstraints( class java.lang.String ) {
 						"value": "West"
 					} )
+					add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+						name: "scrollPane2"
+						add( new FormComponent( "javax.swing.JList" ) {
+							name: "robotList"
+							"selectedIndex": 0
+							auxiliary() {
+								"JavaCodeGenerator.postInitCode": "robotList.setModel(modelRobot);\nrobotList.setCellRenderer(new RobotCellRenderer()); "
+							}
+						} )
+					}, new FormLayoutConstraints( class java.lang.String ) {
+						"value": "Center"
+					} )
 				}, new FormLayoutConstraints( class java.lang.String ) {
 					"value": "South"
+				} )
+				add( new FormContainer( "javax.swing.JScrollPane", new FormLayoutManager( class javax.swing.JScrollPane ) ) {
+					name: "scrollPane1"
+					"visible": false
+					"preferredSize": new java.awt.Dimension( 140, 140 )
+					add( new FormComponent( "javax.swing.JList" ) {
+						name: "playerMoves"
+						"maximumSize": new java.awt.Dimension( 140, 24224 )
+						"minimumSize": new java.awt.Dimension( 140, 140 )
+						auxiliary() {
+							"JavaCodeGenerator.postInitCode": "playerMoves.setModel(modelList);"
+						}
+					} )
+				}, new FormLayoutConstraints( class java.lang.String ) {
+					"value": "East"
 				} )
 			}, new FormLayoutConstraints( class java.lang.String ) {
 				"value": "play"

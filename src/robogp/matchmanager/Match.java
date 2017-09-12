@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import robogp.robodrome.*;
 
+
 /**
  *
  * @author claudia
@@ -33,6 +34,7 @@ public class Match extends Observable implements MessageObserver{
     public enum EndGame {
         First, First3, AllButLast
     };
+
 
     public enum State {
         Created, Started, Canceled
