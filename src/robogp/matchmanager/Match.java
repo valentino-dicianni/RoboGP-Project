@@ -453,9 +453,9 @@ public class Match extends Observable implements MessageObserver{
             }
 
             if (Direction.isHorizontal(robotPos.getDirection())) // si spara in orizzontale
-                animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + robotPos.getPosX() + ":" + offset + ":"+robothit+":"+wallhit);
+                animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + robotPos.getPosY() + ":" + offset + ":"+robothit+":"+wallhit);
             else // si spara in verticale
-                animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + offset + ":" + robotPos.getPosX() + ":"+robothit+":"+wallhit);
+                animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + robotPos.getPosX() + ":" + offset + ":"+robothit+":"+wallhit);
             if (robothit && hitEnemy != null) {
                 if (!damageRobot(hitEnemy, 1, 0))
                     animations.add(hitEnemy.getName()+":death");
