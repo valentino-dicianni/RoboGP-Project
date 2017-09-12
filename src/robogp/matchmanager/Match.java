@@ -397,7 +397,7 @@ public class Match extends Observable implements MessageObserver{
             int offset = -1;
             boolean wallhit = false;
             boolean robothit = false;
-            if (!Direction.isHorizontal(robotPos.getDirection())) {
+            if (!Direction.isHorizontal(robotPos.getDirection())) { // VERTICAL
                 try {
                     for (int i = robotPos.getPosX(); i < theRobodrome.getColumnCount() && i >= 0; i = i + (directionAxis)) {
                         if (theRobodrome.pathHasWall(i, robotPos.getPosY(), robotPos.getDirection())) {
@@ -406,11 +406,11 @@ public class Match extends Observable implements MessageObserver{
                             break;
                         }
                     }
-                } catch (NullPointerException e) {
+                } catch (ArrayIndexOutOfBoundsException e) {
                     // no wall hit, out of robodrome
                     offset = Direction.getDirectionAxis(robotPos.getDirection()) > 0? theRobodrome.getColumnCount(): 0;
                 }
-            } else {
+            } else {    // HORIZONTAL
                 try {
                     for (int i = robotPos.getPosY(); i < theRobodrome.getRowCount() && i >= 0; i = i + (directionAxis)) {
                         if (theRobodrome.pathHasWall(robotPos.getPosX(), i, robotPos.getDirection())) {
@@ -419,7 +419,7 @@ public class Match extends Observable implements MessageObserver{
                             break;
                         }
                     }
-                } catch (NullPointerException e) {
+                } catch (ArrayIndexOutOfBoundsException e) {
                     // no wall hit, out of robodrome
                     offset = Direction.getDirectionAxis(robotPos.getDirection()) > 0? theRobodrome.getRowCount(): 0;
                 }
@@ -433,19 +433,21 @@ public class Match extends Observable implements MessageObserver{
                 int signY = robotPos.getPosY() - enemyPos.getPosY() > 0? -1:1;
                 if ((enemyPos.getPosX() == robotPos.getPosX() && directionAxis == signY && Direction.isHorizontal(robotPos.getDirection()))) {
                     // robot colpito orizzontalmente
-                    if (offset - (enemyPos.getPosX() * directionAxis) > 0) {
+                    if (!(offset - (enemyPos.getPosY() * directionAxis) > 0) || enemyPos.getPosY() == offset) {
                         // robot nemico è davanti al muro/ostacolo finora più vicino -> aggiorno offset
                         offset = enemyPos.getPosX();
                         hitEnemy = enemyRobot;
                         robothit = true;
+                        wallhit = false;
                     }
                 } else if (enemyPos.getPosY() == robotPos.getPosY() && directionAxis == signX && !Direction.isHorizontal(robotPos.getDirection())) {
                     // robot colpito verticalmente
-                    if (offset - (enemyPos.getPosY() * directionAxis) > 0) {
+                    if (!(offset - (enemyPos.getPosY() * directionAxis) > 0) || enemyPos.getPosX() == offset) {
                         // robot nemico è davanti al muro/ostacolo finora più vicino -> aggiorno offset
                         offset = enemyPos.getPosY();
                         hitEnemy = enemyRobot;
                         robothit = true;
+                        wallhit = false;
                     }
                 }
             }
