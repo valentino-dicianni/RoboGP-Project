@@ -396,7 +396,6 @@ public class Match extends Observable implements MessageObserver{
             int directionAxis = Direction.getDirectionAxis(robotPos.getDirection());
             int offset = -1;
             boolean wallhit = false;
-            boolean robothit = false;
             if (!Direction.isHorizontal(robotPos.getDirection())) { // VERTICAL
                 try {
                     for (int i = robotPos.getPosX(); i < theRobodrome.getColumnCount() && i >= 0; i = i + (directionAxis)) {
@@ -429,34 +428,43 @@ public class Match extends Observable implements MessageObserver{
 
             for (MatchRobot enemyRobot : allRobots) {
                 Position enemyPos = enemyRobot.getPosition();
-                int signX = robotPos.getPosX() - enemyPos.getPosX() > 0? -1:1;
-                int signY = robotPos.getPosY() - enemyPos.getPosY() > 0? -1:1;
-                if ((enemyPos.getPosX() == robotPos.getPosX() && directionAxis == signY && Direction.isHorizontal(robotPos.getDirection()))) {
-                    // robot colpito orizzontalmente
-                    if (!(offset - (enemyPos.getPosY() * directionAxis) > 0) || enemyPos.getPosY() == offset) {
-                        // robot nemico è davanti al muro/ostacolo finora più vicino -> aggiorno offset
-                        offset = enemyPos.getPosX();
-                        hitEnemy = enemyRobot;
-                        robothit = true;
-                        wallhit = false;
-                    }
-                } else if (enemyPos.getPosY() == robotPos.getPosY() && directionAxis == signX && !Direction.isHorizontal(robotPos.getDirection())) {
-                    // robot colpito verticalmente
-                    if (!(offset - (enemyPos.getPosY() * directionAxis) > 0) || enemyPos.getPosX() == offset) {
-                        // robot nemico è davanti al muro/ostacolo finora più vicino -> aggiorno offset
-                        offset = enemyPos.getPosY();
-                        hitEnemy = enemyRobot;
-                        robothit = true;
-                        wallhit = false;
-                    }
+                switch (robotPos.getDirection()) {
+                    case W:
+                        if (enemyPos.getPosX() == robotPos.getPosX() && enemyPos.getPosY() < robotPos.getPosY() && offset <= enemyPos.getPosY() ) {
+                            hitEnemy = enemyRobot;
+                            offset = enemyPos.getPosY();
+                            wallhit = false;
+                        }
+                        break;
+                    case E:
+                        if (enemyPos.getPosX() == robotPos.getPosX() && enemyPos.getPosY() > robotPos.getPosY() && offset >= enemyPos.getPosY() ) {
+                            hitEnemy = enemyRobot;
+                            offset = enemyPos.getPosY();
+                            wallhit = false;
+                        }
+                        break;
+                    case N:
+                        if (enemyPos.getPosY() == robotPos.getPosY() && enemyPos.getPosX() < robotPos.getPosX() && offset <= enemyPos.getPosX() ) {
+                            hitEnemy = enemyRobot;
+                            offset = enemyPos.getPosX();
+                            wallhit = false;
+                        }
+                        break;
+                    case S:
+                        if (enemyPos.getPosY() == robotPos.getPosY() && enemyPos.getPosX() > robotPos.getPosX() && offset >= enemyPos.getPosX() ) {
+                            hitEnemy = enemyRobot;
+                            offset = enemyPos.getPosX();
+                            wallhit = false;
+                        }
+                        break;
                 }
             }
 
             if (Direction.isHorizontal(robotPos.getDirection())) // si spara in orizzontale
-                animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + robotPos.getPosY() + ":" + offset + ":"+robothit+":"+wallhit);
+                animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + robotPos.getPosY() + ":" + offset + ":"+(hitEnemy != null? ":"+ hitEnemy.getName(): "false")+":"+wallhit);
             else // si spara in verticale
-                animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + robotPos.getPosX() + ":" + offset + ":"+robothit+":"+wallhit);
-            if (robothit && hitEnemy != null) {
+                animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + robotPos.getPosX() + ":" + offset + ":"+(hitEnemy != null? ":"+ hitEnemy.getName(): "false")+":"+wallhit);
+            if (hitEnemy != null) {
                 if (!damageRobot(hitEnemy, 1, 0))
                     animations.add(hitEnemy.getName()+":death");
             }
