@@ -425,37 +425,58 @@ public class Match extends Observable implements MessageObserver{
                 if (enemyDestroyed.length() > 0) animations.add(enemyDestroyed);
             } else {
                 // nessun robot colpito, controllo se laser colpisce qualche muro
-                boolean wallhit = false;
                 if (!Direction.isHorizontal(robotPos.getDirection())) {
-                    for (int i = robotPos.getPosX(); i < theRobodrome.getColumnCount() && i >= 0; i = i +(Direction.getDirectionAxis(robotPos.getDirection()))) {
-                        if (theRobodrome.pathHasWall(i, robotPos.getPosY(), robotPos.getDirection())) {
-                            animations.add(robot.getName()+":"+robotPos.getDirection()+":"+robotPos.getPosX()+":"+i+":false:true");
-                            wallhit = true;
-                            break;
+                    try {
+                        for (int i = robotPos.getPosX(); i < theRobodrome.getColumnCount() && i >= 0; i = i + (Direction.getDirectionAxis(robotPos.getDirection()))) {
+                            if (theRobodrome.pathHasWall(i, robotPos.getPosY(), robotPos.getDirection())) {
+                                animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + robotPos.getPosX() + ":" + i + ":false:true");
+                                break;
+                            }
                         }
-                    }
-                    if (!wallhit) {
+                    } catch (NullPointerException e) {
+                        // no wall hit, out of robodrome
                         animations.add(robot.getName()+":"+robotPos.getDirection()+":"+robotPos.getPosX()+":"+theRobodrome.getColumnCount()+":false:false");
                     }
                 } else {
-                    for (int i = robotPos.getPosY(); i < theRobodrome.getRowCount() && i >= 0; i = i +(Direction.getDirectionAxis(robotPos.getDirection()))) {
-                        if (theRobodrome.pathHasWall(robotPos.getPosX(), i, robotPos.getDirection())) {
-                            animations.add(robot.getName()+":"+robotPos.getDirection()+":"+robotPos.getPosY()+":"+i+":false:true");
-                            wallhit = true;
-                            break;
+                    try {
+                        for (int i = robotPos.getPosY(); i < theRobodrome.getRowCount() && i >= 0; i = i + (Direction.getDirectionAxis(robotPos.getDirection()))) {
+                            if (theRobodrome.pathHasWall(robotPos.getPosX(), i, robotPos.getDirection())) {
+                                animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + robotPos.getPosY() + ":" + i + ":false:true");
+                                break;
+                            }
                         }
-                    }
-                    if (!wallhit) {
+                    } catch (NullPointerException e) {
+                        // no wall hit, out of robodrome
                         animations.add(robot.getName()+":"+robotPos.getDirection()+":"+robotPos.getPosY()+":"+theRobodrome.getRowCount()+":false:false");
                     }
                 }
             }
         }
-            log("Laser and weapons subphase end: "+animations.size()+" animations created.");
+        log("Laser and weapons subphase end: "+animations.size()+" animations created.");
 
         String message = animations.toString().replaceAll("[\\[\\]\\s]", "");
 
         broadcastMessage(message, Match.MancheLasersAndWeaponsMsg);
+    }
+
+    private void touchAndSaveSubPhase() {
+        // in questa sottofase vengono
+
+        ArrayList<MatchRobot> robots = new ArrayList<>();
+        for(Map.Entry<String, List<MatchRobot>> robotlist : ownedRobots.entrySet()) {
+            robots.addAll(robotlist.getValue());
+        }
+
+        for (MatchRobot robot : robots) {
+            Position robotPos = robot.getPosition();
+            BoardCell tempbcell = theRobodrome.getCell(robotPos.getPosX(), robotPos.getPosY());
+            if (tempbcell instanceof FloorCell) {
+                FloorCell tempfcell = (FloorCell) tempbcell;
+                if (tempfcell.isRepair())
+                    robot.setLastCheckpointPosition(robotPos.clone());
+            }
+        }
+
     }
 
     /**
