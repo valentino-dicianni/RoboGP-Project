@@ -839,6 +839,18 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 rv.play();
                 break;
 
+            case (Match.MancheLasersAndWeaponsMsg):
+                notifications.setText("AVVISO: Sottofse Armi & Laser. Ora i robot spareranno");
+                logText.setText(logText.getText()+"\nRicevuta Laser: " + msg.getParameter(0));
+                System.out.println("\t\tLASER" + msg.getParameter(0));
+                String[]weps = ((String) msg.getParameter(0)).split(",");
+                for(String wep: weps)
+                    createAnimation(wep);
+                rv.addHideLaser();
+                rv.play();
+                break;
+
+
             case (Match.MatchCancelMsg):
                 JOptionPane.showMessageDialog(playFrame,
                             "La partita è stata annullata dal manager di partita!","Attenzione:",
@@ -909,8 +921,9 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 rv.addLaserFire(robot, dir, inizioSparo, fineSparo, isHit, wallHit);
                 if(isHit) {
                     rv.addRobotHit(robot, dir);
-                    //tolgo punto vita se colpisco robot
+                    updateHitPointsRobotList(robot);
                 }
+
             }
 
             rv.addPause(1000);
@@ -918,45 +931,47 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
     }
 
     private void updateHitPointsRobotList(MatchRobot robot) {
-        MatchRobot selected = null;
-        for(int i=0;i<modelRobot.size();i++){
-            if( robot.getName().equals(modelRobot.elementAt(i).getName())){
-                selected =  modelRobot.getElementAt(i);
-                selected.setHitPoints(selected.getHitPoints()-1);
-                if(selected.getHitPoints() == 0){
-                    selected.setLifePoints(selected.getLifePoints()-1);
-                    selected.setHitPoints(10);
+        if(modelRobot.contains(robot)) {
+            MatchRobot selected = null;
+            for (int i = 0; i < modelRobot.size(); i++) {
+                if (robot.getName().equals(modelRobot.elementAt(i).getName())) {
+                    selected = modelRobot.getElementAt(i);
+                    selected.setHitPoints(selected.getHitPoints() - 1);
+                    if (selected.getHitPoints() == 0) {
+                        selected.setLifePoints(selected.getLifePoints() - 1);
+                        selected.setHitPoints(10);
+                    }
                 }
             }
+            modelRobot.addElement(selected);
+            modelRobot.removeElement(selected);
         }
-        modelRobot.addElement(selected);
-        modelRobot.removeElement(selected);
 
     }
 
+
     private void updateLifePointsRobotList(MatchRobot robot) {
         MatchRobot selected = null;
-        for(int i=0;i<modelRobot.size();i++){
-            if( robot.getName().equals(modelRobot.elementAt(i).getName())){
-                selected =  modelRobot.getElementAt(i);
-                selected.setLifePoints(selected.getLifePoints()-1);
-                selected.setHitPoints(10);
+        if(modelRobot.contains(robot)) {
+            for (int i = 0; i < modelRobot.size(); i++) {
+                if (robot.getName().equals(modelRobot.elementAt(i).getName())) {
+                    selected = modelRobot.getElementAt(i);
+                    selected.setLifePoints(selected.getLifePoints() - 1);
+                    selected.setHitPoints(10);
+                }
+
             }
 
+            //inserisco e tolgo un doppione per far renderizzare
+            //la llista di nuovoq
+            modelRobot.addElement(selected);
+            modelRobot.removeElement(selected);
+            assert selected != null;
+            if(selected.getLifePoints() == 0){
+                rv.removeRobot(selected.getName());
+                modelList.removeElement(selected);
+            }
         }
-        //inserisco e tolgo un doppione per far renderizzare
-        //la llista di nuovoq
-        modelRobot.addElement(selected);
-        modelRobot.removeElement(selected);
-
-        assert selected != null;
-        if(selected.getLifePoints() == 0){
-            rv.removeRobot(selected.getName());
-            modelList.removeElement(selected);
-        }
-
-
-
     }
 
     private void setupRobotsOnRobodrome(ArrayList<MatchRobot> upRobots) {

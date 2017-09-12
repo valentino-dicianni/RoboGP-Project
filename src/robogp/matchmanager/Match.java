@@ -98,7 +98,8 @@ public class Match extends Observable implements MessageObserver{
                     log("Tutte le animazioni della sottofase Attivazione robodromo sono state inviate...");
                     getReadyPlayers();
                     log("Tutte le animazioni della sottofase Attivazione robodromo sono terminata...");
-
+                    lasersAndWeaponsSubPhase();
+                    getReadyPlayers();
                 }
 
             }
