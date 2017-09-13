@@ -98,6 +98,6 @@ public class Message implements Serializable {
 	 * @return nome/tipo di questo messaggio
 	 */
 	public String getName() {
-		return name;
+    		return name;
 	}
 }

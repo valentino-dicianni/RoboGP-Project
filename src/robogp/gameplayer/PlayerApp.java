@@ -536,6 +536,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
 
                         //---- nextManche ----
                         nextManche.setText("Prossima Manche");
+                        nextManche.setEnabled(false);
                         nextManche.addActionListener(e -> nextMancheActionPerformed(e));
                         panel4.add(nextManche, "cell 0 2");
                     }
@@ -856,7 +857,9 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                     repositionRobot(rep);
                 break;
 
-
+            case (Match.MancheEndMsg):
+                nextManche.setEnabled(true);
+                break;
 
             case (Match.MatchCancelMsg):
                 JOptionPane.showMessageDialog(playFrame,
@@ -916,6 +919,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
     }
 
     private void repositionRobot(String rep) {
+        System.out.println("\t\tREPOSITION: "+rep);
         String[] animdata = rep.split(":");
 
         if (animdata.length == 5){ //animazione di caduto o di morte
@@ -923,7 +927,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
             int savedposX = Integer.parseInt(animdata[1]);
             int savedposY = Integer.parseInt(animdata[2]);
             Direction dir = Direction.valueOf(animdata[3]);
-            Boolean isAlive = Boolean.parseBoolean(animdata[4]); //true robot in vita, false è morto
+            Boolean isAlive = Boolean.parseBoolean(animdata[4]);
 
             if(isAlive) {
                 //tolto punto vita
@@ -932,6 +936,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
             }
             else{
                 rv.removeRobot(robot.getName());
+                System.out.println("-->robot rimosso<--");
                 modelList.removeElement(robot);
                 robotsOnRobodrome.remove(robot);
             }
