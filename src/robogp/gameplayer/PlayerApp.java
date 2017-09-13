@@ -216,7 +216,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         msg.setParameters(pars);
         System.out.println("\t\tNUOVE SCHEDE INVIATE: " + msg.getParameter(1).toString());
         controller.sendMessage(msg);
-        regResponseMsg.clear();
+        regResponseMsg = new HashMap<>();
         logText.setText(logText.getText()+"\nSchede istruzione inviate al server");
         iniziaButton.setEnabled(false);
         notifications.setText("Attendi che tutti i giocatori abbiano programmato i propri robot");
