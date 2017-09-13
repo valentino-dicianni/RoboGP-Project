@@ -574,13 +574,13 @@ public class Match extends Observable implements MessageObserver{
 
         currentHP -= HPDamage;
 
-        if (HPDamage <= 0) { currentLP--; currentHP = 0; }
+        if (currentHP <= 0) { currentLP--; currentHP = 10; }
 
         currentLP -= LPDamage;
 
+        robot.setHitPoints(currentHP);
+        robot.setLifePoints(currentLP);
         if (currentLP > 0) {
-            robot.setHitPoints(currentHP);
-            robot.setLifePoints(currentLP);
             return true;
         } else {
             // rimuove riferimento di robot da owned robots
