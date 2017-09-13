@@ -21,7 +21,11 @@ public class MatchRobot extends RobotMarker {
         this.registries = new Registry[5];
         for(int i = 0; i < 5; i++)
             this.registries[i] = new Registry(i + 1);
-        this.instructionsPool = new ArrayList<MatchInstruction>();
+        this.instructionsPool = new ArrayList<>();
+    }
+
+    public void setInstructionsPool(ArrayList<MatchInstruction> instructionsPool) {
+        this.instructionsPool = instructionsPool;
     }
 
     public int getHitPoints() {
@@ -47,6 +51,17 @@ public class MatchRobot extends RobotMarker {
     public void setRegistry(int regNumber, MatchInstruction instruction) {
         if (!this.registries[regNumber-1].isLocked())
             this.registries[regNumber-1].setInstruction(instruction);
+    }
+
+    public void resetRegistries() {
+        for(int i = 0; i < 5; i++) {
+            this.registries[i].setInstruction(null);
+            this.registries[i].setLocked(false);
+        }
+    }
+
+    public void setRegistryLock(int regNumber, boolean locked) {
+        this.registries[regNumber-1].setLocked(locked);
     }
 
     public Registry getRegistry(int regNumber) {

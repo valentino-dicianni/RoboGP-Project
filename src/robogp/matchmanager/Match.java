@@ -30,6 +30,7 @@ public class Match extends Observable implements MessageObserver{
     public static final String MancheRobotsAnimationsMsg = "robotsMoveAnimations";
     public static final String MancheRobodromeActivationMsg = "robodromeActivationAnimations";
     public static final String MancheLasersAndWeaponsMsg = "lasersAndWeaponsAnimations";
+    public static final String MancheEndMsg = "mancheEnd";
 
     public enum EndGame {First, First3, AllButLast}
     public enum State {Created, Started, Canceled}
@@ -95,8 +96,11 @@ public class Match extends Observable implements MessageObserver{
                     log("Tutte le animazioni della sottofase Attivazione robodromo sono terminata...");
                     lasersAndWeaponsSubPhase();
                     getReadyPlayers();
+                    log("Sottofase touch and save...");
+                    touchAndSaveSubPhase();
                 }
-
+                log("Fine manche, reset per prossima manche...");
+                endManche();
             }
 
         }
@@ -106,7 +110,7 @@ public class Match extends Observable implements MessageObserver{
     /**
      * manda i pool di schede instruzione ai giocatori, calcolati in base ai punti vita dei robot
      */
-    public void sendInstructionPools() {
+    private void sendInstructionPools() {
         MatchInstructionManager instructionManager = MatchInstructionManager.getInstance();
         for(Map.Entry<String, Connection> player : players.entrySet()) {
             String nickname = player.getKey();
@@ -122,7 +126,10 @@ public class Match extends Observable implements MessageObserver{
                 // per ogni robot di un giocatore
                 if (robot.getLifePoints() > 1) {
                     //ArrayList<String> stringpool = new ArrayList<>();
-                    robotsPool.put(robot.getName(), instructionManager.getRandomInstructionPool(robot.getHitPoints() - 1).toString().replaceAll("[\\[\\]]", ""));
+                    ArrayList<MatchInstruction> newInstructionsPool = instructionManager.getRandomInstructionPool(robot.getHitPoints() - 1);
+                    robotsPool.put(robot.getName(), newInstructionsPool.toString().replaceAll("[\\[\\]\\s]", ""));
+                    // setta robot instruction pool
+                    robot.setInstructionsPool(newInstructionsPool);
                 }
             }
 
@@ -142,7 +149,7 @@ public class Match extends Observable implements MessageObserver{
      * manda le schede istruzione che verranno eseguite nella sottofase per il dato registro
      * @param regNum numero del registro attualmente in eseguzione
      */
-    public void declarationSubPhase(int regNum) {
+    private void declarationSubPhase(int regNum) {
         // messaggio: String strutturato "nomerobot:instrname:priority" separatore ","
         ArrayList<String> orderedInstr = new ArrayList<>();
         for(Map.Entry<String, List<MatchRobot>> robotlist : ownedRobots.entrySet()) {
@@ -166,7 +173,7 @@ public class Match extends Observable implements MessageObserver{
         broadcastMessage(message, Match.MancheDeclarationSubPhaseMsg);
     }
 
-    public void moveSubPhase(int regNum) {
+    private void moveSubPhase(int regNum) {
         // sottofase dove vengono calcolate le animazioni
         // si prendono i robot in ordine per
         ArrayList<MatchRobot> orderedRobotList = new ArrayList<>();
@@ -241,7 +248,7 @@ public class Match extends Observable implements MessageObserver{
         broadcastMessage(message, MancheRobotsAnimationsMsg);
     }
 
-    public void robodromeActivationSubPhase() {
+    private void robodromeActivationSubPhase() {
         // fase attivazione robodromo, controlla la posizione di ogni robot
         // se un robot è finito su una cella attiva allora si aggiungono le animazioni per quel robot
         ArrayList<MatchRobot> robotsToAnimate = new ArrayList<>();
@@ -369,7 +376,7 @@ public class Match extends Observable implements MessageObserver{
 
     }
 
-    public void lasersAndWeaponsSubPhase() {
+    private void lasersAndWeaponsSubPhase() {
         // la vista deve fare rv.addLaserFire(robots[0], Direction.E, 3, 15, false, false);
         // per ogni robot guardo se ci sono altri robot nella via del laser, se si colpisco, aggiungo anim e continue
         // se no, trovo il primo muro del robodromo dove far fermare il laser
@@ -467,7 +474,9 @@ public class Match extends Observable implements MessageObserver{
     }
 
     private void touchAndSaveSubPhase() {
-        // in questa sottofase vengono
+        // in questa sottofase vengono salvate la posizione dei robot se sono finiti su repair/checkpoint
+        // quelli finiti su repair guadagnano anche punto vita
+        //NON FARE: distribuzione upgrade
 
         ArrayList<MatchRobot> robots = new ArrayList<>();
         for(Map.Entry<String, List<MatchRobot>> robotlist : ownedRobots.entrySet()) {
@@ -479,11 +488,57 @@ public class Match extends Observable implements MessageObserver{
             BoardCell tempbcell = theRobodrome.getCell(robotPos.getPosX(), robotPos.getPosY());
             if (tempbcell instanceof FloorCell) {
                 FloorCell tempfcell = (FloorCell) tempbcell;
-                if (tempfcell.isRepair())
+                if (tempfcell.isRepair()) {
                     robot.setLastCheckpointPosition(robotPos.clone());
+                    int rHP = robot.getHitPoints();
+                    if (rHP < 10) robot.setHitPoints(rHP+1);
+                }
+            }
+        }
+        // no msg?
+    }
+
+    private void endManche() {
+        // tolgo schede dai registri dei robot e setto i registri bloccati in base ai punti vita attuali del robot
+        ArrayList<String> robotsUpdated = new ArrayList<>();
+        for(Map.Entry<String, List<MatchRobot>> robotlist : ownedRobots.entrySet()) {
+            //robots.addAll(robotlist.getValue());
+            for (MatchRobot robot : robotlist.getValue()) {
+                if (robot.getLifePoints() < 1) { // rimuovo robot se non ha più punti vita
+                    robotsUpdated.add(robot.getName()+":dead");
+                    robotlist.getValue().remove(robot);
+                    continue;
+                }
+                robot.resetRegistries();
+                int hitpoints = robot.getHitPoints();
+                int regAval = 5;
+                // setta registri bloccati in base agli hp
+                switch (hitpoints) {
+                    case 1:
+                        robot.setRegistryLock(1, true);
+                        regAval--;
+                    case 2:
+                        robot.setRegistryLock(2, true);
+                        regAval--;
+                    case 3:
+                        robot.setRegistryLock(3, true);
+                        regAval--;
+                    case 4:
+                        robot.setRegistryLock(4, true);
+                        regAval--;
+                    case 5:
+                        robot.setRegistryLock(5, true);
+                        regAval--;
+                }
+                robotsUpdated.add(robot.getName()+":"+hitpoints+":"+robot.getLifePoints()+":"+regAval);
             }
         }
 
+        log("Manche end: "+robotsUpdated.size()+" robots updated");
+
+        String message = robotsUpdated.toString().replaceAll("[\\[\\]\\s]", "");
+
+        //broadcastMessage(message, Match.MancheEndMsg);
     }
 
     /**
