@@ -81,12 +81,16 @@ public class Match extends Observable implements MessageObserver{
                     log("Tutti i robot sono stati programmati correttamente...");
                     getReadyPlayers();
                     //move subphase
-                    moveSubPhase(i);
+                    String moveRepositions = moveSubPhase(i);
+                    getReadyPlayers();
+                    syncRePositions(moveRepositions);
                     log("Tutte le animazioni della sottofase Mossa sono state inviate...");
                     getReadyPlayers();
                     log("Tutte le animazioni della sottofase Mossa sono terminate...");
                     //esecuzione con robodromo
-                    robodromeActivationSubPhase();
+                    String activRepositions = robodromeActivationSubPhase();
+                    getReadyPlayers();
+                    syncRePositions(activRepositions);
                     log("Tutte le animazioni della sottofase Attivazione robodromo sono state inviate...");
                     getReadyPlayers();
                     log("Tutte le animazioni della sottofase Attivazione robodromo sono terminata...");
@@ -169,7 +173,7 @@ public class Match extends Observable implements MessageObserver{
         broadcastMessage(message, Match.MancheDeclarationSubPhaseMsg);
     }
 
-    private void moveSubPhase(int regNum) {
+    private String moveSubPhase(int regNum) {
         // sottofase dove vengono calcolate le animazioni
         // si prendono i robot in ordine per
         ArrayList<MatchRobot> orderedRobotList = new ArrayList<>();
@@ -252,14 +256,10 @@ public class Match extends Observable implements MessageObserver{
 
         broadcastMessage(animMessage, MancheRobotsAnimationsMsg);
 
-        getReadyPlayers();
-
-        String reposMessage = repositions.toString().replaceAll("[\\[\\]\\s]", "");
-
-        broadcastMessage(reposMessage, MancheRobotsRepositionsMsg);
+        return repositions.toString().replaceAll("[\\[\\]\\s]", "");
     }
 
-    private void robodromeActivationSubPhase() {
+    private String robodromeActivationSubPhase() {
         // fase attivazione robodromo, controlla la posizione di ogni robot
         // se un robot è finito su una cella attiva allora si aggiungono le animazioni per quel robot
         ArrayList<MatchRobot> robotsToAnimate = new ArrayList<>();
@@ -385,12 +385,7 @@ public class Match extends Observable implements MessageObserver{
 
         broadcastMessage(message, Match.MancheRobodromeActivationMsg);
 
-        getReadyPlayers();
-
-        String reposMessage = repositions.toString().replaceAll("[\\[\\]\\s]", "");
-
-        broadcastMessage(reposMessage, MancheRobotsRepositionsMsg);
-
+        return repositions.toString().replaceAll("[\\[\\]\\s]", "");
     }
 
     private void lasersAndWeaponsSubPhase() {
@@ -585,6 +580,10 @@ public class Match extends Observable implements MessageObserver{
             }
             return false;
         }
+    }
+
+    private void syncRePositions(String repositionMessage) {
+        broadcastMessage(repositionMessage, Match.MancheRobotsRepositionsMsg);
     }
 
     /**
