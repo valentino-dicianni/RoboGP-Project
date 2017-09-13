@@ -252,6 +252,8 @@ public class Match extends Observable implements MessageObserver{
 
         broadcastMessage(animMessage, MancheRobotsAnimationsMsg);
 
+        getReadyPlayers();
+
         String reposMessage = repositions.toString().replaceAll("[\\[\\]\\s]", "");
 
         broadcastMessage(reposMessage, MancheRobotsRepositionsMsg);
@@ -382,6 +384,8 @@ public class Match extends Observable implements MessageObserver{
         String message = animations.toString().replaceAll("[\\[\\]\\s]", "");
 
         broadcastMessage(message, Match.MancheRobodromeActivationMsg);
+
+        getReadyPlayers();
 
         String reposMessage = repositions.toString().replaceAll("[\\[\\]\\s]", "");
 
