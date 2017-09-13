@@ -225,6 +225,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
 
     private void nextMancheActionPerformed(ActionEvent e) {
         controller.sendMessage(new Message(Match.MatchReadyMsg));
+        nextManche.setEnabled(false);
     }
 
 
@@ -1011,7 +1012,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
 
     @Override
     public void animationFinished() {
-        rv.stopFollowingAction();
         controller.sendMessage(new Message(Match.MatchReadyMsg));
         logText.setText(logText.getText()+"\nRobotAnimations Finish");
     }
