@@ -938,7 +938,10 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 robotsOnRobodrome.remove(robot);
             }
 
+
         }
+        controller.sendMessage(new Message(Match.MatchReadyMsg));
+
     }
 
     private void updateHitPointsRobotList(MatchRobot robot) {
