@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.*;
 import javax.swing.border.*;
+
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import connection.Connection;
 import connection.Message;
 import connection.MessageObserver;
@@ -849,6 +851,13 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 rv.play();
                 break;
 
+            case (Match.MancheRobotsRepositionsMsg):
+                String[]reps = ((String) msg.getParameter(0)).split(",");
+                for(String rep: reps)
+                    repositionRobot(rep);
+                break;
+
+
 
             case (Match.MatchCancelMsg):
                 JOptionPane.showMessageDialog(playFrame,
@@ -862,9 +871,20 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
 
     }
 
+
+
     private void createAnimation(String a) {
         if (a != null) {
             String[] animdata = a.split(":");
+
+            //animazione di caduta buco nero
+            if (animdata.length == 2) {
+                MatchRobot robot = getRobotByName(animdata[0]);
+                String cause = animdata[1];
+                if(cause.equals("pitfall")) {
+                    rv.addRobotFall(robot);
+                }
+            }
 
             //nomerobot:passi:direzione:rotazione
             if (animdata.length == 4) { //animazione scheda/robodromo
@@ -875,42 +895,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 rv.addRobotMove(robot, movement, dir, rot);
             }
 
-            if (animdata.length == 5){ //animazione di caduto o di morte
-                MatchRobot robot = getRobotByName(animdata[0]);
-                int savedposX = Integer.parseInt(animdata[1]);
-                int savedposY = Integer.parseInt(animdata[2]);
-                Direction dir = Direction.valueOf(animdata[3]);
-                String cause = animdata[4];
-
-                switch (cause) {
-                    case "pitfall":
-                        rv.addRobotFall(robot);
-                        assert robot != null;
-                        robot.setLastCheckpointPosition(new Position(savedposX,savedposY,dir));
-                        //tolto punto vita
-                        updateLifePointsRobotList(robot);
-                        break;
-
-                    case "outofrobodrome":
-                        //tolto punto vita
-                        rv.changeRobotPosition(robot, dir, savedposX, savedposY, true);
-                        updateLifePointsRobotList(robot);
-                        break;
-                        // rv.removeRobot(selected.getName());
-                   // modelList.removeElement(selected);
-
-                        //TODO animazione di morte separata?? non basta che faccio update delle caratteristiche??
-                    case "death":
-                        rv.addPause(1000);
-                        assert robot != null;
-                        rv.removeRobot(robot.getName());
-                        modelList.removeElement(robot);
-                        robotsOnRobodrome.remove(robot);
-                        break;
-                }
-
-            }
-
             //nomerobot:direzionerobot:casellainiziosparo:casellafinesparo:robotcolpito:murocolpito
             if(animdata.length == 6){ //animazione laser
                 MatchRobot robot = getRobotByName(animdata[0]);
@@ -918,7 +902,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 int inizioSparo = Integer.parseInt(animdata[2]);
                 int fineSparo = Integer.parseInt(animdata[3]);
                 String hit = animdata[4];
-                Boolean wallHit = new Boolean(animdata[5]);
+                Boolean wallHit = Boolean.parseBoolean(animdata[5]);
 
                 if(!hit.equals("false")) {
                     rv.addLaserFire(robot, dir, inizioSparo, fineSparo, true, wallHit);
@@ -926,11 +910,33 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                     updateHitPointsRobotList(getRobotByName(hit));
                 }
                 else{rv.addLaserFire(robot, dir, inizioSparo, fineSparo, false, wallHit);}
+            }
+            rv.addPause(1000);
+        }
+    }
 
+    private void repositionRobot(String rep) {
+        String[] animdata = rep.split(":");
 
+        if (animdata.length == 5){ //animazione di caduto o di morte
+            MatchRobot robot = getRobotByName(animdata[0]);
+            int savedposX = Integer.parseInt(animdata[1]);
+            int savedposY = Integer.parseInt(animdata[2]);
+            Direction dir = Direction.valueOf(animdata[3]);
+            Boolean isAlive = Boolean.parseBoolean(animdata[4]); //true robot in vita, false è morto
+
+            if(isAlive) {
+                //tolto punto vita
+                rv.changeRobotPosition(robot, dir, savedposX, savedposY, true);
+                updateLifePointsRobotList(robot);
+            }
+            else{
+                assert robot != null;
+                rv.removeRobot(robot.getName());
+                modelList.removeElement(robot);
+                robotsOnRobodrome.remove(robot);
             }
 
-            rv.addPause(1000);
         }
     }
 
@@ -954,6 +960,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
     }
 
 
+
     private void updateLifePointsRobotList(MatchRobot robot) {
         MatchRobot selected = null;
         if(modelRobot.contains(robot)) {
@@ -963,14 +970,11 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                     selected.setLifePoints(selected.getLifePoints() - 1);
                     selected.setHitPoints(10);
                 }
-
             }
-
             //inserisco e tolgo un doppione per far renderizzare
             //la llista di nuovoq
             modelRobot.addElement(selected);
             modelRobot.removeElement(selected);
-            assert selected != null;
         }
     }
 
