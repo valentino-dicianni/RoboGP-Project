@@ -28,6 +28,7 @@ public class Match extends Observable implements MessageObserver{
     public static final String MancheProgrammedRegistriesMsg = "programmedRegistries";
     public static final String MancheDeclarationSubPhaseMsg = "declarationSubPhase";
     public static final String MancheRobotsAnimationsMsg = "robotsMoveAnimations";
+    public static final String MancheRobotsRepositionsMsg = "robotsRepositionsAnimations";
     public static final String MancheRobodromeActivationMsg = "robodromeActivationAnimations";
     public static final String MancheLasersAndWeaponsMsg = "lasersAndWeaponsAnimations";
     public static final String MancheEndMsg = "mancheEnd";
@@ -185,6 +186,7 @@ public class Match extends Observable implements MessageObserver{
         log("Verranno calcolate animazioni per "+orderedRobotList.size()+" robot...");
         //String[] animationInstr = new String[orderedRobotList.size()];
         ArrayList<String> animations = new ArrayList<>();
+        ArrayList<String> repositions = new ArrayList<>();
         int i = 0;
         for (MatchRobot robot : orderedRobotList) {
             Position robotPos = robot.getPosition();
@@ -228,8 +230,12 @@ public class Match extends Observable implements MessageObserver{
             } catch (ArrayIndexOutOfBoundsException e) {
                 Position checkpointPos = robot.getLastCheckpointPosition();
                 animations.add(robot.getName() + ":" + stepstaken + ":" + chosendir + ":" + instrRot);
-                animations.add(robot.getName()+":"+checkpointPos.getPosX()+":"+checkpointPos.getPosY()+":"+checkpointPos.getDirection()+":outofrobodrome");
-                robot.setPosition(checkpointPos.clone());
+                if (!damageRobot(robot, 0, 1)) {
+                    repositions.add(robot.getName() + ":death");
+                } else {
+                    repositions.add(robot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":outofrobodrome");
+                    robot.setPosition(checkpointPos.clone());
+                }
                 continue;
             }
             i++;
@@ -238,9 +244,13 @@ public class Match extends Observable implements MessageObserver{
         log("Sono state calcolate "+i+" animazioni...");
 
         //String message = Arrays.toString(animationInstr).replaceAll("[\\[\\]\\s]", "");
-        String message = animations.toString().replaceAll("[\\[\\]\\s]", "");
+        String animMessage = animations.toString().replaceAll("[\\[\\]\\s]", "");
 
-        broadcastMessage(message, MancheRobotsAnimationsMsg);
+        broadcastMessage(animMessage, MancheRobotsAnimationsMsg);
+
+        String reposMessage = repositions.toString().replaceAll("[\\[\\]\\s]", "");
+
+        broadcastMessage(animMessage, MancheRobotsRepositionsMsg);
     }
 
     private void robodromeActivationSubPhase() {
@@ -336,7 +346,7 @@ public class Match extends Observable implements MessageObserver{
                     animations.add(robotName+":"+checkpointPos.getPosX()+":"+checkpointPos.getPosY()+":"+checkpointPos.getDirection()+":pitfall");
                     robot.setPosition(checkpointPos.clone());
                 } else {
-                    animations.add(robotName+":-1:-1:NO:death");
+                    animations.add(robotName+":-1:-1:E:death");
                 }
 
             } else if (currentcell instanceof FloorCell) {
@@ -358,7 +368,7 @@ public class Match extends Observable implements MessageObserver{
                 System.out.println("H or V laser cell");
                 animations.add(robotName+":"+Direction.N+":"+"laserhit");
                 if (!damageRobot(robot, 1, 0)) {
-                    animations.add(robotName+":-1:-1:NO:death");
+                    animations.add(robotName+":-1:-1:E:death");
                 }
             }
         }
@@ -533,7 +543,7 @@ public class Match extends Observable implements MessageObserver{
 
         String message = robotsUpdated.toString().replaceAll("[\\[\\]\\s]", "");
 
-        //broadcastMessage(message, Match.MancheEndMsg);
+        broadcastMessage(message, Match.MancheEndMsg);
     }
 
     /**
@@ -715,7 +725,9 @@ public class Match extends Observable implements MessageObserver{
     private void setProgrammedRegistries(String nickname, HashMap<String, String> registries) {
         // formato: hashmap<robot_name, string registri> registri è nel formato "numeroregistro:nomeistruzione:priorità" separato da ","
         // se un registro è bloccato ci sarà la stringa "--"
+        System.out.println("-> PR: programmed registries received from player "+nickname+"; ");
         for (MatchRobot robot : ownedRobots.get(nickname)) {
+            System.out.println("->-> PR: "+registries.get(robot.getName()));
             for (String registry : registries.get(robot.getName()).split(",")) {
                 if (registry.equals("--")) continue;
                 String[] regData = registry.split(":");
