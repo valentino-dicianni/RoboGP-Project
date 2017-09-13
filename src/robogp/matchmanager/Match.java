@@ -221,6 +221,7 @@ public class Match extends Observable implements MessageObserver{
                         Position checkpointPos = robot.getLastCheckpointPosition();
                         repositions.add(robot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":"+damageRobot(robot, 0, 1));
                         robot.setPosition(checkpointPos.clone());
+                        break;
                     }
                     stepstaken++;
                 }
