@@ -213,12 +213,7 @@ public class Match extends Observable implements MessageObserver{
                         robotPos.changePosition(1, Rotation.NO);
                         stepstaken++;
                         // nuova casella su cui si arriva
-                        BoardCell tempbcell = theRobodrome.getCell(robotPos.getPosX(), robotPos.getPosY());
-                        if (tempbcell instanceof FloorCell) {
-                            FloorCell tempfcell = (FloorCell) tempbcell;
-                            if (tempfcell.isRepair())
-                                robot.setLastCheckpointPosition(robotPos.clone());
-                        } else if (tempbcell instanceof PitCell) {
+                        if (theRobodrome.isCellPit(robotPos.getPosX(), robotPos.getPosY())) {
                             pitfall = true;
                             Position checkpointPos = robot.getLastCheckpointPosition();
                             repositions.add(robot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":"+damageRobot(robot, 0, 1));
@@ -240,9 +235,14 @@ public class Match extends Observable implements MessageObserver{
                 // backup
                 stepstaken = Math.abs(stepsToTake);
                 try {
-                    if (!this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), chosendir)) {
+                    if (!this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), Direction.getOppositeDirection(chosendir))) {
                         robotPos.changePosition(stepsToTake, instrRot);
                         animations.add(robot.getName()+":"+stepstaken+":"+Direction.getOppositeDirection(chosendir)+":"+Rotation.NO);
+                        if (theRobodrome.isCellPit(robotPos.getPosX(), robotPos.getPosY())) {
+                            Position checkpointPos = robot.getLastCheckpointPosition();
+                            repositions.add(robot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":"+damageRobot(robot, 0, 1));
+                            robot.setPosition(checkpointPos.clone());
+                        }
                     }
                 } catch (ArrayIndexOutOfBoundsException e) {
                     // il percorso sta uscendo dal robodromo

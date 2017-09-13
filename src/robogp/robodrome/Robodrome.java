@@ -199,6 +199,11 @@ public class Robodrome {
         return false;
     }
 
+    public boolean isCellPit(int posX, int posY) {
+        BoardCell landingCell = getCell(posX, posY);
+        return landingCell instanceof PitCell;
+    }
+
     /**
      * data una posizione e una direzione guarda se il le prime due caselle sul percorso hanno un muro
      * che impedirebbe il movimento nella casella successiva
