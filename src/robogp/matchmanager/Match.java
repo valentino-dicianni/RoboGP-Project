@@ -69,14 +69,9 @@ public class Match extends Observable implements MessageObserver{
             while(true){
                 getReadyPlayers();
                 log("Giocatori Pronti...");
-
                 sendInstructionPools();
                 getReadyPlayers();
                 log("Tutti i robot sono stati programmati correttamente...");
-
-                // a questo punto tutti i giocatori hanno programmato i propri robot
-                // inizio ciclo principale della manche
-                //printRobots();
                 log("Inizio ciclo principale esecuzione Manche...");
                 for(int i = 1; i <= 5; i++) {
                     log("Inizio esecuzione registro "+i+"...");

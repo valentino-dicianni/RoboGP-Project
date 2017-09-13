@@ -214,6 +214,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         pars[0] = nickname;
         pars[1] = regResponseMsg;
         msg.setParameters(pars);
+        System.out.println("\t\tNUOVE SCHEDE INVIATE: " + msg.getParameter(1).toString());
         controller.sendMessage(msg);
         regResponseMsg.clear();
         logText.setText(logText.getText()+"\nSchede istruzione inviate al server");
@@ -893,11 +894,14 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                     case "outofrobodrome":
                         //tolto punto vita
                         rv.changeRobotPosition(robot, dir, savedposX, savedposY, true);
-                        updateHitPointsRobotList(robot);
+                        updateLifePointsRobotList(robot);
                         break;
+                        // rv.removeRobot(selected.getName());
+                   // modelList.removeElement(selected);
 
                         //TODO animazione di morte separata?? non basta che faccio update delle caratteristiche??
                     case "death":
+                        rv.addPause(1000);
                         assert robot != null;
                         rv.removeRobot(robot.getName());
                         modelList.removeElement(robot);
@@ -967,10 +971,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
             modelRobot.addElement(selected);
             modelRobot.removeElement(selected);
             assert selected != null;
-            if(selected.getLifePoints() == 0){
-                rv.removeRobot(selected.getName());
-                modelList.removeElement(selected);
-            }
         }
     }
 
