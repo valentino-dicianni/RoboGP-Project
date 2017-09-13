@@ -25,9 +25,7 @@ import robogp.robodrome.Rotation;
 import robogp.robodrome.view.RobodromeAnimationObserver;
 import robogp.robodrome.view.RobodromeView;
 
-/**
- * @author valka getz
- */
+
 public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
     private PlayerController controller = new PlayerController();
     private String nickname;
@@ -44,6 +42,11 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
     public PlayerApp() {
         initComponents();
     }
+
+
+    /**
+     * Action Performs methods
+     */
 
     private void accessButtonActionPerformed(ActionEvent e) {
         if(ceckCredentials()){
@@ -120,6 +123,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         regV.removeAllItems();regV.addItem("--");
 
     }
+
     private void setRegister(JComboBox reg){
         reg.removeAllItems();
         String pool = poolInstr.get(((MatchRobot)robotList.getSelectedValue()).getName());
@@ -178,8 +182,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         confirmButton.setEnabled(true);
     }
 
-
-
     private void confirmButtonActionPerformed(ActionEvent e) {
         String str = "1:"+regI.getSelectedItem()+", "+"2:"+regII.getSelectedItem()+", "+"3:"+regIII.getSelectedItem()+", "+
                 "4:"+regIV.getSelectedItem()+", "+"5:"+regV.getSelectedItem();
@@ -204,8 +206,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         if(regResponseMsg.size() == modelRobot.size()){
             iniziaButton.setEnabled(true);
         }
-
-
     }
 
     private void iniziaButtonActionPerformed(ActionEvent e) {
@@ -227,6 +227,12 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         controller.sendMessage(new Message(Match.MatchReadyMsg));
         nextManche.setEnabled(false);
     }
+
+    private void upgradeButtonActionPerformed(ActionEvent e) {
+        // TODO add your code here
+    }
+
+    //END ACTION PERFORM
 
 
     private void initComponents() {
@@ -256,7 +262,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         playButton = new JButton();
         playFrame = new JFrame();
         robodromePanel = new JPanel();
-        notifications = new JLabel();
         panel2 = new JPanel();
         panel3 = new JPanel();
         scrollPane3 = new JScrollPane();
@@ -264,11 +269,15 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         panel4 = new JPanel();
         progRobot = new JButton();
         iniziaButton = new JButton();
+        upgradeButton = new JButton();
         nextManche = new JButton();
         scrollPane2 = new JScrollPane();
         robotList = new JList();
         scrollPane1 = new JScrollPane();
         playerMoves = new JList();
+        panel1 = new JPanel();
+        title = new JLabel();
+        notifications = new JLabel();
         programDialog = new JDialog();
         label5 = new JLabel();
         label9 = new JLabel();
@@ -297,14 +306,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
 
             //======== accessPanel ========
             {
-
-                // JFormDesigner evaluation mark
-                accessPanel.setBorder(new javax.swing.border.CompoundBorder(
-                    new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
-                        "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
-                        javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
-                        java.awt.Color.red), accessPanel.getBorder())); accessPanel.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
-
                 accessPanel.setLayout(new MigLayout(
                     "hidemode 3,alignx center",
                     // columns
@@ -468,20 +469,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 robodromePanel.setMinimumSize(new Dimension(500, 400));
                 robodromePanel.setVisible(false);
                 robodromePanel.setPreferredSize(new Dimension(900, 700));
-
-                // JFormDesigner evaluation mark
-                robodromePanel.setBorder(new javax.swing.border.CompoundBorder(
-                    new javax.swing.border.TitledBorder(new javax.swing.border.EmptyBorder(0, 0, 0, 0),
-                        "JFormDesigner Evaluation", javax.swing.border.TitledBorder.CENTER,
-                        javax.swing.border.TitledBorder.BOTTOM, new java.awt.Font("Dialog", java.awt.Font.BOLD, 12),
-                        java.awt.Color.red), robodromePanel.getBorder())); robodromePanel.addPropertyChangeListener(new java.beans.PropertyChangeListener(){public void propertyChange(java.beans.PropertyChangeEvent e){if("border".equals(e.getPropertyName()))throw new RuntimeException();}});
-
                 robodromePanel.setLayout(new BorderLayout());
-
-                //---- notifications ----
-                notifications.setText("AVVISI: ");
-                notifications.setFont(new Font("Lucida Grande", Font.BOLD, 16));
-                robodromePanel.add(notifications, BorderLayout.NORTH);
 
                 //======== panel2 ========
                 {
@@ -520,6 +508,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                             "[]" +
                             "[]" +
                             "[]" +
+                            "[]" +
                             "[]"));
 
                         //---- progRobot ----
@@ -534,11 +523,17 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                         iniziaButton.addActionListener(e -> iniziaButtonActionPerformed(e));
                         panel4.add(iniziaButton, "cell 0 1");
 
+                        //---- upgradeButton ----
+                        upgradeButton.setText("text");
+                        upgradeButton.setEnabled(false);
+                        upgradeButton.addActionListener(e -> upgradeButtonActionPerformed(e));
+                        panel4.add(upgradeButton, "cell 0 2");
+
                         //---- nextManche ----
                         nextManche.setText("Prossima Manche");
                         nextManche.setEnabled(false);
                         nextManche.addActionListener(e -> nextMancheActionPerformed(e));
-                        panel4.add(nextManche, "cell 0 2");
+                        panel4.add(nextManche, "cell 0 3");
                     }
                     panel2.add(panel4, BorderLayout.WEST);
 
@@ -567,6 +562,23 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                     scrollPane1.setViewportView(playerMoves);
                 }
                 robodromePanel.add(scrollPane1, BorderLayout.EAST);
+
+                //======== panel1 ========
+                {
+                    panel1.setLayout(new FlowLayout(FlowLayout.LEFT));
+
+                    //---- title ----
+                    title.setText("AVVISI: ");
+                    title.setFont(new Font("Lucida Grande", Font.BOLD, 16));
+                    title.setForeground(Color.red);
+                    panel1.add(title);
+
+                    //---- notifications ----
+                    notifications.setText("text");
+                    notifications.setFont(new Font("Lucida Grande", Font.ITALIC, 16));
+                    panel1.add(notifications);
+                }
+                robodromePanel.add(panel1, BorderLayout.NORTH);
             }
             playFrameContentPane.add(robodromePanel, "play");
             playFrame.pack();
@@ -718,7 +730,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
     private JButton playButton;
     private JFrame playFrame;
     private JPanel robodromePanel;
-    private JLabel notifications;
     private JPanel panel2;
     private JPanel panel3;
     private JScrollPane scrollPane3;
@@ -726,11 +737,15 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
     private JPanel panel4;
     private JButton progRobot;
     private JButton iniziaButton;
+    private JButton upgradeButton;
     private JButton nextManche;
     private JScrollPane scrollPane2;
     private JList robotList;
     private JScrollPane scrollPane1;
     private JList playerMoves;
+    private JPanel panel1;
+    private JLabel title;
+    private JLabel notifications;
     private JDialog programDialog;
     private JLabel label5;
     private JLabel label9;
@@ -758,6 +773,12 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         });
     }
 
+    /**
+     * Metodo in Override di MessageObserver.
+     * La connection di ogni giocatore, quando riceve un messaggio
+     * dal match, notifica il giocatore mandandogli il messaggio.
+     * A seconda del tipo di messaggio, il giocatore esegue un'azine diversa
+     */
     @Override
     public void notifyMessageReceived(Message msg) {
         switch (msg.getName()) {
@@ -817,13 +838,13 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 playerMoves.setCellRenderer(new ListCellRenderer());
                 scrollPane1.setVisible(true);
                 notifications.setText("AVVISO: Sottofase di Dichiarazione. Guarda cosa hanno scelto i tuoi avversari!");
-                //logText.setText(logText.getText()+"\nReceived Message: MancheDeclarationSubPhaseMsg");
+                logText.setText(logText.getText()+"\nReceived Message: MancheDeclarationSubPhaseMsg");
                 controller.sendMessage(new Message(Match.MatchReadyMsg));
                 break;
 
             case (Match.MancheRobotsAnimationsMsg):
                 notifications.setText("AVVISO: Sottofse di movimento . Ora i robot eseguiranno le loro mosse!");
-                logText.setText(logText.getText()+"\nRicevuta Anim: " + msg.getParameter(0));
+                logText.setText(logText.getText()+"\nRicevute Animazioni Robot");
                 String[]anim = ((String) msg.getParameter(0)).split(",");
                 rv.startFollowingAction();
                 for(String a: anim)
@@ -833,7 +854,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
 
             case(Match.MancheRobodromeActivationMsg):
                 notifications.setText("AVVISO: Sottofse di attivazione Robodromo . Verranno eseguite le mosse del robodromo");
-                logText.setText(logText.getText()+"\nRicevuta Robo: " + msg.getParameter(0));
+                logText.setText(logText.getText()+"\nRicevute Animazioni Robodromo");
                 String[]pars = ((String) msg.getParameter(0)).split(",");
                 for(String par: pars)
                     createAnimation(par);
@@ -842,8 +863,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
 
             case (Match.MancheLasersAndWeaponsMsg):
                 notifications.setText("AVVISO: Sottofase Armi & Laser. Ora i robot spareranno");
-                logText.setText(logText.getText()+"\nRicevuta Laser: " + msg.getParameter(0));
-                System.out.println("\t\tLASER: " + msg.getParameter(0));
+                logText.setText(logText.getText()+"\nRicevuti Laser");
                 String[]weps = ((String) msg.getParameter(0)).split(",");
                 for(String wep: weps)
                     createAnimation(wep);
@@ -867,14 +887,21 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                             JOptionPane.INFORMATION_MESSAGE);
                 System.exit(0);
                 break;
-
-
-
         }
 
     }
 
 
+    /**
+     * Metodo che analizza la stringa codificata ricevuta dal server
+     * con tutte le animazioni e le aggiunge alla coda di animazioni
+     * della robodromeView.
+     * La stringa può avere forme diverse:
+     *
+     * + nomerobot:pitfall -> animazione di caduta buco nero
+     * + nomerobot:passi:direzione:rotazione -> movimento robot o robodromo
+     * + nomerobot:direzionerobot:casellainiziosparo:casellafinesparo:robotcolpito:murocolpito -> sparo laser
+     */
 
     private void createAnimation(String a) {
         if (a != null) {
@@ -889,8 +916,8 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 }
             }
 
-            //nomerobot:passi:direzione:rotazione
-            if (animdata.length == 4) { //animazione scheda/robodromo
+            // movimento robot o robodromo
+            if (animdata.length == 4) {
                 MatchRobot robot = getRobotByName(animdata[0]);
                 int movement = Integer.parseInt(animdata[1]);
                 Direction dir = Direction.valueOf(animdata[2]);
@@ -898,7 +925,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 rv.addRobotMove(robot, movement, dir, rot);
             }
 
-            //nomerobot:direzionerobot:casellainiziosparo:casellafinesparo:robotcolpito:murocolpito
+            //sparo laser
             if(animdata.length == 6){ //animazione laser
                 MatchRobot robot = getRobotByName(animdata[0]);
                 Direction dir = Direction.valueOf(animdata[1]);
@@ -930,7 +957,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
             Boolean isAlive = Boolean.parseBoolean(animdata[4]);
 
             if(isAlive) {
-                //tolto punto vita
                 rv.changeRobotPosition(robot, dir, savedposX, savedposY, true);
                 updateLifePointsRobotList(robot);
             }
@@ -946,6 +972,12 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         controller.sendMessage(new Message(Match.MatchReadyMsg));
 
     }
+
+    /**
+     * Metodo che fa l'update della lista dei robot qualora
+     * perdessero punti salute, colpiti da un laser.
+     * @param robot è il robot che subisce danno
+     */
 
     private void updateHitPointsRobotList(MatchRobot robot) {
         if(modelRobot.contains(robot)) {
@@ -966,8 +998,12 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
 
     }
 
-
-
+    /**
+     * Metodo che fa l'update della lista dei robot qualora
+     * perdessero punti vita, cadendo in un buco nero o uscendo
+     * dal robodromo.
+     *  @param robot è il robot che subisce danno
+     */
     private void updateLifePointsRobotList(MatchRobot robot) {
         MatchRobot selected = null;
         if(modelRobot.contains(robot)) {
@@ -979,21 +1015,28 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 }
             }
             //inserisco e tolgo un doppione per far renderizzare
-            //la llista di nuovoq
+            //la llista di nuovo --> FIX THIS
             modelRobot.addElement(selected);
             modelRobot.removeElement(selected);
         }
     }
 
-    private void setupRobotsOnRobodrome(ArrayList<MatchRobot> upRobots) {
+    /**
+     * Una volta ricevuta la lista con tutti i robot nel gioco,
+     * questo metodo va a posizionare i vari robot sul robodromo
+     * a seconda del dock assegnato a ciascun robot dall matchManager
+     * @param setupRobots è la lista dei robot effettivamente in partita
+     * */
+    private void setupRobotsOnRobodrome(ArrayList<MatchRobot> setupRobots) {
         Robodrome theDrome = rv.getDrome();
         HashMap<Integer,Position> dockTable = theDrome.getDockTable();
-        for(MatchRobot rob : upRobots){
+        for(MatchRobot rob : setupRobots){
            rv.placeRobot(rob,dockTable.get(rob.getDock()).getDirection(),dockTable.get(rob.getDock()).getPosX(),
                    dockTable.get(rob.getDock()).getPosY(),true);
         }
-        robotsOnRobodrome.addAll(upRobots);
+        robotsOnRobodrome.addAll(setupRobots);
     }
+
 
     private MatchRobot getRobotByName(String name){
         for(MatchRobot robot : robotsOnRobodrome){
@@ -1003,6 +1046,14 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         }
         return null;
     }
+
+
+    /**
+     * Metodi in ovverride di RobodromeAnimationObserver.
+     * una volta iniziate/finite le animazioni sulla robodromeView,
+     * la playerApp viene notificata tramite questi metodi, così da passare
+     * alla fase successiva
+     */
 
     @Override
     public void animationStarted() {
@@ -1016,6 +1067,9 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         logText.setText(logText.getText()+"\nRobotAnimations Finish");
     }
 }
+
+
+
 
 class RobotCellRenderer extends DefaultListCellRenderer {
     private final JLabel label;
@@ -1036,7 +1090,8 @@ class RobotCellRenderer extends DefaultListCellRenderer {
 
         MatchRobot robot = (MatchRobot) value;
         label.setIcon(new ImageIcon(robot.getImage(60)));
-        label.setText("<html><b>Nome:</b> "+robot.getName()+"<br><b>Punti vita:</b> "+robot.getHitPoints()+"<br><b>Vite rimaste:</b> " +robot.getLifePoints()+"</html>");
+        label.setText("<html><b>Nome:</b> "+robot.getName()+"<br><b>Punti vita:</b> "+robot.getHitPoints()+"<br><b>Vite rimaste:</b> "
+                +robot.getLifePoints()+"</html>");
 
         if (selected) {
             label.setBackground(Color.CYAN);
@@ -1069,7 +1124,8 @@ class ListCellRenderer extends DefaultListCellRenderer{
         if (!args[1].equals("locked")) {
             Instruction instruction = new Instruction(args[1]);
             ImageIcon imageIcon = new ImageIcon(instruction.getImage(100));
-            label = new JLabel("<html><b>Nome:</b> " + args[0] + "<br><b>Scheda:</b> " + args[1] + "<br><b>Priorità:</b> " + args[2] + "</html>", imageIcon, JLabel.CENTER);
+            label = new JLabel("<html><b>Nome:</b> " + args[0] + "<br><b>Scheda:</b> " + args[1] +
+                    "<br><b>Priorità:</b> " + args[2] + "</html>", imageIcon, JLabel.CENTER);
 
         }
         //registro bloccato
