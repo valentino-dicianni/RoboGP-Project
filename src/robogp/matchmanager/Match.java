@@ -242,7 +242,7 @@ public class Match extends Observable implements MessageObserver{
                 try {
                     if (!this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), chosendir)) {
                         robotPos.changePosition(stepsToTake, instrRot);
-                        chosendir = Direction.getOppositeDirection(chosendir);
+                        animations.add(robot.getName()+":"+stepstaken+":"+Direction.getOppositeDirection(chosendir)+":"+Rotation.NO);
                     }
                 } catch (ArrayIndexOutOfBoundsException e) {
                     // il percorso sta uscendo dal robodromo
@@ -556,6 +556,9 @@ public class Match extends Observable implements MessageObserver{
         }
 
         log("Manche end: "+robotsUpdated.size()+" robots updated");
+
+        if (robotsUpdated.size() == 0)
+            robotsUpdated.add("winnerrobotname:matchend");
 
         String message = robotsUpdated.toString().replaceAll("[\\[\\]\\s]", "");
 

@@ -224,8 +224,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
     }
 
     private void nextMancheActionPerformed(ActionEvent e) {
-        for(int i =0;i< modelRobot.size();i++)
-            controller.sendMessage(new Message(Match.MatchReadyMsg));
+        controller.sendMessage(new Message(Match.MatchReadyMsg));
     }
 
 
