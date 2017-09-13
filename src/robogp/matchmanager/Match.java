@@ -196,6 +196,7 @@ public class Match extends Observable implements MessageObserver{
             int stepstaken = 0;
             Direction chosendir = robotPos.getDirection();
             Rotation instrRot = instrToExecute.getRotation();
+            boolean pitfall = false;
 
             try {
                 for (steps = instrToExecute.getStepsToTake(); steps > 0; steps--) {
@@ -211,6 +212,11 @@ public class Match extends Observable implements MessageObserver{
                         FloorCell tempfcell = (FloorCell) tempbcell;
                         if (tempfcell.isRepair())
                             robot.setLastCheckpointPosition(robotPos.clone());
+                    } else if (tempbcell instanceof PitCell) {
+                        pitfall = true;
+                        Position checkpointPos = robot.getLastCheckpointPosition();
+                        repositions.add(robot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":"+damageRobot(robot, 0, 1));
+                        robot.setPosition(checkpointPos.clone());
                     }
                     stepstaken++;
                 }
@@ -227,15 +233,13 @@ public class Match extends Observable implements MessageObserver{
                 // animazione codificata del movimento fatto con scheda istruzione
                 //animationInstr[i] = robot.getName() + ":" + stepstaken + ":" + chosendir + ":" + instrRot;
                 animations.add(robot.getName() + ":" + stepstaken + ":" + chosendir + ":" + instrRot);
+                if (pitfall)
+                    animations.add(robot.getName() + ":pitfall");
             } catch (ArrayIndexOutOfBoundsException e) {
                 Position checkpointPos = robot.getLastCheckpointPosition();
                 animations.add(robot.getName() + ":" + stepstaken + ":" + chosendir + ":" + instrRot);
-                if (!damageRobot(robot, 0, 1)) {
-                    repositions.add(robot.getName() + ":death");
-                } else {
-                    repositions.add(robot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":outofrobodrome");
-                    robot.setPosition(checkpointPos.clone());
-                }
+                repositions.add(robot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":"+damageRobot(robot, 0, 1));
+                robot.setPosition(checkpointPos.clone());
                 continue;
             }
             i++;
@@ -250,7 +254,7 @@ public class Match extends Observable implements MessageObserver{
 
         String reposMessage = repositions.toString().replaceAll("[\\[\\]\\s]", "");
 
-        broadcastMessage(animMessage, MancheRobotsRepositionsMsg);
+        broadcastMessage(reposMessage, MancheRobotsRepositionsMsg);
     }
 
     private void robodromeActivationSubPhase() {
@@ -267,6 +271,7 @@ public class Match extends Observable implements MessageObserver{
         log("Robodrome activation: "+robotsToAnimate.size()+" robots to animate...");
 
         ArrayList<String> animations = new ArrayList<>();
+        ArrayList<String> repositions = new ArrayList<>();
 
         for (MatchRobot robot : robotsToAnimate) {
             Position robotPos = robot.getPosition();
@@ -331,24 +336,24 @@ public class Match extends Observable implements MessageObserver{
                     }
                     currentcell = bcell;
                 } catch (ArrayIndexOutOfBoundsException e) { // quando belt cell porta fuori da robodromo
-                    Position checkpointPos = robot.getLastCheckpointPosition();
+                    /*Position checkpointPos = robot.getLastCheckpointPosition();
                     animations.add(robotName+":1:"+output+":"+Rotation.NO);
                     animations.add(robotName+":"+checkpointPos.getPosX()+":"+checkpointPos.getPosY()+":"+checkpointPos.getDirection()+":outofrobodrome");
+                    robot.setPosition(checkpointPos.clone());*/
+
+                    Position checkpointPos = robot.getLastCheckpointPosition();
+                    animations.add(robotName + ":1:" + output + ":" + Rotation.NO);
+                    repositions.add(robotName + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":"+damageRobot(robot, 0, 1));
                     robot.setPosition(checkpointPos.clone());
                     continue;
                 }
             } else if (currentcell instanceof PitCell) { // quando cela è buco nero
                 // ripristina pos robot a ultima salvata e fa animazione muovi robot a quella
                 // robot perde una vita, e se ha ancora vite allora resetto posizione, altrimenti viene tolto da lista owned robots
-
-                if (damageRobot(robot, 0, 1)) {
-                    Position checkpointPos = robot.getLastCheckpointPosition();
-                    animations.add(robotName+":"+checkpointPos.getPosX()+":"+checkpointPos.getPosY()+":"+checkpointPos.getDirection()+":pitfall");
-                    robot.setPosition(checkpointPos.clone());
-                } else {
-                    animations.add(robotName+":-1:-1:E:death");
-                }
-
+                animations.add(robotName + ":pitfall");
+                Position checkpointPos = robot.getLastCheckpointPosition();
+                repositions.add(robotName+":"+checkpointPos.getPosX()+":"+checkpointPos.getPosY()+":"+checkpointPos.getDirection()+":"+damageRobot(robot, 0, 1));
+                robot.setPosition(checkpointPos.clone());
             } else if (currentcell instanceof FloorCell) {
                 FloorCell fcell = (FloorCell) currentcell;
                 if (fcell.isCheckpoint()) {
@@ -367,9 +372,8 @@ public class Match extends Observable implements MessageObserver{
             if (currentcell.hasHorizontalLaser() || currentcell.hasVerticalLaser()) {
                 System.out.println("H or V laser cell");
                 animations.add(robotName+":"+Direction.N+":"+"laserhit");
-                if (!damageRobot(robot, 1, 0)) {
-                    animations.add(robotName+":-1:-1:E:death");
-                }
+                if (!damageRobot(robot, 1, 0))
+                    repositions.add(robotName+":-1:-1:E:false");
             }
         }
 
@@ -378,6 +382,10 @@ public class Match extends Observable implements MessageObserver{
         String message = animations.toString().replaceAll("[\\[\\]\\s]", "");
 
         broadcastMessage(message, Match.MancheRobodromeActivationMsg);
+
+        String reposMessage = repositions.toString().replaceAll("[\\[\\]\\s]", "");
+
+        broadcastMessage(reposMessage, MancheRobotsRepositionsMsg);
 
     }
 
