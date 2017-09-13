@@ -196,63 +196,71 @@ public class Match extends Observable implements MessageObserver{
             Position robotPos = robot.getPosition();
             //System.out.println("initial posX="+robotPos.getPosX()+", posY="+robotPos.getPosY());
             MatchInstruction instrToExecute = robot.getRegistry(regNum).getInstruction();
-            int steps;
             int stepstaken = 0;
             Direction chosendir = robotPos.getDirection();
             Rotation instrRot = instrToExecute.getRotation();
             boolean pitfall = false;
 
-            try {
-                for (steps = instrToExecute.getStepsToTake(); steps > 0; steps--) {
-                    // controllo che non ci siano muri
-                    if (this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), chosendir)) {
-                        break;
-                    }
-                    // il percorso per la prossima cella è libero, continuo a muovermi
-                    robotPos.changePosition(1, instrRot);
-                    // se la nuova prosizione è save point -> salvo posizione
-                    BoardCell tempbcell = theRobodrome.getCell(robotPos.getPosX(), robotPos.getPosY());
-                    if (tempbcell instanceof FloorCell) {
-                        FloorCell tempfcell = (FloorCell) tempbcell;
-                        if (tempfcell.isRepair())
-                            robot.setLastCheckpointPosition(robotPos.clone());
-                    } else if (tempbcell instanceof PitCell) {
-                        pitfall = true;
-                        Position checkpointPos = robot.getLastCheckpointPosition();
-                        repositions.add(robot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":"+damageRobot(robot, 0, 1));
-                        robot.setPosition(checkpointPos.clone());
-                        break;
-                    }
-                    stepstaken++;
-                }
-                // se instruzione backup
-                if (steps == -1 && !this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), Direction.getOppositeDirection(chosendir))) {
-                    stepstaken = Math.abs(steps);
-                    robotPos.changePosition(steps, instrRot);
-                    chosendir = Direction.getOppositeDirection(chosendir);
-                }
-                if (instrToExecute.getStepsToTake() == 0) { // se istruzione rotazione
-                    robotPos.changePosition(0, instrRot);
-                }
+            int stepsToTake = instrToExecute.getStepsToTake();
 
-                // animazione codificata del movimento fatto con scheda istruzione
-                //animationInstr[i] = robot.getName() + ":" + stepstaken + ":" + chosendir + ":" + instrRot;
-                animations.add(robot.getName() + ":" + stepstaken + ":" + chosendir + ":" + instrRot);
-                if (pitfall)
-                    animations.add(robot.getName() + ":pitfall");
-            } catch (ArrayIndexOutOfBoundsException e) {
-                Position checkpointPos = robot.getLastCheckpointPosition();
-                animations.add(robot.getName() + ":" + (stepstaken+1) + ":" + chosendir + ":" + instrRot);
-                repositions.add(robot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":"+damageRobot(robot, 0, 1));
-                robot.setPosition(checkpointPos.clone());
-                continue;
+            if (stepsToTake > 0) {
+                // move 1-2-3
+                try {
+                    for (int s = 0; s < stepsToTake; s++) {
+                        if (this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), chosendir)) {
+                            break;
+                        }
+                        robotPos.changePosition(1, Rotation.NO);
+                        stepstaken++;
+                        // nuova casella su cui si arriva
+                        BoardCell tempbcell = theRobodrome.getCell(robotPos.getPosX(), robotPos.getPosY());
+                        if (tempbcell instanceof FloorCell) {
+                            FloorCell tempfcell = (FloorCell) tempbcell;
+                            if (tempfcell.isRepair())
+                                robot.setLastCheckpointPosition(robotPos.clone());
+                        } else if (tempbcell instanceof PitCell) {
+                            pitfall = true;
+                            Position checkpointPos = robot.getLastCheckpointPosition();
+                            repositions.add(robot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":"+damageRobot(robot, 0, 1));
+                            robot.setPosition(checkpointPos.clone());
+                            break;
+                        }
+                    }
+                    animations.add(robot.getName() + ":" + stepstaken + ":" + chosendir + ":" + Rotation.NO);
+                    if (pitfall)
+                        animations.add(robot.getName() + ":pitfall");
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    // il percorso sta uscendo dal robodromo
+                    Position checkpointPos = robot.getLastCheckpointPosition();
+                    animations.add(robot.getName() + ":" + (stepstaken+1) + ":" + chosendir + ":" + Rotation.NO);
+                    repositions.add(robot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":"+damageRobot(robot, 0, 1));
+                    robot.setPosition(checkpointPos.clone());
+                }
+            } else if (stepsToTake < 0) {
+                // backup
+                stepstaken = Math.abs(stepsToTake);
+                try {
+                    if (!this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), chosendir)) {
+                        robotPos.changePosition(stepsToTake, instrRot);
+                        chosendir = Direction.getOppositeDirection(chosendir);
+                    }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    // il percorso sta uscendo dal robodromo
+                    Position checkpointPos = robot.getLastCheckpointPosition();
+                    animations.add(robot.getName() + ":" + stepstaken + ":" + chosendir + ":" + Rotation.NO);
+                    repositions.add(robot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":"+damageRobot(robot, 0, 1));
+                    robot.setPosition(checkpointPos.clone());
+                }
+            } else {
+                // rotate
+                robotPos.changePosition(0, instrRot);
+                animations.add(robot.getName() + ":0:" + chosendir + ":" + instrRot);
             }
-            i++;
+
         }
 
         log("Sono state calcolate "+i+" animazioni...");
 
-        //String message = Arrays.toString(animationInstr).replaceAll("[\\[\\]\\s]", "");
         String animMessage = animations.toString().replaceAll("[\\[\\]\\s]", "");
 
         broadcastMessage(animMessage, MancheRobotsAnimationsMsg);
