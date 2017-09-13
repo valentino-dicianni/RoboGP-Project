@@ -864,6 +864,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                             "La partita è stata annullata dal manager di partita!","Attenzione:",
                             JOptionPane.INFORMATION_MESSAGE);
                 System.exit(0);
+                break;
 
 
 
@@ -982,7 +983,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         Robodrome theDrome = rv.getDrome();
         HashMap<Integer,Position> dockTable = theDrome.getDockTable();
         for(MatchRobot rob : upRobots){
-           //rob.setPosition(dockTable.get(rob.getDock()));
            rv.placeRobot(rob,dockTable.get(rob.getDock()).getDirection(),dockTable.get(rob.getDock()).getPosX(),
                    dockTable.get(rob.getDock()).getPosY(),true);
         }
@@ -1009,14 +1009,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         rv.stopFollowingAction();
         controller.sendMessage(new Message(Match.MatchReadyMsg));
         logText.setText(logText.getText()+"\nRobotAnimations Finish");
-        for(MatchRobot rob :robotsOnRobodrome){
-            if(rv.isInPit(rob)){
-                rv.changeRobotPosition(rob, rob.getLastCheckpointPosition().getDirection(),
-                        rob.getLastCheckpointPosition().getPosX(), rob.getLastCheckpointPosition().getPosY(), true);
-
-            }
-        }
-
     }
 }
 
