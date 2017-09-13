@@ -241,7 +241,7 @@ public class Match extends Observable implements MessageObserver{
                     animations.add(robot.getName() + ":pitfall");
             } catch (ArrayIndexOutOfBoundsException e) {
                 Position checkpointPos = robot.getLastCheckpointPosition();
-                animations.add(robot.getName() + ":" + stepstaken + ":" + chosendir + ":" + instrRot);
+                animations.add(robot.getName() + ":" + (stepstaken+1) + ":" + chosendir + ":" + instrRot);
                 repositions.add(robot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":"+damageRobot(robot, 0, 1));
                 robot.setPosition(checkpointPos.clone());
                 continue;

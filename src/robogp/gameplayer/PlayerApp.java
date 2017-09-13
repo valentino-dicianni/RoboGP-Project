@@ -11,7 +11,6 @@ import java.util.HashMap;
 import javax.swing.*;
 import javax.swing.border.*;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import connection.Connection;
 import connection.Message;
 import connection.MessageObserver;
@@ -907,7 +906,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
 
                 if(!hit.equals("false")) {
                     rv.addLaserFire(robot, dir, inizioSparo, fineSparo, true, wallHit);
-                    rv.addRobotHit(getRobotByName(hit), dir);
+                    rv.addRobotHit(getRobotByName(hit), dir.getOppositeDirection(dir));
                     updateHitPointsRobotList(getRobotByName(hit));
                 }
                 else{rv.addLaserFire(robot, dir, inizioSparo, fineSparo, false, wallHit);}
@@ -932,7 +931,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 updateLifePointsRobotList(robot);
             }
             else{
-                assert robot != null;
                 rv.removeRobot(robot.getName());
                 modelList.removeElement(robot);
                 robotsOnRobodrome.remove(robot);
