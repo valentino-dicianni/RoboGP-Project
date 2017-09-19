@@ -231,7 +231,7 @@ public class Match extends Observable implements MessageObserver{
                     if (adiacentrobots.size() > 0 && stepstaken < stepsToTake) {
                         // aggiunge animazioni resto del movimento anche per gli altri robot nella lista
                         int remsteps = stepsToTake - stepstaken;
-                        animations.add(robot.getName()+":"+remsteps+":"+chosendir+":"+Rotation.NO+":"+adiacentrobots.toString().replaceAll("[\\[\\]\\s]", "").replaceAll(",", ":"));
+                        animations.add(robot.getName()+":"+remsteps+":"+chosendir+":"+Rotation.NO+":"+adiacentrobots.toString().replaceAll("[\\[\\]\\s]", "").replaceAll(",", "§"));
                     }
                     if (pitfall)
                         animations.add(robot.getName() + ":pitfall");

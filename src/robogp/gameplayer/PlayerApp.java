@@ -824,7 +824,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
 
             case (Match.MancheInstructionPoolMsg):
                 poolInstr = ( HashMap<String,String>) msg.getParameter(0);
-                notifications.setText("AVVISO: Nuovo pool di schede istruzione ricevute. Ora puoi programmare i tuoi robot!");
+                notifications.setText("Nuovo pool di schede istruzione ricevute. Ora puoi programmare i tuoi robot!");
                 logText.setText(logText.getText()+"\nReceived Message: instructionPool");
                 progRobot.setEnabled(true);
                 break;
@@ -837,13 +837,13 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 }
                 playerMoves.setCellRenderer(new ListCellRenderer());
                 scrollPane1.setVisible(true);
-                notifications.setText("AVVISO: Sottofase di Dichiarazione. Guarda cosa hanno scelto i tuoi avversari!");
+                notifications.setText("Sottofase di Dichiarazione. Guarda cosa hanno scelto i tuoi avversari!");
                 logText.setText(logText.getText()+"\nReceived Message: MancheDeclarationSubPhaseMsg");
                 controller.sendMessage(new Message(Match.MatchReadyMsg));
                 break;
 
             case (Match.MancheRobotsAnimationsMsg):
-                notifications.setText("AVVISO: Sottofse di movimento . Ora i robot eseguiranno le loro mosse!");
+                notifications.setText("Sottofse di movimento . Ora i robot eseguiranno le loro mosse!");
                 logText.setText(logText.getText()+"\nRicevute Animazioni Robot");
                 String[]anim = ((String) msg.getParameter(0)).split(",");
                 rv.startFollowingAction();
@@ -853,7 +853,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 break;
 
             case(Match.MancheRobodromeActivationMsg):
-                notifications.setText("AVVISO: Sottofse di attivazione Robodromo . Verranno eseguite le mosse del robodromo");
+                notifications.setText("Sottofse di attivazione Robodromo . Verranno eseguite le mosse del robodromo");
                 logText.setText(logText.getText()+"\nRicevute Animazioni Robodromo");
                 String[]pars = ((String) msg.getParameter(0)).split(",");
                 for(String par: pars)
@@ -862,7 +862,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 break;
 
             case (Match.MancheLasersAndWeaponsMsg):
-                notifications.setText("AVVISO: Sottofase Armi & Laser. Ora i robot spareranno");
+                notifications.setText("Sottofase Armi & Laser. Ora i robot spareranno");
                 logText.setText(logText.getText()+"\nRicevuti Laser");
                 String[]weps = ((String) msg.getParameter(0)).split(",");
                 for(String wep: weps)
@@ -925,6 +925,22 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 rv.addRobotMove(robot, movement, dir, rot);
             }
 
+            if (animdata.length == 5) {
+                String[] robotsName = animdata[4].split("§");
+
+                MatchRobot[] pushRobots= new MatchRobot[robotsName.length];
+                for(int i =0;i<robotsName.length;i++){
+                    pushRobots[i] = getRobotByName(robotsName[i]);
+                }
+
+                MatchRobot robot = getRobotByName(animdata[0]);
+                int movement = Integer.parseInt(animdata[1]);
+                Direction dir = Direction.valueOf(animdata[2]);
+                Rotation rot = Rotation.valueOf(animdata[3]);
+                rv.addRobotMove(robot, movement, dir, rot,pushRobots);
+            }
+
+
             //sparo laser
             if(animdata.length == 6){ //animazione laser
                 MatchRobot robot = getRobotByName(animdata[0]);
@@ -978,7 +994,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
      * perdessero punti salute, colpiti da un laser.
      * @param robot è il robot che subisce danno
      */
-
     private void updateHitPointsRobotList(MatchRobot robot) {
         if(modelRobot.contains(robot)) {
             MatchRobot selected = null;
