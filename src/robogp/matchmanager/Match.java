@@ -7,6 +7,8 @@ import connection.PartnerShutDownException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.jetbrains.annotations.Nullable;
 import robogp.robodrome.*;
 
 
@@ -211,7 +213,7 @@ public class Match extends Observable implements MessageObserver{
                         if (this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), chosendir)) {
                             break;
                         }
-                        adiacentrobots = getAdiacentRobots(robot);
+                        adiacentrobots = getAdiacentRobots(robot, null);
                         if (adiacentrobots == null || adiacentrobots.size() > 0) {
                             break;
                         }
@@ -237,6 +239,7 @@ public class Match extends Observable implements MessageObserver{
                         for (MatchRobot arb : adiacentrobots) {
                             arb.getPosition().changePosition(remsteps, Rotation.NO);
                             adiacrobnames += arb.getName()+"§";
+                            //TODO: controllo se cella è pitcell, se si faccio cadere robot
                         }
                         adiacrobnames = adiacrobnames.substring(0, adiacrobnames.length() - 1);
                         animations.add(robot.getName()+":"+remsteps+":"+chosendir+":"+Rotation.NO+":"+adiacrobnames);
@@ -256,14 +259,29 @@ public class Match extends Observable implements MessageObserver{
                 // backup
                 stepstaken = Math.abs(stepsToTake);
                 try {
-                    if (!this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), Direction.getOppositeDirection(chosendir))) {
-                        robotPos.changePosition(stepsToTake, instrRot);
-                        animations.add(robot.getName()+":"+stepstaken+":"+Direction.getOppositeDirection(chosendir)+":"+Rotation.NO);
-                        if (theRobodrome.isCellPit(robotPos.getPosX(), robotPos.getPosY())) {
-                            Position checkpointPos = robot.getLastCheckpointPosition();
-                            repositions.add(robot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY()
-                                    + ":" + checkpointPos.getDirection() + ":"+damageRobot(robot, 0, 1));
-                            robot.setPosition(checkpointPos.clone());
+                    Direction oppositedir = Direction.getOppositeDirection(chosendir);
+                    if (!this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), oppositedir)) {
+                        ArrayList<MatchRobot> adiacentrobots = getAdiacentRobots(robot, oppositedir);
+                        if (adiacentrobots != null) {
+                            robotPos.changePosition(stepsToTake, Rotation.NO);
+                            if (adiacentrobots.size() > 0) {
+                                // si muove il robot e tutti i robot spinti da lui
+                                String adiacrobnames = "";
+                                for (MatchRobot arb : adiacentrobots) {
+                                    arb.getPosition().changePosition(stepsToTake, Rotation.NO);
+                                    adiacrobnames += arb.getName()+"§";
+                                    //TODO: controllo se cella è pitcell, se si faccio cadere robot
+                                }
+                                animations.add(robot.getName() + ":" + stepstaken + ":" + oppositedir + ":" + Rotation.NO+":"+adiacrobnames);
+                            } else {
+                                animations.add(robot.getName() + ":" + stepstaken + ":" + oppositedir + ":" + Rotation.NO);
+                            }
+                            if (theRobodrome.isCellPit(robotPos.getPosX(), robotPos.getPosY())) {
+                                Position checkpointPos = robot.getLastCheckpointPosition();
+                                repositions.add(robot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY()
+                                        + ":" + checkpointPos.getDirection() + ":" + damageRobot(robot, 0, 1));
+                                robot.setPosition(checkpointPos.clone());
+                            }
                         }
                     }
                 } catch (ArrayIndexOutOfBoundsException e) {
@@ -606,9 +624,11 @@ public class Match extends Observable implements MessageObserver{
      * @param targetRobot robot di cui si vuole controllare le vicinanze
      * @return arraylist di robot vicini, oppure null se non ci si può muovere in quella direzione causa muro
      */
-    private ArrayList<MatchRobot> getAdiacentRobots(MatchRobot targetRobot) {
+    @Nullable
+    private ArrayList<MatchRobot> getAdiacentRobots(MatchRobot targetRobot, Direction dir) {
         ArrayList<MatchRobot> affectedRobots = new ArrayList<>();
         Position position = targetRobot.getPosition().clone();
+        if (dir != null) position.setDirection(dir);
         position.changePosition(1, Rotation.NO);
         try {
 

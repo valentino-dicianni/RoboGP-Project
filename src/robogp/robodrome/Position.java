@@ -25,6 +25,10 @@ public class Position implements Serializable{
         return this.dir;
     }
 
+    public void setDirection(Direction dir) {
+        this.dir = dir;
+    }
+
     public void changePosition(int movement, Rotation rotation) {
         if (rotation == Rotation.NO) {
             // movimento senza rotazione
