@@ -206,8 +206,13 @@ public class Match extends Observable implements MessageObserver{
             if (stepsToTake > 0) {
                 // move 1-2-3
                 try {
+                    ArrayList<String> adiacentrobots = null;
                     for (int s = 0; s < stepsToTake; s++) {
+                        adiacentrobots = getAdiacentRobots(robot);
                         if (this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), chosendir)) {
+                            break;
+                        }
+                        if (adiacentrobots.size() > 0) {
                             break;
                         }
                         robotPos.changePosition(1, Rotation.NO);
@@ -223,6 +228,11 @@ public class Match extends Observable implements MessageObserver{
                         }
                     }
                     animations.add(robot.getName() + ":" + stepstaken + ":" + chosendir + ":" + Rotation.NO);
+                    if (adiacentrobots.size() > 0 && stepstaken < stepsToTake) {
+                        // aggiunge animazioni resto del movimento anche per gli altri robot nella lista
+                        int remsteps = stepsToTake - stepstaken;
+                        animations.add(robot.getName()+":"+remsteps+":"+chosendir+":"+Rotation.NO+":"+adiacentrobots.toString().replaceAll("[\\[\\]\\s]", "").replaceAll(",", ":"));
+                    }
                     if (pitfall)
                         animations.add(robot.getName() + ":pitfall");
                 } catch (ArrayIndexOutOfBoundsException e) {
@@ -580,6 +590,46 @@ public class Match extends Observable implements MessageObserver{
     }
 
     /**
+     * ritorna array di tutti i robot che sono vicini alla posizione data e che verrebbero
+     * spostati se un robot si muovesse di 1 in quella direzione.
+     * Se si trovasse un secondo robot anchesso vicino al primo robot e che verrebbe spostato,
+     * allora anch'esso è incluso in questa lista, e così via.
+     * @param targetRobot robot di cui si vuole controllare le vicinanze
+     * @return arraylist di robot vicini
+     */
+    private ArrayList<String> getAdiacentRobots(MatchRobot targetRobot) {
+        ArrayList<String> affectedRobots = new ArrayList<>();
+        Position position = targetRobot.getPosition().clone();
+        position.changePosition(1, Rotation.NO);
+
+        ArrayList<MatchRobot> allrobots = new ArrayList<>();
+        for(Map.Entry<String, List<MatchRobot>> robotlist : ownedRobots.entrySet()) {
+            for (MatchRobot robot : robotlist.getValue()) {
+                if (robot != targetRobot) allrobots.add(robot);
+            }
+        }
+
+        boolean complete = false;
+
+        while (!complete) {
+            boolean found = false;
+            for (MatchRobot robot : allrobots) {
+                Position rpos = robot.getPosition();
+                if (rpos.getPosX() == position.getPosX() && rpos.getPosY() == position.getPosY()) {
+                    affectedRobots.add(robot.getName());
+                    allrobots.remove(robot);
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) complete = true;
+            position.changePosition(1, Rotation.NO);
+        }
+
+        return  affectedRobots;
+    }
+
+    /**
      * modifica i dati di robot in base ai danni presi, se alla fine del calcolo dei danni il robot è distrutto allora ritorna false
      * @param HPDamage danni subiti agli hit points
      * @param LPDamage danni subiti alle vite
@@ -608,6 +658,11 @@ public class Match extends Observable implements MessageObserver{
         }
     }
 
+    /**
+     * manda messaggio in broadcast dei robot che sono morti/finiti in buchi neri/usciti dal robodromo
+     * utilizzato nelle sottofasi di move e activation
+     * @param repositionMessage
+     */
     private void syncRePositions(String repositionMessage) {
         broadcastMessage(repositionMessage, Match.MancheRobotsRepositionsMsg);
     }
