@@ -206,13 +206,13 @@ public class Match extends Observable implements MessageObserver{
             if (stepsToTake > 0) {
                 // move 1-2-3
                 try {
-                    ArrayList<String> adiacentrobots = null;
+                    ArrayList<MatchRobot> adiacentrobots = null;
                     for (int s = 0; s < stepsToTake; s++) {
-                        adiacentrobots = getAdiacentRobots(robot);
                         if (this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), chosendir)) {
                             break;
                         }
-                        if (adiacentrobots.size() > 0) {
+                        adiacentrobots = getAdiacentRobots(robot);
+                        if (adiacentrobots == null || adiacentrobots.size() > 0) {
                             break;
                         }
                         robotPos.changePosition(1, Rotation.NO);
@@ -228,10 +228,19 @@ public class Match extends Observable implements MessageObserver{
                         }
                     }
                     animations.add(robot.getName() + ":" + stepstaken + ":" + chosendir + ":" + Rotation.NO);
-                    if (adiacentrobots.size() > 0 && stepstaken < stepsToTake) {
+                    if (adiacentrobots != null && adiacentrobots.size() > 0 && stepstaken < stepsToTake) {
                         // aggiunge animazioni resto del movimento anche per gli altri robot nella lista
                         int remsteps = stepsToTake - stepstaken;
-                        animations.add(robot.getName()+":"+remsteps+":"+chosendir+":"+Rotation.NO+":"+adiacentrobots.toString().replaceAll("[\\[\\]\\s]", "").replaceAll(",", "§"));
+                        robotPos.changePosition(remsteps, Rotation.NO);
+                        String adiacrobnames = "";
+
+                        for (MatchRobot arb : adiacentrobots) {
+                            arb.getPosition().changePosition(remsteps, Rotation.NO);
+                            adiacrobnames += arb.getName()+"§";
+                        }
+                        adiacrobnames = adiacrobnames.substring(0, adiacrobnames.length() - 1);
+                        animations.add(robot.getName()+":"+remsteps+":"+chosendir+":"+Rotation.NO+":"+adiacrobnames);
+                        //animations.add(robot.getName()+":"+remsteps+":"+chosendir+":"+Rotation.NO+":"+adiacentrobots.toString().replaceAll("[\\[\\]\\s]", "").replaceAll(",", "§"));
                     }
                     if (pitfall)
                         animations.add(robot.getName() + ":pitfall");
@@ -595,35 +604,48 @@ public class Match extends Observable implements MessageObserver{
      * Se si trovasse un secondo robot anchesso vicino al primo robot e che verrebbe spostato,
      * allora anch'esso è incluso in questa lista, e così via.
      * @param targetRobot robot di cui si vuole controllare le vicinanze
-     * @return arraylist di robot vicini
+     * @return arraylist di robot vicini, oppure null se non ci si può muovere in quella direzione causa muro
      */
-    private ArrayList<String> getAdiacentRobots(MatchRobot targetRobot) {
-        ArrayList<String> affectedRobots = new ArrayList<>();
+    private ArrayList<MatchRobot> getAdiacentRobots(MatchRobot targetRobot) {
+        ArrayList<MatchRobot> affectedRobots = new ArrayList<>();
         Position position = targetRobot.getPosition().clone();
         position.changePosition(1, Rotation.NO);
+        try {
 
-        ArrayList<MatchRobot> allrobots = new ArrayList<>();
-        for(Map.Entry<String, List<MatchRobot>> robotlist : ownedRobots.entrySet()) {
-            for (MatchRobot robot : robotlist.getValue()) {
-                if (robot != targetRobot) allrobots.add(robot);
+            if (this.theRobodrome.pathHasWall(position.getPosX(), position.getPosY(), position.getDirection())) {
+                return null;
             }
-        }
 
-        boolean complete = false;
-
-        while (!complete) {
-            boolean found = false;
-            for (MatchRobot robot : allrobots) {
-                Position rpos = robot.getPosition();
-                if (rpos.getPosX() == position.getPosX() && rpos.getPosY() == position.getPosY()) {
-                    affectedRobots.add(robot.getName());
-                    allrobots.remove(robot);
-                    found = true;
-                    break;
+            ArrayList<MatchRobot> allrobots = new ArrayList<>();
+            for (Map.Entry<String, List<MatchRobot>> robotlist : ownedRobots.entrySet()) {
+                for (MatchRobot robot : robotlist.getValue()) {
+                    if (robot != targetRobot) allrobots.add(robot);
                 }
             }
-            if (!found) complete = true;
-            position.changePosition(1, Rotation.NO);
+
+            boolean complete = false;
+
+            while (!complete) {
+                boolean found = false;
+                for (MatchRobot robot : allrobots) {
+                    Position rpos = robot.getPosition();
+                    if (rpos.getPosX() == position.getPosX() && rpos.getPosY() == position.getPosY()) {
+                        affectedRobots.add(robot);
+                        allrobots.remove(robot);
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) complete = true;
+                position.changePosition(1, Rotation.NO);
+                if (this.theRobodrome.pathHasWall(position.getPosX(), position.getPosY(), position.getDirection())) {
+                    return null;
+                }
+            }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            // uno o più robot andrà a finire fuori dal robodromo
+            // TODO: gestione di quando robot è spinto fuori dal robodromo
+            return null;
         }
 
         return  affectedRobots;
