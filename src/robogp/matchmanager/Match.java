@@ -678,7 +678,8 @@ public class Match extends Observable implements MessageObserver{
                 }
                 if (!found) complete = true;
                 if (this.theRobodrome.pathHasWall(position.getPosX(), position.getPosY(), position.getDirection())) {
-                    return null;
+                    //return null;
+                    return affectedRobots;
                 }
                 position.changePosition(1, Rotation.NO);
             }
