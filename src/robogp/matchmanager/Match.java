@@ -96,7 +96,9 @@ public class Match extends Observable implements MessageObserver{
                     log("Tutte le animazioni della sottofase Attivazione robodromo sono state inviate...");
                     getReadyPlayers();
                     log("Tutte le animazioni della sottofase Attivazione robodromo sono terminata...");
-                    lasersAndWeaponsSubPhase();
+                    String weapRepositions = lasersAndWeaponsSubPhase();
+                    getReadyPlayers();
+                    syncRePositions(weapRepositions);
                     getReadyPlayers();
                     log("Sottofase touch and save...");
                     touchAndSaveSubPhase();
@@ -440,7 +442,7 @@ public class Match extends Observable implements MessageObserver{
         return repositions.toString().replaceAll("[\\[\\]\\s]", "");
     }
 
-    private void lasersAndWeaponsSubPhase() {
+    private String lasersAndWeaponsSubPhase() {
         // la vista deve fare rv.addLaserFire(robots[0], Direction.E, 3, 15, false, false);
         // per ogni robot guardo se ci sono altri robot nella via del laser, se si colpisco, aggiungo anim e continue
         // se no, trovo il primo muro del robodromo dove far fermare il laser
@@ -449,6 +451,7 @@ public class Match extends Observable implements MessageObserver{
             allRobots.addAll(robotlist.getValue());
         }
         ArrayList<String> animations = new ArrayList<>();
+        ArrayList<String> repositions = new ArrayList<>();
         // se trova un robt nella direzione di sparo
         for (MatchRobot robot : allRobots) {
             // controllo il primo oggetto che il laser colpirebbe se non ci fossero robot, salvo la x/y della cella
@@ -533,8 +536,20 @@ public class Match extends Observable implements MessageObserver{
                 animations.add(robot.getName() + ":" + robotPos.getDirection() + ":" + robotPos.getPosX() + ":"
                         + offset + ":"+(hitEnemy != null? hitEnemy.getName(): "false")+":"+wallhit);
             if (hitEnemy != null) {
-                if (!damageRobot(hitEnemy, 1, 0))
-                    animations.add(hitEnemy.getName()+":death");
+                int prehitLP = hitEnemy.getLifePoints();
+                if (damageRobot(hitEnemy, 1, 0)) {
+                    if (prehitLP != hitEnemy.getLifePoints()) {
+                        // robot ha perso una vita e deve errere riposizionato in ultimo checkpoint
+                        animations.add(hitEnemy.getName() + ":death");
+                        Position checkpointPos = hitEnemy.getLastCheckpointPosition();
+                        repositions.add(hitEnemy.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":true");
+                        hitEnemy.setPosition(checkpointPos.clone());
+                    }
+                } else {
+                    // robot ha ricevuto colpo fatale e non ha più vite = reposition con death
+                    animations.add(hitEnemy.getName() + ":death");
+                    repositions.add(hitEnemy.getName() + ":-1:-1:" + Direction.N + ":false");
+                }
             }
         }
         log("Laser and weapons subphase end: "+animations.size()+" animations created...");
@@ -542,6 +557,8 @@ public class Match extends Observable implements MessageObserver{
         String message = animations.toString().replaceAll("[\\[\\]\\s]", "");
 
         broadcastMessage(message, Match.MancheLasersAndWeaponsMsg);
+
+        return repositions.toString().replaceAll("[\\[\\]\\s]", "");
     }
 
     private void touchAndSaveSubPhase() {
