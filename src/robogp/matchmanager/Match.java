@@ -186,17 +186,16 @@ public class Match extends Observable implements MessageObserver{
             }
         }
 
+        //ordina i robot in base alla priorità della scheda istruzione nel registro da eseguire
         orderedRobotList.sort((mr1, mr2) -> -Integer.compare(mr1.getRegistry(regNum).getInstruction().getPriority(), mr2.getRegistry(regNum).getInstruction().getPriority()));
 
         // dalla lista ordinata di robot in base alla priorità dell'istruzione del registro regNum si fanno le animazioni di quel registro
         log("Verranno calcolate animazioni per "+orderedRobotList.size()+" robot...");
-        //String[] animationInstr = new String[orderedRobotList.size()];
         ArrayList<String> animations = new ArrayList<>();
         ArrayList<String> repositions = new ArrayList<>();
         int i = 0;
         for (MatchRobot robot : orderedRobotList) {
             Position robotPos = robot.getPosition();
-            //System.out.println("initial posX="+robotPos.getPosX()+", posY="+robotPos.getPosY());
             MatchInstruction instrToExecute = robot.getRegistry(regNum).getInstruction();
             int stepstaken = 0;
             Direction chosendir = robotPos.getDirection();
@@ -230,14 +229,14 @@ public class Match extends Observable implements MessageObserver{
                         }
                     }
                     animations.add(robot.getName() + ":" + stepstaken + ":" + chosendir + ":" + Rotation.NO);
-                    if (adiacentrobots != null && adiacentrobots.size() > 0 && stepstaken < stepsToTake) {
+                    if (adiacentrobots != null && adiacentrobots.size() > 0 && stepstaken < stepsToTake && !pitfall) {
                         // aggiunge animazioni resto del movimento anche per gli altri robot nella lista
                         int remsteps = stepsToTake - stepstaken;
                         robotPos.changePosition(remsteps, Rotation.NO);
                         String adiacrobnames = "";
 
                         for (MatchRobot arb : adiacentrobots) {
-                            arb.getPosition().changePosition(remsteps, Rotation.NO);
+                            arb.getPosition().changePosition(remsteps, robotPos.getDirection(), Rotation.NO);
                             adiacrobnames += arb.getName()+"§";
                             //TODO: controllo se cella è pitcell, se si faccio cadere robot
                         }
@@ -267,7 +266,7 @@ public class Match extends Observable implements MessageObserver{
                                 // si muove il robot e tutti i robot spinti da lui
                                 String adiacrobnames = "";
                                 for (MatchRobot arb : adiacentrobots) {
-                                    arb.getPosition().changePosition(stepsToTake, Rotation.NO);
+                                    arb.getPosition().changePosition(stepsToTake, oppositedir, Rotation.NO);
                                     adiacrobnames += arb.getName()+"§";
                                     //TODO: controllo se cella è pitcell, se si faccio cadere robot
                                 }
