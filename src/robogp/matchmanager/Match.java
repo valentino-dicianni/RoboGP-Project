@@ -236,7 +236,7 @@ public class Match extends Observable implements MessageObserver{
                         String adiacrobnames = "";
 
                         for (MatchRobot arb : adiacentrobots) {
-                            arb.getPosition().changePosition(remsteps, robotPos.getDirection(), Rotation.NO);
+                            arb.getPosition().changePosition(remsteps, chosendir, Rotation.NO);
                             adiacrobnames += arb.getName()+"§";
                             //TODO: controllo se cella è pitcell, se si faccio cadere robot
                         }
@@ -266,7 +266,7 @@ public class Match extends Observable implements MessageObserver{
                                 // si muove il robot e tutti i robot spinti da lui
                                 String adiacrobnames = "";
                                 for (MatchRobot arb : adiacentrobots) {
-                                    arb.getPosition().changePosition(stepsToTake, oppositedir, Rotation.NO);
+                                    arb.getPosition().changePosition(stepsToTake, chosendir, Rotation.NO);
                                     adiacrobnames += arb.getName()+"§";
                                     //TODO: controllo se cella è pitcell, se si faccio cadere robot
                                 }
