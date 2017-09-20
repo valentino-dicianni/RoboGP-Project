@@ -192,11 +192,14 @@ public class Match extends Observable implements MessageObserver{
         orderedRobotList.sort((mr1, mr2) -> -Integer.compare(mr1.getRegistry(regNum).getInstruction().getPriority(), mr2.getRegistry(regNum).getInstruction().getPriority()));
 
         // dalla lista ordinata di robot in base alla priorità dell'istruzione del registro regNum si fanno le animazioni di quel registro
+        // array di robot che durante l'eseguzione vengono spinti fuori o cadono e quindi non possono eseguire la lora istruzione per quel registro
+        ArrayList<MatchRobot> robotsOut = new ArrayList<>();
         log("Verranno calcolate animazioni per "+orderedRobotList.size()+" robot...");
         ArrayList<String> animations = new ArrayList<>();
         ArrayList<String> repositions = new ArrayList<>();
         int i = 0;
         for (MatchRobot robot : orderedRobotList) {
+            if (robotsOut.contains(robot)) continue;
             Position robotPos = robot.getPosition();
             MatchInstruction instrToExecute = robot.getRegistry(regNum).getInstruction();
             int stepstaken = 0;
@@ -252,45 +255,49 @@ public class Match extends Observable implements MessageObserver{
                         repositions.add(lastRobot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":"+damageRobot(lastRobot, 0, 1));
                         lastRobot.setPosition(checkpointPos.clone());
                         robotTrain.remove(lastRobot);
+                        //il robot uscito non deve eseguire la sua istruzione
+                        robotsOut.add(lastRobot);
                     }
                 }
             } else if (stepsToTake < 0) {
                 // backup
-                stepstaken = Math.abs(stepsToTake);
+                //stepstaken = Math.abs(stepsToTake);
                 Direction oppositedir = Direction.getOppositeDirection(chosendir);
+                ArrayList<MatchRobot> robotTrain = new ArrayList<>();
+                robotTrain.add(robot);
+                robotTrain.addAll(getAdiacentRobots(robot, oppositedir));
+                MatchRobot lastRobot = robotTrain.get(robotTrain.size() - 1);
+                Position lastRobotPos = lastRobot.getPosition();
+                boolean lastout = false;
+                boolean walled = false;
                 try {
-                    if (!this.theRobodrome.pathHasWall(robotPos.getPosX(), robotPos.getPosY(), oppositedir)) {
-                        ArrayList<MatchRobot> adiacentrobots = getAdiacentRobots(robot, oppositedir);
-                        if (adiacentrobots != null) {
-                            robotPos.changePosition(stepsToTake, Rotation.NO);
-                            if (adiacentrobots.size() > 0) {
-                                // si muove il robot e tutti i robot spinti da lui
-                                String adiacrobnames = "";
-                                for (MatchRobot arb : adiacentrobots) {
-                                    arb.getPosition().changePosition(stepsToTake, chosendir, Rotation.NO);
-                                    adiacrobnames += arb.getName()+"§";
-                                    //TODO: controllo se cella è pitcell, se si faccio cadere robot
-                                }
-                                adiacrobnames = adiacrobnames.substring(0, adiacrobnames.length() - 1);
-                                animations.add(robot.getName() + ":" + stepstaken + ":" + oppositedir + ":" + Rotation.NO+":"+adiacrobnames);
-                            } else {
-                                animations.add(robot.getName() + ":" + stepstaken + ":" + oppositedir + ":" + Rotation.NO);
-                            }
-                            if (theRobodrome.isCellPit(robotPos.getPosX(), robotPos.getPosY())) {
-                                Position checkpointPos = robot.getLastCheckpointPosition();
-                                repositions.add(robot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY()
-                                        + ":" + checkpointPos.getDirection() + ":" + damageRobot(robot, 0, 1));
-                                robot.setPosition(checkpointPos.clone());
-                            }
-                        }
-                    }
+                    walled = theRobodrome.pathHasWall(lastRobotPos.getPosX(), lastRobotPos.getPosY(), lastRobotPos.getDirection());
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    // il percorso sta uscendo dal robodromo
-                    Position checkpointPos = robot.getLastCheckpointPosition();
-                    animations.add(robot.getName() + ":" + stepstaken + ":" + oppositedir + ":" + Rotation.NO);
-                    repositions.add(robot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY()
-                            + ":" + checkpointPos.getDirection() + ":"+damageRobot(robot, 0, 1));
-                    robot.setPosition(checkpointPos.clone());
+                    lastout = true;
+                }
+                if (!walled) {
+                    String adiacrobnames = "";
+                    for (MatchRobot arb : robotTrain) {
+                        arb.getPosition().changePosition(-1, chosendir, Rotation.NO);
+                        if (arb != robot)
+                            adiacrobnames += arb.getName() + "§";
+                    }
+                    if (adiacrobnames.length() > 0)
+                        adiacrobnames = adiacrobnames.substring(0, adiacrobnames.length() - 1);
+                    if (robotTrain.size() > 1) {
+                        animations.add(robot.getName() + ":1:" + oppositedir + ":" + Rotation.NO + ":" +adiacrobnames); // robot train
+                    } else {
+                        animations.add(robot.getName() + ":1:" + oppositedir + ":" + Rotation.NO); // robot singolo
+                    }
+                    if (lastout || theRobodrome.isCellPit(lastRobotPos.getPosX(), lastRobotPos.getPosY())) {
+                        // last robot va fuori o cade in pit
+                        animations.add(lastRobot.getName() + ":"+ (lastout?"outofrobodrome":"pitfall"));
+                        Position checkpointPos = lastRobot.getLastCheckpointPosition();
+                        repositions.add(lastRobot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":"+damageRobot(lastRobot, 0, 1));
+                        lastRobot.setPosition(checkpointPos.clone());
+                        //il robot uscito non deve eseguire la sua istruzione
+                        robotsOut.add(lastRobot);
+                    }
                 }
             } else {
                 // rotate
