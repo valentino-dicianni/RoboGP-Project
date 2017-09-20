@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.*;
 import javax.swing.border.*;
-
 import connection.Connection;
 import connection.Message;
 import connection.MessageObserver;
@@ -226,6 +225,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
     private void nextMancheActionPerformed(ActionEvent e) {
         controller.sendMessage(new Message(Match.MatchReadyMsg));
         nextManche.setEnabled(false);
+        notifications.setText("Fine manche. Premi 'prossima manche' per continuare!");
     }
 
     private void upgradeButtonActionPerformed(ActionEvent e) {
@@ -843,7 +843,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 break;
 
             case (Match.MancheRobotsAnimationsMsg):
-                notifications.setText("Sottofse di movimento . Ora i robot eseguiranno le loro mosse!");
+                notifications.setText("Sottofase di movimento . Ora i robot eseguiranno le loro mosse!");
                 logText.setText(logText.getText()+"\nRicevute Animazioni Robot");
                 String[]anim = ((String) msg.getParameter(0)).split(",");
                 rv.startFollowingAction();
@@ -853,7 +853,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 break;
 
             case(Match.MancheRobodromeActivationMsg):
-                notifications.setText("Sottofse di attivazione Robodromo . Verranno eseguite le mosse del robodromo");
+                notifications.setText("Sottofase di attivazione Robodromo . Verranno eseguite le mosse del robodromo");
                 logText.setText(logText.getText()+"\nRicevute Animazioni Robodromo");
                 String[]pars = ((String) msg.getParameter(0)).split(",");
                 for(String par: pars)
@@ -898,9 +898,10 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
      * della robodromeView.
      * La stringa può avere forme diverse:
      *
-     * + nomerobot:pitfall -> animazione di caduta buco nero
-     * + nomerobot:passi:direzione:rotazione -> movimento robot o robodromo
-     * + nomerobot:direzionerobot:casellainiziosparo:casellafinesparo:robotcolpito:murocolpito -> sparo laser
+     * + nomerobot:pitfall  --> animazione di caduta buco nero
+     * + nomerobot:passi:direzione:rotazione  --> movimento robot o robodromo
+     * + nomerobot:passi:direzione:rotazione:robot1§robot2§..§robotN  --> movimento robot o robodromo con spinta di altri robot
+     * + nomerobot:direzionerobot:casellainiziosparo:casellafinesparo:robotcolpito:murocolpito  --> sparo laser
      */
 
     private void createAnimation(String a) {
@@ -925,6 +926,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 rv.addRobotMove(robot, movement, dir, rot);
             }
 
+            // movimento robot con spinta
             if (animdata.length == 5) {
                 String[] robotsName = animdata[4].split("§");
 
@@ -1001,10 +1003,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 if (robot.getName().equals(modelRobot.elementAt(i).getName())) {
                     selected = modelRobot.getElementAt(i);
                     selected.setHitPoints(selected.getHitPoints() - 1);
-                    if (selected.getHitPoints() == 0) {
-                        selected.setLifePoints(selected.getLifePoints() - 1);
-                        selected.setHitPoints(10);
-                    }
                 }
             }
             modelRobot.addElement(selected);

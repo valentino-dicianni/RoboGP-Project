@@ -7,8 +7,6 @@ import connection.PartnerShutDownException;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.jetbrains.annotations.Nullable;
 import robogp.robodrome.*;
 
 
@@ -649,7 +647,6 @@ public class Match extends Observable implements MessageObserver{
      * @param targetRobot robot di cui si vuole controllare le vicinanze
      * @return arraylist di robot vicini, oppure null se non ci si può muovere in quella direzione causa muro
      */
-    @Nullable
     private ArrayList<MatchRobot> getAdiacentRobots(MatchRobot targetRobot, Direction dir) {
         ArrayList<MatchRobot> affectedRobots = new ArrayList<>();
         Position position = targetRobot.getPosition().clone();
@@ -766,7 +763,6 @@ public class Match extends Observable implements MessageObserver{
 
         log("Broadcast messages sent: "+i+" of type: "+messageType+"...");
     }
-
 
     private void log(String message) {
         setChanged();
