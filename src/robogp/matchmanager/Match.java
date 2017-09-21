@@ -286,7 +286,7 @@ public class Match extends Observable implements MessageObserver{
                 boolean lastout = false;
                 boolean walled = false;
                 try {
-                    walled = theRobodrome.pathHasWall(lastRobotPos.getPosX(), lastRobotPos.getPosY(), lastRobotPos.getDirection());
+                    walled = theRobodrome.pathHasWall(lastRobotPos.getPosX(), lastRobotPos.getPosY(), oppositedir);
                 } catch (ArrayIndexOutOfBoundsException e) {
                     lastout = true;
                 }
