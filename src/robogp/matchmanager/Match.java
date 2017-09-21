@@ -58,11 +58,18 @@ public class Match extends Observable implements MessageObserver{
     private static Match singleInstance;
 
 
-    /** TODO
-     * 	quando un giocatore ha finito di programmare il robot per quella
-     * 	manche chiama il metodo setReadyPlayers per aumentare di 1 il counter
-     * 	una volta che sono tutti pronti si attiva il thread che eseguirà le istruzioni
-     * 	e comunica tutto ai giocatori
+    /**
+     * 	Thread MatchHeper:
+     *
+     * 	questo thread consente di avanzare l'esecusione del gioco.
+     * 	All'inizio di ogni manche, non appena tutti i giocatori sono pronti,
+     * 	vengono eseguite in sequenza tutte le sottofasi della manche, per ogni registro.
+     * 	Alla fine di ogni sottofase viene mandato un messaggio ai giocatori
+     * 	con i risultati dell'esecuzione della sottofase in corso.
+     *
+     *  La sincronizzazione avviene per mezzo dei metodi setReadyPlayer e getReadyPlayer,
+     *  che, prendendo il lock sulla variabile readyPlayers, sincronizzano il thread di esecuzione
+     *  rispetto alla disponibilità dei vari giocatori.
      */
 
     private class MatchHelper implements Runnable {
@@ -78,38 +85,48 @@ public class Match extends Observable implements MessageObserver{
                 log("Inizio ciclo principale esecuzione Manche...");
                 for(int i = 1; i <= 5; i++) {
                     log("Inizio esecuzione registro "+i+"...");
-                    //manda lista ordinata in base a priorità di schede istr ai giocatori secondo registro corrente
+
+                    //declaration subfase
+                    log("Inizio sottofase Dichiarazione...");
                     declarationSubPhase(i);
                     log("Tutti i robot sono stati programmati correttamente...");
                     getReadyPlayers();
+
                     //move subphase
-                    //String moveRepositions = moveSubPhase(i);
+                    log("Inizio sottofase Mossa...");
                     String moveAnimations = moveSubPhase(i);
                     broadcastMessage(moveAnimations, Match.MancheRobotsAnimationsMsg);
                     getReadyPlayers();
-                    //syncRePositions(moveRepositions);
                     syncRePositions(emptyRepositionsToString());
                     log("Tutte le animazioni della sottofase Mossa sono state inviate...");
                     getReadyPlayers();
                     log("Tutte le animazioni della sottofase Mossa sono terminate...");
-                    //esecuzione con robodromo
+
+                    //robodrome activation subfase
+                    log("Inizio sottofase Attivazione Robodromo...");
                     String activAnimations = robodromeActivationSubPhase();
                     broadcastMessage(activAnimations, Match.MancheRobodromeActivationMsg);
                     getReadyPlayers();
-                    //syncRePositions(activRepositions);
                     syncRePositions(emptyRepositionsToString());
                     log("Tutte le animazioni della sottofase Attivazione robodromo sono state inviate...");
                     getReadyPlayers();
                     log("Tutte le animazioni della sottofase Attivazione robodromo sono terminata...");
+
+                    //laser and weapon subfase
+                    log("Inizio sottofase Laser & Weapon...");
                     String weapAnimations = lasersAndWeaponsSubPhase();
                     broadcastMessage(weapAnimations, Match.MancheLasersAndWeaponsMsg);
                     getReadyPlayers();
-                    //syncRePositions(weapRepositions);
                     syncRePositions(emptyRepositionsToString());
+                    log("Tutte le animazioni della sottofase Lasers & Weapons sono state inviate...");
                     getReadyPlayers();
-                    log("Sottofase touch and save...");
+                    log("Tutte le animazioni della sottofase Lasers & Weapons sono terminate...");
+
+                    //touch and save subfase
+                    log("Inizio sottofase touch and save...");
                     touchAndSaveSubPhase();
                 }
+
                 log("Fine manche, reset per prossima manche...");
                 String endMessage = endManche();
                 broadcastMessage(endMessage, Match.MancheEndMsg);
@@ -267,7 +284,8 @@ public class Match extends Observable implements MessageObserver{
                     if (lastExit || theRobodrome.isCellPit(lastRobotPos.getPosX(), lastRobotPos.getPosY())) {
                         animations.add(lastRobot.getName() + ":"+ (lastExit?"outofrobodrome":"pitfall"));
                         Position checkpointPos = lastRobot.getLastCheckpointPosition();
-                        repositions.add(lastRobot.getName() + ":" + checkpointPos.getPosX() + ":" + checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":"+damageRobot(lastRobot, 0, 1));
+                        repositions.add(lastRobot.getName() + ":" + checkpointPos.getPosX() + ":" +
+                                checkpointPos.getPosY() + ":" + checkpointPos.getDirection() + ":"+damageRobot(lastRobot, 0, 1));
                         lastRobot.setPosition(checkpointPos.clone());
                         robotTrain.remove(lastRobot);
                         //il robot uscito non deve eseguire la sua istruzione
@@ -319,7 +337,6 @@ public class Match extends Observable implements MessageObserver{
                 robotPos.changePosition(0, instrRot);
                 animations.add(robot.getName() + ":0:" + chosendir + ":" + instrRot);
             }
-
         }
 
         log("Sono state calcolate "+i+" animazioni...");
@@ -327,12 +344,7 @@ public class Match extends Observable implements MessageObserver{
         // ritorna animation e mette le repositions come variabile globale che ogni volta svuoto quando le mando ai client
         // diventano public, ritornano stringa delle animazioni da fare, non manda broadcast msg quello lo manda il thread
 
-        String animMessage = animations.toString().replaceAll("[\\[\\]\\s]", "");
-
-        //broadcastMessage(animMessage, MancheRobotsAnimationsMsg);
-
-        //return repositions.toString().replaceAll("[\\[\\]\\s]", "");
-        return animMessage;
+        return animations.toString().replaceAll("[\\[\\]\\s]", "");
     }
 
     private String robodromeActivationSubPhase() {
@@ -457,15 +469,9 @@ public class Match extends Observable implements MessageObserver{
                     repositions.add(robotName+":-1:-1:E:false");
             }
         }
-
         log("Robodrome activation end: "+animations.size()+" animations created.");
 
-        String message = animations.toString().replaceAll("[\\[\\]\\s]", "");
-
-        //broadcastMessage(message, Match.MancheRobodromeActivationMsg);
-
-        //return repositions.toString().replaceAll("[\\[\\]\\s]", "");
-        return message;
+        return animations.toString().replaceAll("[\\[\\]\\s]", "");
     }
 
     private String lasersAndWeaponsSubPhase() {
@@ -580,12 +586,7 @@ public class Match extends Observable implements MessageObserver{
         }
         log("Laser and weapons subphase end: "+animations.size()+" animations created...");
 
-        String message = animations.toString().replaceAll("[\\[\\]\\s]", "");
-
-        //broadcastMessage(message, Match.MancheLasersAndWeaponsMsg);
-
-        //return repositions.toString().replaceAll("[\\[\\]\\s]", "");
-        return message;
+        return animations.toString().replaceAll("[\\[\\]\\s]", "");
     }
 
     private void touchAndSaveSubPhase() {
@@ -610,14 +611,12 @@ public class Match extends Observable implements MessageObserver{
                 }
             }
         }
-        // no msg?
     }
 
     private String endManche() {
         // tolgo schede dai registri dei robot e setto i registri bloccati in base ai punti vita attuali del robot
         ArrayList<String> robotsUpdated = new ArrayList<>();
         for(Map.Entry<String, List<MatchRobot>> robotlist : ownedRobots.entrySet()) {
-            //robots.addAll(robotlist.getValue());
             for (MatchRobot robot : robotlist.getValue()) {
                 if (robot.getLifePoints() < 1) { // rimuovo robot se non ha più punti vita
                     robotsUpdated.add(robot.getName()+":dead");
@@ -648,16 +647,11 @@ public class Match extends Observable implements MessageObserver{
                 robotsUpdated.add(robot.getName()+":"+hitpoints+":"+robot.getLifePoints()+":"+regAval);
             }
         }
-
         log("Manche end: "+robotsUpdated.size()+" robots updated");
-
         if (robotsUpdated.size() == 0)
             robotsUpdated.add("winnerrobotname:matchend");
 
-        String message = robotsUpdated.toString().replaceAll("[\\[\\]\\s]", "");
-
-        //broadcastMessage(message, Match.MancheEndMsg);
-        return message;
+        return robotsUpdated.toString().replaceAll("[\\[\\]\\s]", "");
     }
 
     /**
@@ -709,12 +703,8 @@ public class Match extends Observable implements MessageObserver{
                 position.changePosition(1, Rotation.NO);
             }
         } catch (ArrayIndexOutOfBoundsException e) {
-            // uno o più robot andrà a finire fuori dal robodromo
-            // TODO: gestione di quando robot è spinto fuori dal robodromo
-            //return null;
             return affectedRobots;
         }
-
         return affectedRobots;
     }
 
@@ -781,7 +771,6 @@ public class Match extends Observable implements MessageObserver{
             }
             i++;
         }
-
         log("Broadcast messages sent: "+i+" of type: "+messageType+"...");
     }
 
