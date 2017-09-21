@@ -52,6 +52,8 @@ public class Match extends Observable implements MessageObserver{
     private final HashMap<String, Connection> players;
     private HashMap<String, List<MatchRobot>> ownedRobots;
 
+    private ArrayList<String> repositions;
+
     /* Gestione pattern singleton */
     private static Match singleInstance;
 
@@ -81,31 +83,46 @@ public class Match extends Observable implements MessageObserver{
                     log("Tutti i robot sono stati programmati correttamente...");
                     getReadyPlayers();
                     //move subphase
-                    String moveRepositions = moveSubPhase(i);
+                    //String moveRepositions = moveSubPhase(i);
+                    String moveAnimations = moveSubPhase(i);
+                    broadcastMessage(moveAnimations, Match.MancheRobotsAnimationsMsg);
                     getReadyPlayers();
-                    syncRePositions(moveRepositions);
+                    //syncRePositions(moveRepositions);
+                    syncRePositions(emptyRepositionsToString());
                     log("Tutte le animazioni della sottofase Mossa sono state inviate...");
                     getReadyPlayers();
                     log("Tutte le animazioni della sottofase Mossa sono terminate...");
                     //esecuzione con robodromo
-                    String activRepositions = robodromeActivationSubPhase();
+                    String activAnimations = robodromeActivationSubPhase();
+                    broadcastMessage(activAnimations, Match.MancheRobodromeActivationMsg);
                     getReadyPlayers();
-                    syncRePositions(activRepositions);
+                    //syncRePositions(activRepositions);
+                    syncRePositions(emptyRepositionsToString());
                     log("Tutte le animazioni della sottofase Attivazione robodromo sono state inviate...");
                     getReadyPlayers();
                     log("Tutte le animazioni della sottofase Attivazione robodromo sono terminata...");
-                    String weapRepositions = lasersAndWeaponsSubPhase();
+                    String weapAnimations = lasersAndWeaponsSubPhase();
+                    broadcastMessage(weapAnimations, Match.MancheLasersAndWeaponsMsg);
                     getReadyPlayers();
-                    syncRePositions(weapRepositions);
+                    //syncRePositions(weapRepositions);
+                    syncRePositions(emptyRepositionsToString());
                     getReadyPlayers();
                     log("Sottofase touch and save...");
                     touchAndSaveSubPhase();
                 }
                 log("Fine manche, reset per prossima manche...");
-                endManche();
+                String endMessage = endManche();
+                broadcastMessage(endMessage, Match.MancheEndMsg);
             }
 
         }
+    }
+
+    private String emptyRepositionsToString() {
+        String rp = repositions.toString().replaceAll("[\\[\\]\\s]", "");
+        this.repositions.clear();
+        // fare la new?
+        return rp;
     }
 
 
@@ -194,7 +211,7 @@ public class Match extends Observable implements MessageObserver{
         ArrayList<MatchRobot> robotsOut = new ArrayList<>();
         log("Verranno calcolate animazioni per "+orderedRobotList.size()+" robot...");
         ArrayList<String> animations = new ArrayList<>();
-        ArrayList<String> repositions = new ArrayList<>();
+        //ArrayList<String> repositions = new ArrayList<>();
         int i = 0;
         for (MatchRobot robot : orderedRobotList) {
             if (robotsOut.contains(robot)) continue;
@@ -203,7 +220,7 @@ public class Match extends Observable implements MessageObserver{
             int stepstaken = 0;
             Direction chosendir = robotPos.getDirection();
             Rotation instrRot = instrToExecute.getRotation();
-            boolean pitfall = false;
+            //boolean pitfall = false;
 
             int stepsToTake = instrToExecute.getStepsToTake();
 
@@ -312,9 +329,10 @@ public class Match extends Observable implements MessageObserver{
 
         String animMessage = animations.toString().replaceAll("[\\[\\]\\s]", "");
 
-        broadcastMessage(animMessage, MancheRobotsAnimationsMsg);
+        //broadcastMessage(animMessage, MancheRobotsAnimationsMsg);
 
-        return repositions.toString().replaceAll("[\\[\\]\\s]", "");
+        //return repositions.toString().replaceAll("[\\[\\]\\s]", "");
+        return animMessage;
     }
 
     private String robodromeActivationSubPhase() {
@@ -331,7 +349,7 @@ public class Match extends Observable implements MessageObserver{
         log("Robodrome activation: "+robotsToAnimate.size()+" robots to animate...");
 
         ArrayList<String> animations = new ArrayList<>();
-        ArrayList<String> repositions = new ArrayList<>();
+        //ArrayList<String> repositions = new ArrayList<>();
 
         for (MatchRobot robot : robotsToAnimate) {
             Position robotPos = robot.getPosition();
@@ -444,9 +462,10 @@ public class Match extends Observable implements MessageObserver{
 
         String message = animations.toString().replaceAll("[\\[\\]\\s]", "");
 
-        broadcastMessage(message, Match.MancheRobodromeActivationMsg);
+        //broadcastMessage(message, Match.MancheRobodromeActivationMsg);
 
-        return repositions.toString().replaceAll("[\\[\\]\\s]", "");
+        //return repositions.toString().replaceAll("[\\[\\]\\s]", "");
+        return message;
     }
 
     private String lasersAndWeaponsSubPhase() {
@@ -458,7 +477,7 @@ public class Match extends Observable implements MessageObserver{
             allRobots.addAll(robotlist.getValue());
         }
         ArrayList<String> animations = new ArrayList<>();
-        ArrayList<String> repositions = new ArrayList<>();
+        //ArrayList<String> repositions = new ArrayList<>();
         // se trova un robt nella direzione di sparo
         for (MatchRobot robot : allRobots) {
             // controllo il primo oggetto che il laser colpirebbe se non ci fossero robot, salvo la x/y della cella
@@ -563,9 +582,10 @@ public class Match extends Observable implements MessageObserver{
 
         String message = animations.toString().replaceAll("[\\[\\]\\s]", "");
 
-        broadcastMessage(message, Match.MancheLasersAndWeaponsMsg);
+        //broadcastMessage(message, Match.MancheLasersAndWeaponsMsg);
 
-        return repositions.toString().replaceAll("[\\[\\]\\s]", "");
+        //return repositions.toString().replaceAll("[\\[\\]\\s]", "");
+        return message;
     }
 
     private void touchAndSaveSubPhase() {
@@ -593,7 +613,7 @@ public class Match extends Observable implements MessageObserver{
         // no msg?
     }
 
-    private void endManche() {
+    private String endManche() {
         // tolgo schede dai registri dei robot e setto i registri bloccati in base ai punti vita attuali del robot
         ArrayList<String> robotsUpdated = new ArrayList<>();
         for(Map.Entry<String, List<MatchRobot>> robotlist : ownedRobots.entrySet()) {
@@ -636,7 +656,8 @@ public class Match extends Observable implements MessageObserver{
 
         String message = robotsUpdated.toString().replaceAll("[\\[\\]\\s]", "");
 
-        broadcastMessage(message, Match.MancheEndMsg);
+        //broadcastMessage(message, Match.MancheEndMsg);
+        return message;
     }
 
     /**
@@ -811,6 +832,8 @@ public class Match extends Observable implements MessageObserver{
         this.status = State.Created;
 
         this.ownedRobots = new HashMap<>();
+
+        this.repositions = new ArrayList<>();
 
         MatchHelper matchThread = new MatchHelper();
         (new Thread(matchThread)).start();
