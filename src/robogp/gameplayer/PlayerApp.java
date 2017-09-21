@@ -1,11 +1,9 @@
-
 package robogp.gameplayer;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import javax.swing.*;
@@ -64,8 +62,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 ((CardLayout) setupFrame.getContentPane().getLayout()).show(
                         setupFrame.getContentPane(), "wait");
 
-            } catch (UnknownHostException e1) {
-                e1.printStackTrace();
             } catch (IOException e1) {
                 e1.printStackTrace();
             }
@@ -879,6 +875,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 break;
 
             case (Match.MancheEndMsg):
+                notifications.setText("Manche terminata. Premi 'manche successiva' per continuare.");
                 nextManche.setEnabled(true);
                 break;
 
@@ -955,7 +952,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
 
                 if(!hit.equals("false")) {
                     rv.addLaserFire(robot, dir, inizioSparo, fineSparo, true, wallHit);
-                    rv.addRobotHit(getRobotByName(hit), dir.getOppositeDirection(dir));
+                    rv.addRobotHit(getRobotByName(hit), Direction.getOppositeDirection(dir));
                     updateHitPointsRobotList(getRobotByName(hit));
                 }
                 else{rv.addLaserFire(robot, dir, inizioSparo, fineSparo, false, wallHit);}
@@ -980,9 +977,8 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 updateLifePointsRobotList(robot);
             }
             else{
-                rv.removeRobot(robot.getName());
+                rv.removeRobot(robot != null ? robot.getName() : null);
                 System.out.println("-->robot rimosso. Era un tuo robot? "+modelRobot.removeElement(robot));
-                //modelRobot.removeElement(robot);
                 robotsOnRobodrome.remove(robot);
             }
 
