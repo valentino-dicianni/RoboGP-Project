@@ -875,6 +875,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 String[]reps = ((String) msg.getParameter(0)).split(",");
                 for(String rep: reps)
                     repositionRobot(rep);
+                controller.sendMessage(new Message(Match.MatchReadyMsg));
                 break;
 
             case (Match.MancheEndMsg):
@@ -987,7 +988,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
 
 
         }
-        controller.sendMessage(new Message(Match.MatchReadyMsg));
 
     }
 
@@ -1071,11 +1071,13 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
     @Override
     public void animationStarted() {
         logText.setText(logText.getText()+"\nStart RobotAnimations");
+        System.out.println("--> ANIMAZIONE INIZIATA <--");
 
     }
 
     @Override
     public void animationFinished() {
+        System.out.println("--> ANIMAZIONE FINITA <--");
         controller.sendMessage(new Message(Match.MatchReadyMsg));
         logText.setText(logText.getText()+"\nRobotAnimations Finish");
     }
