@@ -981,8 +981,8 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
             }
             else{
                 rv.removeRobot(robot.getName());
-                System.out.println("-->robot rimosso<--");
-                modelList.removeElement(robot);
+                System.out.println("-->robot rimosso. Era un tuo robot? "+modelRobot.removeElement(robot));
+                //modelRobot.removeElement(robot);
                 robotsOnRobodrome.remove(robot);
             }
 
