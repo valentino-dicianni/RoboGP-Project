@@ -1,0 +1,14 @@
+testRobodrome;
+10x10;
+F;F;F;F;F;F;F;F;F;F;
+F;F;F;F;F;F;F;F;F;F;
+F;F;F;F;F;F;F;F;F;F;
+F;F;F;F;F;F;F;F;F;F;
+F;F;F;F;F;F;F;F;F;F;
+F;F;P;F;F;F;F;F;F;F;
+F;F;F-Wyyyy;F;F;F;F;F;F;F;
+F-Wyyyy;F-Wyyyy;F;F;F;F;F;F;F;F;
+F;F;F;F;F;F;F;F;F;F;
+F;F;F;F;F;F;F;F;F;F;
+
+

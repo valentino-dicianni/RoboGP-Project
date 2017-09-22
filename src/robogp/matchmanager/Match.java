@@ -142,7 +142,6 @@ public class Match extends Observable implements MessageObserver{
         return rp;
     }
 
-
     /**
      * manda i pool di schede instruzione ai giocatori, calcolati in base ai punti vita dei robot
      */
@@ -209,7 +208,7 @@ public class Match extends Observable implements MessageObserver{
         broadcastMessage(message, Match.MancheDeclarationSubPhaseMsg);
     }
 
-    private String moveSubPhase(int regNum) {
+    public String moveSubPhase(int regNum) {
         // sottofase dove vengono calcolate le animazioni
         // si prendono i robot in ordine per
         ArrayList<MatchRobot> orderedRobotList = new ArrayList<>();
@@ -346,7 +345,7 @@ public class Match extends Observable implements MessageObserver{
         return animations.toString().replaceAll("[\\[\\]\\s]", "");
     }
 
-    private String robodromeActivationSubPhase() {
+    public String robodromeActivationSubPhase() {
         // fase attivazione robodromo, controlla la posizione di ogni robot
         // se un robot è finito su una cella attiva allora si aggiungono le animazioni per quel robot
         ArrayList<MatchRobot> robotsToAnimate = new ArrayList<>();
@@ -473,7 +472,7 @@ public class Match extends Observable implements MessageObserver{
         return animations.toString().replaceAll("[\\[\\]\\s]", "");
     }
 
-    private String lasersAndWeaponsSubPhase() {
+    public String lasersAndWeaponsSubPhase() {
         // la vista deve fare rv.addLaserFire(robots[0], Direction.E, 3, 15, false, false);
         // per ogni robot guardo se ci sono altri robot nella via del laser, se si colpisco, aggiungo anim e continue
         // se no, trovo il primo muro del robodromo dove far fermare il laser
@@ -588,9 +587,11 @@ public class Match extends Observable implements MessageObserver{
         return animations.toString().replaceAll("[\\[\\]\\s]", "");
     }
 
+    /**
+     * In questa sottofase vengono salvate la posizione dei robot se sono finiti
+     * su repair/checkpoint. Quelli finiti su repair guadagnano anche punto vita
+     */
     private void touchAndSaveSubPhase() {
-        // in questa sottofase vengono salvate la posizione dei robot se sono finiti su repair/checkpoint
-        // quelli finiti su repair guadagnano anche punto vita
         //NON FARE: distribuzione upgrade
 
         ArrayList<MatchRobot> robots = new ArrayList<>();
@@ -1063,6 +1064,10 @@ public class Match extends Observable implements MessageObserver{
 
     public int getMaxPlayers() {
         return this.nMaxPlayers;
+    }
+
+    public HashMap<String, List<MatchRobot>> getOwnedRobots() {
+        return ownedRobots;
     }
 
     public void printRobots() {

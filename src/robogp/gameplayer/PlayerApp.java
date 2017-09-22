@@ -965,7 +965,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
         System.out.println("\t\tREPOSITION: "+rep);
         String[] animdata = rep.split(":");
 
-        if (animdata.length == 5){ //animazione di caduto o di morte
+        if (animdata.length == 5){
             MatchRobot robot = getRobotByName(animdata[0]);
             int savedposX = Integer.parseInt(animdata[1]);
             int savedposY = Integer.parseInt(animdata[2]);
