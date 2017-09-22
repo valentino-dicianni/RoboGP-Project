@@ -248,39 +248,37 @@ public class Match extends Observable implements MessageObserver{
                 MatchRobot lastRobot = robot;
 
                 for (stepstaken = 0; stepstaken < stepsToTake && robotTrain.size() > 0; stepstaken++) {
-                    //MatchRobot lastRobot = robotTrain.get(robotTrain.size() - 1);
+                    // aggiorna lista robot adiacenti all'ultimo robot della fila prima di muovere il treno
                     robotTrain.addAll(getAdiacentRobots(lastRobot, chosendir));
-                    // aggiorna last robot
                     lastRobot = robotTrain.get(robotTrain.size() - 1);
                     Position lastRobotPos = lastRobot.getPosition();
-                    boolean lastExit = false;
+                    boolean lastExit = false; //indica se l'utimo robot della cosa è uscito dal robodromo
                     try {
                         if (theRobodrome.pathHasWall(lastRobotPos.getPosX(), lastRobotPos.getPosY(), chosendir)) {
-                            // il train si ferma
+                            // c'è un muro: il train si ferma
                             break;
                         }
                     } catch (ArrayIndexOutOfBoundsException e) {
                         lastExit = true;
                     }
-                    // a questo punto il percorso non ha muri e non manda nessuno robot fuori dal robodromo
-                    // aggiorna lista robot adiacenti all'ultimo robot della fila prima di muovere il treno
-
+                    // a questo punto il percorso non ha muri
                     // fanno passo tutti i robot della coda
-                    String adiacrobnames = "";
+                    StringBuilder strbld = new StringBuilder();
                     for (MatchRobot arb : robotTrain) {
                         arb.getPosition().changePosition(1, chosendir, Rotation.NO);
-                        if (arb != robot)
-                            adiacrobnames += arb.getName() + "§";
+                        if (arb != robot) // robot che spinge tutti non va nella lista dei robot spinti
+                            strbld.append(arb.getName() + "§");
                     }
-                    if (adiacrobnames.length() > 0)
-                        adiacrobnames = adiacrobnames.substring(0, adiacrobnames.length() - 1);
+                    if (strbld.length() > 0)
+                        strbld.deleteCharAt(strbld.length() - 1);
+
                     if (robotTrain.size() > 1) {
-                        animations.add(robot.getName() + ":1:" + chosendir + ":" + Rotation.NO + ":" +adiacrobnames); // robot train
+                        animations.add(robot.getName() + ":1:" + chosendir + ":" + Rotation.NO + ":" +strbld.toString()); // robot train
                     } else {
                         animations.add(robot.getName() + ":1:" + chosendir + ":" + Rotation.NO); // robot singolo
                     }
 
-                    // controllo se l'ultimo robot è finito in buco nero
+                    // controllo se l'ultimo robot è finito in buco nero o è uscito dal robodromo
                     if (lastExit || theRobodrome.isCellPit(lastRobotPos.getPosX(), lastRobotPos.getPosY())) {
                         animations.add(lastRobot.getName() + ":"+ (lastExit?"outofrobodrome":"pitfall"));
                         Position checkpointPos = lastRobot.getLastCheckpointPosition();
