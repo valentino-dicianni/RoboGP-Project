@@ -3,18 +3,21 @@ package robogp.matchmanager;
 import robogp.common.RobotMarker;
 import robogp.robodrome.Position;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class MatchRobot extends RobotMarker {
     private int hitPoints;
     private int lifePoints;
     private boolean isShutDown;
+    private boolean[] checkpoints;
 
     private Registry[] registries;
 
     private ArrayList<MatchInstruction> instructionsPool;
 
-    public MatchRobot(String name, String color) {
+    public MatchRobot(String name, String color, int checkpointsNumber) {
         super(name, color);
         this.hitPoints = 10;
         this.lifePoints = 3;
@@ -22,10 +25,44 @@ public class MatchRobot extends RobotMarker {
         for(int i = 0; i < 5; i++)
             this.registries[i] = new Registry(i + 1);
         this.instructionsPool = new ArrayList<>();
+        this.checkpoints = new boolean[checkpointsNumber];
+        Arrays.fill(this.checkpoints, false);
     }
 
     public void setInstructionsPool(ArrayList<MatchInstruction> instructionsPool) {
         this.instructionsPool = instructionsPool;
+    }
+
+    /**
+     * il robot ha toccato un checkpoint, se è in ordine con i checkpoint toccati finora mette il checkpoint a true
+     * e ritorna true, altrimenti ritorn false
+     * @param checkpointNum: posizione del checkpoint toccato
+     * @return true se checkpoint toccato è valido, false alrimenti
+     */
+    public boolean touchCheckpoint(int checkpointNum) {
+        int checkpointIndex = checkpointNum - 1;
+        for (int i = 0; i < checkpoints.length; i++) {
+            if (checkpointIndex == i && !checkpoints[i]) {
+                checkpoints[i] = true;
+                return true;
+            } else if (checkpoints[i]) {
+                //continue;
+            } else {
+                return false;
+            }
+        }
+        return true; // tutti i checkpoint sono stati toccati
+    }
+
+    public boolean checkpointsAllTouched() {
+        for (int i = 0; i < checkpoints.length; i++) {
+            if (!checkpoints[i]) return false;
+        }
+        return true;
+    }
+
+    public void resetCheckpoints() {
+        Arrays.fill(this.checkpoints, false);
     }
 
     public int getHitPoints() {

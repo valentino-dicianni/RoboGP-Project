@@ -307,16 +307,17 @@ public class Match extends Observable implements MessageObserver{
                     lastout = true;
                 }
                 if (!walled) {
-                    String adiacrobnames = "";
+
+                    StringBuilder strbld = new StringBuilder();
                     for (MatchRobot arb : robotTrain) {
                         arb.getPosition().changePosition(-1, chosendir, Rotation.NO);
                         if (arb != robot)
-                            adiacrobnames += arb.getName() + "§";
+                            strbld.append(arb.getName() + "§");
                     }
-                    if (adiacrobnames.length() > 0)
-                        adiacrobnames = adiacrobnames.substring(0, adiacrobnames.length() - 1);
+                    if (strbld.length() > 0)
+                        strbld.deleteCharAt(strbld.length() - 1);
                     if (robotTrain.size() > 1) {
-                        animations.add(robot.getName() + ":1:" + oppositedir + ":" + Rotation.NO + ":" +adiacrobnames); // robot train
+                        animations.add(robot.getName() + ":1:" + oppositedir + ":" + Rotation.NO + ":" +strbld.toString()); // robot train
                     } else {
                         animations.add(robot.getName() + ":1:" + oppositedir + ":" + Rotation.NO); // robot singolo
                     }
@@ -606,6 +607,8 @@ public class Match extends Observable implements MessageObserver{
                     robot.setLastCheckpointPosition(robotPos.clone());
                     int rHP = robot.getHitPoints();
                     if (rHP < 10) robot.setHitPoints(rHP+1);
+                } else if (tempfcell.isCheckpoint()) {
+                    boolean checkpointTouched = robot.touchCheckpoint(tempfcell.getCheckpoint());
                 }
             }
         }
@@ -614,6 +617,7 @@ public class Match extends Observable implements MessageObserver{
     private String endManche() {
         // tolgo schede dai registri dei robot e setto i registri bloccati in base ai punti vita attuali del robot
         ArrayList<String> robotsUpdated = new ArrayList<>();
+        MatchRobot robotWinner = null;
         for(Map.Entry<String, List<MatchRobot>> robotlist : ownedRobots.entrySet()) {
             for (MatchRobot robot : robotlist.getValue()) {
                 if (robot.getLifePoints() < 1) { // rimuovo robot se non ha più punti vita
@@ -621,6 +625,7 @@ public class Match extends Observable implements MessageObserver{
                     robotlist.getValue().remove(robot);
                     continue;
                 }
+                if (robot.checkpointsAllTouched()) robotWinner = robot;
                 robot.resetRegistries();
                 int hitpoints = robot.getHitPoints();
                 int regAval = 5;
@@ -647,7 +652,9 @@ public class Match extends Observable implements MessageObserver{
         }
         log("Manche end: "+robotsUpdated.size()+" robots updated");
         if (robotsUpdated.size() == 0)
-            robotsUpdated.add("winnerrobotname:matchend");
+            robotsUpdated.add("alldied:matchend");
+        if (robotWinner != null)
+            robotsUpdated.add(robotWinner.getName()+":matchend");
 
         return robotsUpdated.toString().replaceAll("[\\[\\]\\s]", "");
     }
@@ -811,7 +818,7 @@ public class Match extends Observable implements MessageObserver{
         this.robots = new MatchRobot[Match.ROBOT_NAMES.length];
         this.theRobodrome = new Robodrome(rbdFileName);
         for (int i = 0; i < Match.ROBOT_NAMES.length; i++) {
-            this.robots[i] = new MatchRobot(Match.ROBOT_NAMES[i], Match.ROBOT_COLORS[i]);
+            this.robots[i] = new MatchRobot(Match.ROBOT_NAMES[i], Match.ROBOT_COLORS[i], this.theRobodrome.getCheckpointsCount());
         }
 
         this.waiting = new HashMap<>();

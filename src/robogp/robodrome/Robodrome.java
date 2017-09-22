@@ -25,6 +25,7 @@ public class Robodrome {
     private final int columns;
     private final java.util.ArrayList<CellLaser> allLasers;
     private int docksCount;
+    private int checkpointsCount;
     private HashMap<Integer, Position> dockTable= new HashMap<>();
 
 
@@ -72,10 +73,14 @@ public class Robodrome {
                 } else {
                     board[r][c] = new FloorCell(new String[0]);
                 }
-                if (board[r][c] instanceof FloorCell && ((FloorCell)board[r][c]).isDock()) {
-                    this.docksCount++;
-                    Position doc = new Position(r,c ,((FloorCell)board[r][c]).getDockDirection());
-                    dockTable.put(((FloorCell)board[r][c]).getDock(), doc);
+                if (board[r][c] instanceof FloorCell) {
+                    if (((FloorCell)board[r][c]).isDock()) {
+                        this.docksCount++;
+                        Position doc = new Position(r,c ,((FloorCell)board[r][c]).getDockDirection());
+                        dockTable.put(((FloorCell)board[r][c]).getDock(), doc);
+                    } else if (((FloorCell)board[r][c]).isCheckpoint()) {
+                        this.checkpointsCount++;
+                    }
                 }
             }
         }
@@ -270,6 +275,9 @@ public class Robodrome {
         return this.docksCount;
     }
 
+    public int getCheckpointsCount() {
+        return checkpointsCount;
+    }
 
     public HashMap<Integer, Position> getDockTable() {
         return dockTable;
