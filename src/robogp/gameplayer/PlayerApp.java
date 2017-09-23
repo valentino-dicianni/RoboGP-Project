@@ -897,6 +897,7 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
      * La stringa può avere forme diverse:
      *
      * + nomerobot:pitfall  --> animazione di caduta buco nero
+     * + nomerobot:direction:laserhit  --> animazione laser del robodromo
      * + nomerobot:passi:direzione:rotazione  --> movimento robot o robodromo
      * + nomerobot:passi:direzione:rotazione:robot1§robot2§..§robotN  --> movimento robot o robodromo con spinta di altri robot
      * + nomerobot:direzionerobot:casellainiziosparo:casellafinesparo:robotcolpito:murocolpito  --> sparo laser
@@ -912,6 +913,16 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                 String cause = animdata[1];
                 if(cause.equals("pitfall")) {
                     rv.addRobotFall(robot);
+                }
+            }
+
+            // animazione laser del robodromo
+            if (animdata.length == 3) {
+                MatchRobot robot = getRobotByName(animdata[0]);
+                Direction dir = Direction.valueOf(animdata[1]);
+                String cause = animdata[2];
+                if(cause.equals("laserhit")){
+                    rv.addRobotHit(robot,Direction.getOppositeDirection(dir));
                 }
             }
 

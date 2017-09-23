@@ -1066,6 +1066,10 @@ public class Match extends Observable implements MessageObserver{
         return this.nMaxPlayers;
     }
 
+    public void setOwnedRobots(HashMap<String, List<MatchRobot>> ownedRobots) {
+        this.ownedRobots = ownedRobots;
+    }
+
     public HashMap<String, List<MatchRobot>> getOwnedRobots() {
         return ownedRobots;
     }

@@ -1,9 +1,9 @@
 testRobodrome;
 10x10;
+F;F;F;F;F;F;F;F-Wnynn;F;F;
 F;F;F;F;F;F;F;F;F;F;
-F;F;F;F;F;F;F;F;F;F;
-F;F;F;F;F;F;F;F;F;F;
-F;F;F;F;F;F;F;F;F;F;
+F;F;F;F;B-O1;E-O1;F;F-Wnnny-Lnnny;F;F;
+F;F;F;F;B-O1;E-O1;F-R1;F;F;F;
 F;F;F;F;F;F;F;F;F;F;
 F;F;P;F;F;F;F;F;F;F;
 F;F;F-Wyyyy;F;F;F;F;F;F;F;

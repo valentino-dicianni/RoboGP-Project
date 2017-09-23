@@ -9,6 +9,7 @@ import robogp.robodrome.Rotation;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import static org.junit.Assert.*;
 
@@ -18,11 +19,22 @@ public class MatchTest {
     private Match testMatch;
     private MatchRobot r1;
     private MatchRobot r2;
+    private MatchRobot r3;
     private ArrayList<MatchRobot> list;
     private static final Position CellPosition = new Position(4,0,Direction.E);
     private static final Position PitCellPosition = new Position(5,0,Direction.E);
     private static final Position WallCellPosition = new Position(6,0,Direction.E);
     private static final Position OutRobodromePosition = new Position(8,0,Direction.W);
+    private static final Position PushPosition = new Position(1,0,Direction.E);
+    private static final Position PushedPosition = new Position(1,1,Direction.E);
+    private static final Position PushedPosition2 = new Position(1,2,Direction.E);
+
+    private static final Position LaserPosition = new Position(0,7,Direction.W);
+    private static final Position LaserPosition2 = new Position(1,7,Direction.W);
+    private static final Position ExpressBeltPosition = new Position(3,5,Direction.W);
+    private static final Position NormalBeltPosition = new Position(3,4,Direction.W);
+    private static final Position RotatorPosition = new Position(3,6,Direction.W);
+
 
 
     @Before
@@ -30,8 +42,10 @@ public class MatchTest {
         testMatch = Match.getInstance("testRobodrome",2,1, Match.EndGame.AllButLast,false);
         r1 = new MatchRobot("robot-red","red",0);
         r2 = new MatchRobot("robot-blue","blue",0);
+        r3 = new MatchRobot("robot-yelow","yellow",0);
         r1.setLifePoints(100);
         r2.setLifePoints(100);
+        r3.setLifePoints(100);
         list = new ArrayList<>();
         System.out.println("Setting it up!");
 
@@ -78,15 +92,46 @@ public class MatchTest {
         System.out.println("\t-->TEST OutOfRobodrome: PASSED ");
 
 
-
-
-
-
+        list.add(r2);
+        testMatch.getOwnedRobots().put("playerTest",list);
+        r2.getRegistry(1).setLocked(true);
+        r1.setPosition(PushPosition.clone());
+        r2.setPosition(PushedPosition.clone());
+        assertTrue(testMatch.moveSubPhase(1).equals("robot-red:1:E:NO:robot-blue"));
+        list.add(r3);
+        r3.getRegistry(1).setLocked(true);
+        r1.setPosition(PushPosition.clone());
+        r2.setPosition(PushedPosition.clone());
+        r3.setPosition(PushedPosition2.clone());
+        assertTrue(testMatch.moveSubPhase(1).equals("robot-red:1:E:NO:robot-blue§robot-yelow"));
+        System.out.println("\t-->TEST PushRobot: PASSED ");
 
     }
 
     @Test
     public void robodromeActivationSubPhase() throws Exception {
+        list.add(r1);
+        testMatch.getOwnedRobots().put("playerTest",list);
+
+        r1.setPosition(ExpressBeltPosition.clone());
+        assertTrue(testMatch.robodromeActivationSubPhase().equals("robot-red:1:N:NO,robot-red:1:N:NO"));
+        System.out.println("\t-->TEST ExpressBelt: PASSED ");
+
+        r1.setPosition(NormalBeltPosition.clone());
+        assertTrue(testMatch.robodromeActivationSubPhase().equals("robot-red:1:N:NO"));
+        System.out.println("\t-->TEST NormalBelt: PASSED ");
+
+        r1.setPosition(RotatorPosition.clone());
+        assertTrue(testMatch.robodromeActivationSubPhase().equals("robot-red:0:W:CCW90"));
+        System.out.println("\t-->TEST Rotator: PASSED ");
+
+        r1.setPosition(LaserPosition.clone());
+        assertTrue(testMatch.robodromeActivationSubPhase().equals("robot-red:N:laserhit"));
+        list.add(r2);
+        testMatch.getOwnedRobots().put("playerTest",list);
+        r2.setPosition(LaserPosition2.clone());
+        assertTrue(testMatch.robodromeActivationSubPhase().equals("robot-red:N:laserhit,robot-blue:N:laserhit"));
+        System.out.println("\t-->TEST LaserCell: PASSED ");
     }
 
     @Test
@@ -100,7 +145,8 @@ public class MatchTest {
 
     @After
     public void tearDown() throws Exception {
-        System.out.println("Running: tearDown");
+        testMatch.setOwnedRobots(new HashMap<>());
+        System.out.println("TearDown Executed");
 
     }
 
