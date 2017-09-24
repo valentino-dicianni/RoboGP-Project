@@ -35,6 +35,13 @@ public class MatchTest {
     private static final Position NormalBeltPosition = new Position(3,4,Direction.W);
     private static final Position RotatorPosition = new Position(3,6,Direction.W);
 
+    private static final Position FireLaserOutPosition = new Position(2,0,Direction.W);
+    private static final Position FireLaserPosition = new Position(2,0,Direction.E);
+    private static final Position FireLaserOppositePosition = new Position(2,5,Direction.W);
+    private static final Position FireLaserMiddlePosition = new Position(2,3,Direction.W);
+
+
+
 
 
     @Before
@@ -47,7 +54,7 @@ public class MatchTest {
         r2.setLifePoints(100);
         r3.setLifePoints(100);
         list = new ArrayList<>();
-        System.out.println("Setting it up!");
+        System.out.println("** TEST Setup **");
 
     }
 
@@ -136,17 +143,38 @@ public class MatchTest {
 
     @Test
     public void lasersAndWeaponsSubPhase() throws Exception {
-    }
+        list.add(r1);
+        testMatch.getOwnedRobots().put("playerTest",list);
 
-    @Test
-    public void getAvailableRobots() throws Exception {
+        r1.setPosition(WallCellPosition.clone());
+        assertTrue(testMatch.lasersAndWeaponsSubPhase().equals("robot-red:E:0:1:false:true"));
+        r1.setPosition(CellPosition.clone());
+        assertTrue(testMatch.lasersAndWeaponsSubPhase().equals("robot-red:E:0:10:false:false"));
+        r1.setPosition(FireLaserPosition.clone());
+        assertTrue(testMatch.lasersAndWeaponsSubPhase().equals("robot-red:E:0:10:false:false"));
+        r1.setPosition(FireLaserOutPosition.clone());
+        assertTrue(testMatch.lasersAndWeaponsSubPhase().equals("robot-red:W:0:0:false:false"));
+
+        list.add(r2);
+        testMatch.getOwnedRobots().put("playerTest",list);
+        r1.setPosition(FireLaserPosition.clone());
+        r2.setPosition(FireLaserOppositePosition.clone());
+        assertTrue(testMatch.lasersAndWeaponsSubPhase().equals("robot-red:E:0:5:robot-blue:false,robot-blue:W:5:0:robot-red:false"));
+
+        list.add(r3);
+        testMatch.getOwnedRobots().put("playerTest",list);
+        r3.setPosition(FireLaserMiddlePosition.clone());
+        assertTrue(testMatch.lasersAndWeaponsSubPhase().equals("robot-red:E:0:3:robot-yelow:false,robot-blue:W:5:3:robot-yelow:false,robot-yelow:W:3:0:robot-red:false"));
+        System.out.println("\t-->TEST Laser&Weapons: PASSED ");
+
+
 
     }
 
     @After
     public void tearDown() throws Exception {
         testMatch.setOwnedRobots(new HashMap<>());
-        System.out.println("TearDown Executed");
+        System.out.println("** TEST TearDown **");
 
     }
 
