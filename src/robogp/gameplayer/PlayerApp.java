@@ -1034,8 +1034,6 @@ public class PlayerApp implements MessageObserver,RobodromeAnimationObserver {
                     selected.setHitPoints(10);
                 }
             }
-            //inserisco e tolgo un doppione per far renderizzare
-            //la llista di nuovo --> FIX THIS
             modelRobot.addElement(selected);
             modelRobot.removeElement(selected);
         }
