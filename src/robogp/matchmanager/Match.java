@@ -449,6 +449,7 @@ public class Match extends Observable implements MessageObserver{
                 FloorCell fcell = (FloorCell) currentcell;
                 if (fcell.isCheckpoint()) {
                     // robot.checkPointTouched();
+                    robot.touchCheckpoint(fcell.getCheckpoint());
                 } else if (fcell.isRepair()) {
                     robot.setLastCheckpointPosition(robotPos.clone());
                 } else if (fcell.isLeftRotator()) {

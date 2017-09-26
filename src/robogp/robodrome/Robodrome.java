@@ -26,7 +26,7 @@ public class Robodrome {
     private final java.util.ArrayList<CellLaser> allLasers;
     private int docksCount;
     private int checkpointsCount;
-    private HashMap<Integer, Position> dockTable= new HashMap<>();
+    private HashMap<Integer, Position> dockTable = new HashMap<>();
 
 
     /**
